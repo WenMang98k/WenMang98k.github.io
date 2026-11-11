@@ -7,7 +7,9 @@
 ## 技术文章
 
 - **[LLM 投机解码综述](articles/speculative-decoding/README.md)** · [网页阅读](https://wenmang98k.github.io/articles/speculative-decoding/)  
-  经典 SD、EAGLE、MTP、Medusa、Hydra、ReDrafter、DFlash、DSpark 等路线；训练与推理流程、概率校正、工程选型，以及 vLLM / SGLang 官方主分支支持矩阵。研究初稿，附资料核对范围与待复核项，未进行 GPU 性能对比实验。
+  经典 SD、EAGLE、MTP、Medusa、Hydra、ReDrafter、DFlash、DSpark 等路线；技术时间轴、训练与推理流程、概率校正、工程选型，以及 vLLM / SGLang 官方主分支支持矩阵。研究初稿，附资料核对范围与待复核项，未进行 GPU 性能对比实验。
+
+- [投机解码技术时间轴](articles/speculative-decoding/timeline.md)：分开记录论文年月、代码发布与框架支持。
 
 ## 本地阅读与更新
 
