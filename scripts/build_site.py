@@ -7,7 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DATA = json.loads((ROOT / 'content/catalog.json').read_text())
 
 def shell(title, description, body, prefix='', active=''):
-    nav=''.join(f'<a href="{prefix}{k}/"'+(' aria-current="page"' if k==active else '')+f'>{DATA[k]["label"]}</a>' for k in ['tech','life'])
+    nav = '<a href="/">首页</a><a href="/projects/">项目</a><a href="/articles/">文章</a><a href="/life/">生活</a><a href="/about/">关于</a><a href="https://github.com/WenMang98k" target="_blank" rel="noopener noreferrer">GitHub ↗</a>'
     return f'''<!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="{e(description,quote=True)}"><meta name="theme-color" content="#f6f5ef"><title>{e(title)} · 文氓 WenMang</title><link rel="stylesheet" href="{prefix}site.css?v=20261111"></head>
 <body class="{active or 'home'}"><a class="skip-link" href="#main">跳转到正文</a><header class="site-header container"><a class="wordmark" href="{prefix or './'}">文氓<span> · WenMang</span></a><nav aria-label="主导航">{nav}</nav></header><main id="main" class="container">{body}</main><footer class="site-footer container"><span>© 文氓 · WenMang · 保持好奇，记录日常</span><a href="mailto:WenMang98k@gmail.com">打个招呼 ↗</a></footer></body></html>'''
