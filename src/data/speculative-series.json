@@ -1,0 +1,352 @@
+[
+  {
+    "slug": "classic",
+    "name": "经典 SD / Speculative Sampling",
+    "group": "基础与检索",
+    "description": "从 proposal、接受概率到残差重采样，建立投机解码的正确性地基。",
+    "repo": null,
+    "paper": "2211.17192",
+    "order": 1,
+    "href": "/articles/sd-classic/"
+  },
+  {
+    "slug": "ngram",
+    "name": "N-gram / Prompt Lookup",
+    "group": "基础与检索",
+    "description": "不用额外神经网络，从输入和已生成上下文寻找候选续写。",
+    "repo": "apoorvumang/prompt-lookup-decoding",
+    "paper": null,
+    "order": 2,
+    "href": "/articles/sd-ngram/"
+  },
+  {
+    "slug": "suffix",
+    "name": "Suffix Decoding",
+    "group": "基础与检索",
+    "description": "扩展后缀匹配与候选统计，理解无训练投机的另一条落地路线。",
+    "repo": "vllm-project/vllm",
+    "paper": null,
+    "order": 3,
+    "href": "/articles/sd-suffix/"
+  },
+  {
+    "slug": "rest",
+    "name": "REST",
+    "group": "基础与检索",
+    "description": "把检索来的续写构造成候选树，让目标模型验证。",
+    "repo": "FasterDecoding/REST",
+    "paper": "2311.08252",
+    "order": 4,
+    "href": "/articles/sd-rest/"
+  },
+  {
+    "slug": "lookahead",
+    "name": "Lookahead Decoding",
+    "group": "基础与检索",
+    "description": "理解 Jacobi 并行轨迹、n-gram 候选池与验证分支的分工。",
+    "repo": "hao-ai-lab/LookaheadDecoding",
+    "paper": "2402.02057",
+    "order": 5,
+    "href": "/articles/sd-lookahead/"
+  },
+  {
+    "slug": "recycling",
+    "name": "Token Recycling",
+    "group": "基础与检索",
+    "description": "把已有计算的候选信息再利用，区别于只匹配文本后缀。",
+    "repo": null,
+    "paper": "2408.08696",
+    "order": 6,
+    "href": "/articles/sd-recycling/"
+  },
+  {
+    "slug": "blockwise",
+    "name": "Blockwise Parallel Decoding",
+    "group": "基础与检索",
+    "description": "回看早期多未来预测与块验证，区分其与现代随机 SD 的关系。",
+    "repo": null,
+    "paper": "1811.03115",
+    "order": 7,
+    "href": "/articles/sd-blockwise/"
+  },
+  {
+    "slug": "early-specdec",
+    "name": "早期 SpecDec / Seq2seq 投机执行",
+    "group": "基础与检索",
+    "description": "把 seq2seq 场景的投机执行与今天通用 LLM serving 区分开。",
+    "repo": null,
+    "paper": "2203.16487",
+    "order": 8,
+    "href": "/articles/sd-early-specdec/"
+  },
+  {
+    "slug": "medusa",
+    "name": "Medusa",
+    "group": "多头与特征",
+    "description": "从同一隐藏状态预测多个未来位置，读懂多头候选树与接受规则。",
+    "repo": "FasterDecoding/Medusa",
+    "paper": "2401.10774",
+    "order": 9,
+    "href": "/articles/sd-medusa/"
+  },
+  {
+    "slug": "hydra",
+    "name": "Hydra",
+    "group": "多头与特征",
+    "description": "让后续预测头感知候选前序，缓解独立多头的不协调。",
+    "repo": "zankner/Hydra",
+    "paper": "2402.05109",
+    "order": 10,
+    "href": "/articles/sd-hydra/"
+  },
+  {
+    "slug": "redrafter",
+    "name": "ReDrafter / Recurrent Drafter",
+    "group": "多头与特征",
+    "description": "用轻量循环状态提出多条候选，并通过动态树减少重复验证。",
+    "repo": "apple/ml-recurrent-drafter",
+    "paper": "2403.09919",
+    "order": 11,
+    "href": "/articles/sd-redrafter/"
+  },
+  {
+    "slug": "eagle",
+    "name": "EAGLE",
+    "group": "多头与特征",
+    "description": "利用目标模型上下文特征外推，理解 feature/token 对齐和验证。",
+    "repo": "SafeAILab/EAGLE",
+    "paper": "2401.15077",
+    "order": 12,
+    "href": "/articles/sd-eagle/"
+  },
+  {
+    "slug": "eagle2",
+    "name": "EAGLE-2",
+    "group": "多头与特征",
+    "description": "把固定候选树改成上下文相关的动态扩展预算。",
+    "repo": "SafeAILab/EAGLE",
+    "paper": "2406.16858",
+    "order": 13,
+    "href": "/articles/sd-eagle2/"
+  },
+  {
+    "slug": "eagle3",
+    "name": "EAGLE-3",
+    "group": "多头与特征",
+    "description": "多层特征融合与 training-time testing，让训练更贴近实际草稿 rollout。",
+    "repo": "SafeAILab/EAGLE",
+    "paper": "2503.01840",
+    "order": 14,
+    "href": "/articles/sd-eagle3/"
+  },
+  {
+    "slug": "peagle",
+    "name": "P-EAGLE",
+    "group": "多头与特征",
+    "description": "在特征草稿路线中研究并行 proposal，而非把所有 EAGLE 都看作串行递归。",
+    "repo": "sgl-project/SpecForge",
+    "paper": "2602.01469",
+    "order": 15,
+    "href": "/articles/sd-peagle/"
+  },
+  {
+    "slug": "eagle31",
+    "name": "EAGLE3.1 实现追踪",
+    "group": "多头与特征",
+    "description": "记录框架中的后续变体，明确已核实范围与未核实细节。",
+    "repo": "sgl-project/SpecForge",
+    "paper": null,
+    "order": 16,
+    "href": "/articles/sd-eagle31/"
+  },
+  {
+    "slug": "lstm",
+    "name": "LSTM / RNN 轻量草稿",
+    "group": "多头与特征",
+    "description": "循环网络可以成为便宜 drafter，但架构名字本身不定义完整投机采样算法。",
+    "repo": null,
+    "paper": null,
+    "order": 17,
+    "href": "/articles/sd-lstm/"
+  },
+  {
+    "slug": "mtp",
+    "name": "Multi-Token Prediction / MTP",
+    "group": "MTP 与自投机",
+    "description": "从多未来训练目标到原生推理草稿，区分训练模块数与实际发布权重。",
+    "repo": "deepseek-ai/DeepSeek-V3",
+    "paper": "2412.19437",
+    "order": 18,
+    "href": "/articles/sd-mtp/"
+  },
+  {
+    "slug": "draftverify",
+    "name": "Draft & Verify",
+    "group": "MTP 与自投机",
+    "description": "跳过部分层提出候选，再使用完整模型完成自验证。",
+    "repo": "dilab-zju/self-speculative-decoding",
+    "paper": "2309.08168",
+    "order": 19,
+    "href": "/articles/sd-draftverify/"
+  },
+  {
+    "slug": "layerskip",
+    "name": "LayerSkip",
+    "group": "MTP 与自投机",
+    "description": "先训练早退能力，再共享浅层计算开展自投机。",
+    "repo": "facebookresearch/LayerSkip",
+    "paper": "2404.16710",
+    "order": 20,
+    "href": "/articles/sd-layerskip/"
+  },
+  {
+    "slug": "uno",
+    "name": "UNO",
+    "group": "MTP 与自投机",
+    "description": "复用目标 Transformer 与专门 LoRA，分离草稿与 base-only 验证。",
+    "repo": "sgl-project/sglang",
+    "paper": null,
+    "order": 21,
+    "href": "/articles/sd-uno/"
+  },
+  {
+    "slug": "dflash",
+    "name": "DFlash",
+    "group": "块并行草稿",
+    "description": "用轻量块扩散草稿减少串行提案主干调用。",
+    "repo": "z-lab/dflash",
+    "paper": "2602.06036",
+    "order": 22,
+    "href": "/articles/sd-dflash/"
+  },
+  {
+    "slug": "dflash2",
+    "name": "DFlash2",
+    "group": "块并行草稿",
+    "description": "动态分组卷积与低秩候选路径选择，改善块内关联。",
+    "repo": "z-lab/dflash",
+    "paper": null,
+    "order": 23,
+    "href": "/articles/sd-dflash2/"
+  },
+  {
+    "slug": "dspark",
+    "name": "DSpark",
+    "group": "块并行草稿",
+    "description": "通过 Markov 校正和置信度头连接候选依赖、接受概率与验证预算。",
+    "repo": "sgl-project/SpecForge",
+    "paper": "2607.05147",
+    "order": 24,
+    "href": "/articles/sd-dspark/"
+  },
+  {
+    "slug": "domino",
+    "name": "Domino",
+    "group": "块并行草稿",
+    "description": "在并行草稿后加入便宜 GRU logit correction。",
+    "repo": "sgl-project/SpecForge",
+    "paper": "2605.29707",
+    "order": 25,
+    "href": "/articles/sd-domino/"
+  },
+  {
+    "slug": "lilicorr",
+    "name": "LiLiCorr",
+    "group": "块并行草稿",
+    "description": "用小型 correlator 对各位置候选的组合评分。",
+    "repo": "sgl-project/sglang",
+    "paper": "2608.20530",
+    "order": 26,
+    "href": "/articles/sd-lilicorr/"
+  },
+  {
+    "slug": "sequoia",
+    "name": "Sequoia",
+    "group": "训练与系统优化",
+    "description": "用接受率和硬件成本决定候选树形状。",
+    "repo": "Infini-AI-Lab/Sequoia",
+    "paper": "2402.12374",
+    "order": 27,
+    "href": "/articles/sd-sequoia/"
+  },
+  {
+    "slug": "specexec",
+    "name": "SpecExec",
+    "group": "训练与系统优化",
+    "description": "考察目标调用昂贵、存在 offloading 时的大规模并行候选预算。",
+    "repo": "yandex-research/specexec",
+    "paper": "2406.02532",
+    "order": 28,
+    "href": "/articles/sd-specexec/"
+  },
+  {
+    "slug": "specinfer",
+    "name": "SpecInfer",
+    "group": "训练与系统优化",
+    "description": "从候选树验证与系统实现理解早期投机服务架构。",
+    "repo": "flexflow/FlexFlow",
+    "paper": "2305.09781",
+    "order": 29,
+    "href": "/articles/sd-specinfer/"
+  },
+  {
+    "slug": "distillspec",
+    "name": "DistillSpec",
+    "group": "训练与系统优化",
+    "description": "将草稿训练目标从通用能力转向与目标模型对齐。",
+    "repo": null,
+    "paper": "2310.08461",
+    "order": 30,
+    "href": "/articles/sd-distillspec/"
+  },
+  {
+    "slug": "frspec",
+    "name": "FR-Spec",
+    "group": "训练与系统优化",
+    "description": "从大词表输出头入手，减少 EAGLE 草稿的 lm_head 计算。",
+    "repo": "sgl-project/sglang",
+    "paper": "2502.14856",
+    "order": 31,
+    "href": "/articles/sd-frspec/"
+  },
+  {
+    "slug": "adaptive-draft",
+    "name": "自适应草稿步数：SGLang",
+    "group": "训练与系统优化",
+    "description": "按接受行为与 batch 范围切换草稿步数，避免固定 K 的负收益。",
+    "repo": "sgl-project/sglang",
+    "paper": null,
+    "order": 32,
+    "href": "/articles/sd-adaptive-draft/"
+  },
+  {
+    "slug": "adaptive-verify",
+    "name": "自适应验证预算：vLLM",
+    "group": "训练与系统优化",
+    "description": "以候选前缀存活概率与硬件成本模型分配验证槽位。",
+    "repo": "vllm-project/vllm",
+    "paper": null,
+    "order": 33,
+    "href": "/articles/sd-adaptive-verify/"
+  },
+  {
+    "slug": "dpace",
+    "name": "D-PACE 训练目标",
+    "group": "训练与系统优化",
+    "description": "从平均 token 损失走向接受前缀收益的训练视角。",
+    "repo": "sgl-project/SpecForge",
+    "paper": "2605.18810",
+    "order": 34,
+    "href": "/articles/sd-dpace/"
+  },
+  {
+    "slug": "hybrid",
+    "name": "混合与级联投机",
+    "group": "训练与系统优化",
+    "description": "组合检索、模型草稿与动态路由时，重新定义预算和概率契约。",
+    "repo": null,
+    "paper": null,
+    "order": 35,
+    "href": "/articles/sd-hybrid/"
+  }
+]

@@ -1,11 +1,11 @@
 import { getCollection } from 'astro:content';
 export const legacyArticle = {
   title: 'LLM 投机解码综述',
-  description: '从经典 SD 到 EAGLE、MTP、DFlash 与 DSpark：机制、概率校正与工程选型。研究初稿，未进行 GPU 性能对比实验。',
+  description: '从经典 SD 到 EAGLE、MTP、DFlash 与 DSpark：机制、概率校正与工程选型，关联 35 篇方法文章和固定版本源码。学习初稿，未进行 GPU 性能对比实验。',
   date: new Date('2026-11-11T00:00:00+08:00'), tags: ['LLM', '推理加速'], href: '/articles/speculative-decoding/',
 };
 export async function articles() {
-  const posts = await getCollection('posts', ({ data }) => !data.draft);
+  const posts = await getCollection('posts', ({ data }) => !data.draft && data.seriesRole !== 'overview');
   return [legacyArticle, {
     title: '投机解码技术时间轴', description: '从早期块预测到 EAGLE、MTP、DFlash 与 DSpark，区分论文提出、代码发布和框架支持。',
     date: new Date('2026-11-11T00:00:00+08:00'), tags: ['LLM', '推理加速'], href: '/articles/speculative-decoding/timeline.html'

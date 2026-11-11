@@ -1,0 +1,7 @@
+---
+import methods from '../data/speculative-series.json';
+const { id } = Astro.props;
+const current = methods.find(m => `sd-${m.slug}` === id);
+const same = current ? methods.filter(m => m.group === current.group) : [];
+---
+<aside class="series-context" aria-label="专题导航"><a class="series-overview-link" href="/articles/speculative-decoding/">← 投机解码综述与全系列</a>{current && <><p class="series-position">{current.group} · {current.order} / {methods.length}</p><nav aria-label="同路线文章">{same.map(m => <a href={m.href} aria-current={m===current?'page':undefined}>{m.name}</a>)}</nav></>}<a class="series-source-link" href="/articles/sd-source-map/">原始仓库与代码索引 ↗</a></aside>

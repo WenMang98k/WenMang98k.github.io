@@ -57,3 +57,14 @@ python3 articles/speculative-decoding/scripts/verify_probabilities.py
 ## 保留的分类站点
 
 远程最新的 `/tech/`、`/life/` 与主题页，以及投机解码时间轴均保留。旧分类目录维护在 `content/catalog.json`，说明见 [docs/WRITING.md](docs/WRITING.md)。`python3 scripts/build_site.py` 会重写根目录的旧首页和分类页；Astro 正式首页由 `src/pages/index.astro` 生成。新 Markdown 文章通过新版 `/articles/` 自动收录，旧目录仍使用 catalog 维护。
+
+## 投机解码学习系列
+
+- `/articles/speculative-decoding/` 现由 Astro 渲染，保留原地址，提供导读、公式、分组目录及 35 篇分篇链接。
+- `src/content/posts/speculative-decoding-overview.md` 是新版综述源文件。
+- `src/content/posts/sd-*.md` 是方法文章与源码索引；`src/data/speculative-series.json` 维护分组和顺序。
+- `research/speculative-decoding/` 保存本站原创有限词表参考代码与已读源码来源记录，不复制上游整仓。
+- `articles/speculative-decoding/README.md` 保留早期长版与文献记录；其 Pandoc HTML 不再作为正式综述入口。`prepare:legacy` 会移除该公开副本，避免覆盖 Astro 入口；旧时间轴地址保留。
+- 数学公式使用本地 KaTeX 资源。文章目录、复制代码和阅读进度在普通阅读器中统一提供。
+
+更新内容后执行 `python3 scripts/build_site.py` 刷新技术 Topic 归档，再运行 `npm run check && npm run build`。新增分篇需同步系列 JSON 与 catalog；构建脚本会校验文章目标是否存在。

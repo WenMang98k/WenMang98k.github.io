@@ -1,0 +1,5 @@
+---
+import methods from '../data/speculative-series.json';
+const groups = [...new Set(methods.map(m => m.group))];
+---
+<section class="series-directory" aria-labelledby="directory-title"><div class="series-section-heading"><div><p class="eyebrow">METHOD BY METHOD</p><h2 id="directory-title">按路线，逐篇深入。</h2></div><a href="/articles/sd-source-map/">源码索引 ↗</a></div><p class="directory-hint">每篇包含原始资料、训练与推理、源码入口、框架集成、收益证据及降级策略。点击分组展开。</p>{groups.map((group,i) => <details class="method-group" open={i===0}><summary><span class="group-number">0{i+1}</span><span>{group}</span><small>{methods.filter(m=>m.group===group).length} 篇</small><span class="group-plus" aria-hidden="true">＋</span></summary><div class="method-grid">{methods.filter(m=>m.group===group).map(m => <a href={m.href} class="method-link"><span class="method-number">{String(m.order).padStart(2,'0')}</span><div><h3>{m.name}</h3><p>{m.description}</p></div><span aria-hidden="true">↗</span></a>)}</div></details>)}</section>

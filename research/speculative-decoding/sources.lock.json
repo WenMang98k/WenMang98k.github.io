@@ -1,0 +1,298 @@
+{
+  "collected": "2026-11-11",
+  "scope": "Only successfully read files are evidence; unavailable paths are recorded as failures, not code entry points.",
+  "files": [
+    {
+      "key": "medusa-utils",
+      "repo": "FasterDecoding/Medusa",
+      "ref": "main",
+      "path": "medusa/model/utils.py",
+      "url": "https://raw.githubusercontent.com/FasterDecoding/Medusa/e2a5d20c048a9b0a4092e6933c34313687422518/medusa/model/utils.py",
+      "sha256": "f62632ce0892cec19f3280ce02695c08e0ef84f2a2a8342040e7c75d22bfe4b7",
+      "bytes": 27771,
+      "status": "read",
+      "commit": "e2a5d20c048a9b0a4092e6933c34313687422518"
+    },
+    {
+      "key": "medusa-train",
+      "repo": "FasterDecoding/Medusa",
+      "ref": "main",
+      "path": "medusa/train/train_legacy.py",
+      "url": "https://raw.githubusercontent.com/FasterDecoding/Medusa/e2a5d20c048a9b0a4092e6933c34313687422518/medusa/train/train_legacy.py",
+      "sha256": "280227b3168e07bef420b7461f2d2aff5e4a435e8aaa35d7109890790bb554b2",
+      "bytes": 14492,
+      "status": "read",
+      "commit": "e2a5d20c048a9b0a4092e6933c34313687422518"
+    },
+    {
+      "key": "eagle-utils",
+      "repo": "SafeAILab/EAGLE",
+      "ref": "main",
+      "path": "eagle/model/utils.py",
+      "url": "https://raw.githubusercontent.com/SafeAILab/EAGLE/cb7e0841fe0c206c6ed74a197ad5e2a1f13f5a2b/eagle/model/utils.py",
+      "sha256": "68dadf1977dd76624f87d0dc5ce9f840783ccaeb7554861f1206daa664367fe9",
+      "bytes": 18615,
+      "status": "read",
+      "commit": "cb7e0841fe0c206c6ed74a197ad5e2a1f13f5a2b"
+    },
+    {
+      "key": "eagle-model",
+      "repo": "SafeAILab/EAGLE",
+      "ref": "main",
+      "path": "eagle/model/ea_model.py",
+      "url": "https://raw.githubusercontent.com/SafeAILab/EAGLE/cb7e0841fe0c206c6ed74a197ad5e2a1f13f5a2b/eagle/model/ea_model.py",
+      "sha256": "f834fc37d350b9109ad91ac27a29eb2be59153dc0aac48ab753c6e43aa91d506",
+      "bytes": 20606,
+      "status": "read",
+      "commit": "cb7e0841fe0c206c6ed74a197ad5e2a1f13f5a2b"
+    },
+    {
+      "key": "eagle-train",
+      "repo": "SafeAILab/EAGLE",
+      "ref": "main",
+      "path": "eagle/train/main.py",
+      "url": "https://raw.githubusercontent.com/SafeAILab/EAGLE/cb7e0841fe0c206c6ed74a197ad5e2a1f13f5a2b/eagle/train/main.py",
+      "sha256": "4df07a565b07f828d46d9a68cd3ee53ba5fa0dd51adce0ac5f7db17969b69fba",
+      "bytes": 19411,
+      "status": "read",
+      "commit": "cb7e0841fe0c206c6ed74a197ad5e2a1f13f5a2b"
+    },
+    {
+      "key": "hydra-utils",
+      "repo": "zankner/Hydra",
+      "ref": "main",
+      "path": "hydra/model/utils.py",
+      "url": "https://raw.githubusercontent.com/zankner/Hydra/3f39fbd2c22552e788b62dfd29a12b07ad63abfe/hydra/model/utils.py",
+      "sha256": "9cebfc05322573cefc266da9687891aee314df973a7a2901d8d1c557de10ef17",
+      "bytes": 23574,
+      "status": "read",
+      "commit": "3f39fbd2c22552e788b62dfd29a12b07ad63abfe"
+    },
+    {
+      "key": "redrafter-decode",
+      "repo": "apple/ml-recurrent-drafter",
+      "ref": "main",
+      "path": "recurrent_drafting/recurrent_drafting.py",
+      "url": "https://raw.githubusercontent.com/apple/ml-recurrent-drafter/0ae66cb657b847c3279feb4fa58f57e233ca9c6c/recurrent_drafting/recurrent_drafting.py",
+      "sha256": "38f075466b2f78a8c0f292758d87f523603549e6c78dd4fca785f3bbdd1ff733",
+      "bytes": 27637,
+      "status": "read",
+      "commit": "0ae66cb657b847c3279feb4fa58f57e233ca9c6c"
+    },
+    {
+      "key": "redrafter-train",
+      "repo": "apple/ml-recurrent-drafter",
+      "path": "recurrent_drafting/train/train.py",
+      "status": "unavailable",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "key": "rest-decode",
+      "repo": "FasterDecoding/REST",
+      "ref": "main",
+      "path": "rest/model/rest_model.py",
+      "url": "https://raw.githubusercontent.com/FasterDecoding/REST/154d0f0ae45de5d8a9cbd1c696f6ad5da10904bf/rest/model/rest_model.py",
+      "sha256": "1941097496b1b05189f234a89fd16a0cd769006d0a1def68fc54af187192ce88",
+      "bytes": 10968,
+      "status": "read",
+      "commit": "154d0f0ae45de5d8a9cbd1c696f6ad5da10904bf"
+    },
+    {
+      "key": "layerskip-model",
+      "repo": "facebookresearch/LayerSkip",
+      "path": "self_speculation/generation_strategy.py",
+      "status": "unavailable",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "key": "lookahead-readme",
+      "repo": "hao-ai-lab/LookaheadDecoding",
+      "ref": "main",
+      "path": "README.md",
+      "url": "https://raw.githubusercontent.com/hao-ai-lab/LookaheadDecoding/eed010da9c7b1867912675d480feec5629e0c2d0/README.md",
+      "sha256": "0a232e776cef502aa4c166153e4c41a0406eaeaa8a9e557e0e46a9a665509106",
+      "bytes": 9857,
+      "status": "read",
+      "commit": "eed010da9c7b1867912675d480feec5629e0c2d0"
+    },
+    {
+      "key": "sequoia-tree",
+      "repo": "Infini-AI-Lab/Sequoia",
+      "ref": "main",
+      "path": "tree_search.py",
+      "url": "https://raw.githubusercontent.com/Infini-AI-Lab/Sequoia/0ff3ff71475ca148f2dfb7545e0de5caf5c67b39/tree_search.py",
+      "sha256": "f71e861a71defa1496024346c058e3ef31c33558bc1bc3ed37b08b22a51ff918",
+      "bytes": 3857,
+      "status": "read",
+      "commit": "0ff3ff71475ca148f2dfb7545e0de5caf5c67b39"
+    },
+    {
+      "key": "specexec-model",
+      "repo": "yandex-research/specexec",
+      "path": "specdec/spec_exec.py",
+      "status": "unavailable",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "key": "specforge-dflash",
+      "repo": "sgl-project/SpecForge",
+      "ref": "main",
+      "path": "specforge/modeling/draft/dflash.py",
+      "url": "https://raw.githubusercontent.com/sgl-project/SpecForge/ce3ef8fa05ea397881634590768d0b0150ec24f9/specforge/modeling/draft/dflash.py",
+      "sha256": "0b6d844413c23fda2744fbe8ad43de7279047f266115fff39332c03e5cbc52d3",
+      "bytes": 39449,
+      "status": "read",
+      "commit": "ce3ef8fa05ea397881634590768d0b0150ec24f9"
+    },
+    {
+      "key": "specforge-dspark",
+      "repo": "sgl-project/SpecForge",
+      "ref": "main",
+      "path": "specforge/modeling/draft/dspark.py",
+      "url": "https://raw.githubusercontent.com/sgl-project/SpecForge/ce3ef8fa05ea397881634590768d0b0150ec24f9/specforge/modeling/draft/dspark.py",
+      "sha256": "8acd43463acdd91754003aa1b62efd7d2b6ddcf7a4feff202ede56fc6c4929e8",
+      "bytes": 6575,
+      "status": "read",
+      "commit": "ce3ef8fa05ea397881634590768d0b0150ec24f9"
+    },
+    {
+      "key": "specforge-markov",
+      "repo": "sgl-project/SpecForge",
+      "ref": "main",
+      "path": "specforge/modeling/draft/heads/markov.py",
+      "url": "https://raw.githubusercontent.com/sgl-project/SpecForge/ce3ef8fa05ea397881634590768d0b0150ec24f9/specforge/modeling/draft/heads/markov.py",
+      "sha256": "fef3e57c844ccdfc451dfbf0db841703656a94faae8e953d1570c5071951d8a9",
+      "bytes": 10062,
+      "status": "read",
+      "commit": "ce3ef8fa05ea397881634590768d0b0150ec24f9"
+    },
+    {
+      "key": "specforge-peagle",
+      "repo": "sgl-project/SpecForge",
+      "ref": "main",
+      "path": "specforge/modeling/draft/peagle.py",
+      "url": "https://raw.githubusercontent.com/sgl-project/SpecForge/ce3ef8fa05ea397881634590768d0b0150ec24f9/specforge/modeling/draft/peagle.py",
+      "sha256": "f030c12080cebd8c2f7f71687fac9a14884e3f4a588b690b08ae315738d87969",
+      "bytes": 12082,
+      "status": "read",
+      "commit": "ce3ef8fa05ea397881634590768d0b0150ec24f9"
+    },
+    {
+      "key": "specforge-domino",
+      "repo": "sgl-project/SpecForge",
+      "ref": "main",
+      "path": "specforge/modeling/draft/domino.py",
+      "url": "https://raw.githubusercontent.com/sgl-project/SpecForge/ce3ef8fa05ea397881634590768d0b0150ec24f9/specforge/modeling/draft/domino.py",
+      "sha256": "3e06871ee07b1888ab26c8d1a3c3c80c9292c4497195f0fcf37288add02abaf0",
+      "bytes": 4954,
+      "status": "read",
+      "commit": "ce3ef8fa05ea397881634590768d0b0150ec24f9"
+    },
+    {
+      "key": "specforge-dflash2",
+      "repo": "sgl-project/SpecForge",
+      "ref": "main",
+      "path": "specforge/modeling/draft/dflash2.py",
+      "url": "https://raw.githubusercontent.com/sgl-project/SpecForge/ce3ef8fa05ea397881634590768d0b0150ec24f9/specforge/modeling/draft/dflash2.py",
+      "sha256": "22abdf147c70d836637da58a859044a604285f98e4824625e5511d8311125f1c",
+      "bytes": 13851,
+      "status": "read",
+      "commit": "ce3ef8fa05ea397881634590768d0b0150ec24f9"
+    },
+    {
+      "key": "sglang-info",
+      "repo": "sgl-project/sglang",
+      "ref": "main",
+      "path": "python/sglang/srt/speculative/spec_info.py",
+      "url": "https://raw.githubusercontent.com/sgl-project/sglang/34dfaccc57d928f046317c2e3d9e16bd69837d9b/python/sglang/srt/speculative/spec_info.py",
+      "sha256": "76be1e44eb787719696d4d3fd8d0a84824c2de6e930f7bb51d16819c40ced3fc",
+      "bytes": 19762,
+      "status": "read",
+      "commit": "34dfaccc57d928f046317c2e3d9e16bd69837d9b"
+    },
+    {
+      "key": "vllm-config",
+      "repo": "vllm-project/vllm",
+      "ref": "main",
+      "path": "vllm/config/speculative.py",
+      "url": "https://raw.githubusercontent.com/vllm-project/vllm/2ee8250eaf67059b4e8bc3c1bfb4cfb1c88892a7/vllm/config/speculative.py",
+      "sha256": "6cd1284bfa2aa29d712b4dc02c5c7678dbb70a9e540a772b53793fe3cd4f023e",
+      "bytes": 83380,
+      "status": "read",
+      "commit": "2ee8250eaf67059b4e8bc3c1bfb4cfb1c88892a7"
+    },
+    {
+      "key": "sglang-guide",
+      "repo": "sgl-project/sglang",
+      "ref": "main",
+      "path": "docs/docs/advanced_features/speculative_decoding.mdx",
+      "url": "https://raw.githubusercontent.com/sgl-project/sglang/34dfaccc57d928f046317c2e3d9e16bd69837d9b/docs/docs/advanced_features/speculative_decoding.mdx",
+      "sha256": "98a3a3b385541a11d8efa3c78e94b8a23c22f617f0eaccf22f194204007f5582",
+      "bytes": 71457,
+      "status": "read",
+      "commit": "34dfaccc57d928f046317c2e3d9e16bd69837d9b"
+    },
+    {
+      "key": "vllm-guide",
+      "repo": "vllm-project/vllm",
+      "ref": "main",
+      "path": "docs/features/speculative_decoding/README.md",
+      "url": "https://raw.githubusercontent.com/vllm-project/vllm/2ee8250eaf67059b4e8bc3c1bfb4cfb1c88892a7/docs/features/speculative_decoding/README.md",
+      "sha256": "f82166d055a2e1b467f61d4873f80955db84b655299be02857f1f6706ac816a6",
+      "bytes": 14624,
+      "status": "read",
+      "commit": "2ee8250eaf67059b4e8bc3c1bfb4cfb1c88892a7"
+    },
+    {
+      "key": "pld-readme",
+      "repo": "apoorvumang/prompt-lookup-decoding",
+      "ref": "main",
+      "path": "README.md",
+      "url": "https://raw.githubusercontent.com/apoorvumang/prompt-lookup-decoding/cada4fe6ec7368d41c386ec3fb94fa11268971eb/README.md",
+      "sha256": "9f3fa436a75fd7cec121f7ecd0c3e842dbeae36b84bde7121445a316963c96d8",
+      "bytes": 7576,
+      "status": "read",
+      "commit": "cada4fe6ec7368d41c386ec3fb94fa11268971eb"
+    },
+    {
+      "key": "distillspec-readme",
+      "repo": "google-research/google-research",
+      "path": "distill_spec/README.md",
+      "status": "unavailable",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "key": "draftverify-README.md",
+      "repo": "dilab-zju/self-speculative-decoding",
+      "ref": "main",
+      "path": "README.md",
+      "commit": "688db8b74a782af21777b7ad5aeb399d7eb26faf",
+      "url": "https://raw.githubusercontent.com/dilab-zju/self-speculative-decoding/688db8b74a782af21777b7ad5aeb399d7eb26faf/README.md",
+      "sha256": "9acf3101072f5685fd45506ec40b5387e52ecbc8c90ecbc68983090b20be22b9",
+      "bytes": 2350,
+      "status": "read"
+    },
+    {
+      "key": "draftverify-decoding.py",
+      "repo": "dilab-zju/self-speculative-decoding",
+      "ref": "main",
+      "path": "decoding.py",
+      "commit": "688db8b74a782af21777b7ad5aeb399d7eb26faf",
+      "url": "https://raw.githubusercontent.com/dilab-zju/self-speculative-decoding/688db8b74a782af21777b7ad5aeb399d7eb26faf/decoding.py",
+      "sha256": "f6e7be28cf8c3436c99370b4b730bcd4bc96136448d6921a8630208453052d3d",
+      "bytes": 18594,
+      "status": "read"
+    },
+    {
+      "key": "draftverify-searching.py",
+      "repo": "dilab-zju/self-speculative-decoding",
+      "ref": "main",
+      "path": "searching.py",
+      "commit": "688db8b74a782af21777b7ad5aeb399d7eb26faf",
+      "url": "https://raw.githubusercontent.com/dilab-zju/self-speculative-decoding/688db8b74a782af21777b7ad5aeb399d7eb26faf/searching.py",
+      "sha256": "2b11ad09baf0d5ad8c6ebeac0ee68b3d4709c30c61bc0f8b4fe69e21d82a7844",
+      "bytes": 3207,
+      "status": "read"
+    }
+  ]
+}

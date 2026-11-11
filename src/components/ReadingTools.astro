@@ -1,0 +1,41 @@
+<div class="reading-progress" aria-hidden="true"></div>
+<script>
+const article = document.querySelector<HTMLElement>('.enhanced-prose');
+if (article) {
+  article.querySelectorAll<HTMLPreElement>('pre').forEach(pre => {
+    if (pre.querySelector('.code-copy')) return;
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'code-copy';
+    button.textContent = '复制';
+    button.setAttribute('aria-label', '复制代码');
+    button.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(pre.querySelector('code')?.textContent ?? '');
+        button.textContent = '已复制';
+      } catch {
+        button.textContent = '请选中复制';
+      }
+      window.setTimeout(() => { button.textContent = '复制'; }, 1800);
+    });
+    pre.append(button);
+  });
+  const bar = document.querySelector<HTMLElement>('.reading-progress');
+  const update = () => {
+    const range = article.offsetHeight - innerHeight;
+    const progress = Math.max(0, Math.min(1, (scrollY - article.offsetTop) / Math.max(1, range)));
+    if (bar) bar.style.transform = `scaleX(${progress})`;
+  };
+  addEventListener('scroll', update, { passive: true });
+  addEventListener('resize', update);
+  update();
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('.reading-toc a[href^="#"]')];
+  const observer = new IntersectionObserver(entries => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
+      links.forEach(link => link.classList.toggle('is-active', decodeURIComponent(link.hash.slice(1)) === entry.target.id));
+    }
+  }, { rootMargin: '-8% 0px -65% 0px' });
+  article.querySelectorAll('h2[id]').forEach(heading => observer.observe(heading));
+}
+</script>

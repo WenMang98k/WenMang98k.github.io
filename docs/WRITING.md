@@ -78,3 +78,9 @@ python3 -m http.server 8000 --bind 127.0.0.1
 ```
 
 检查首页 → 大类 → 主题 → 文章 → 返回主题的路径，以及手机布局。提交生成后的 HTML；GitHub Pages 无需运行 Python 或 Pandoc。
+
+## 新版投机解码专题
+
+正式综述改由 `src/pages/articles/speculative-decoding/index.astro` 和 `src/content/posts/speculative-decoding-overview.md` 渲染，旧 URL 不变。分篇使用 Astro 内容集合，不再手工生成重复的 HTML；元数据可含 `series`、`seriesOrder`、`seriesRole`。方法列表与分组维护在 `src/data/speculative-series.json`，技术主题归档维护在 catalog。
+
+当前保留早期综述 Markdown 作为历史长版资料；不要只改旧 Pandoc 页面后以为正式综述已更新。新增数值结论时同时补原仓库／论文、硬件、target、任务、batch 和采样条件，未测的数据不得写为本站实测。

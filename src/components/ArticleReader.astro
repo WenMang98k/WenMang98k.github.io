@@ -1,0 +1,11 @@
+---
+import { render } from 'astro:content';
+import ReadingTools from './ReadingTools.astro';
+import Base from '../layouts/Base.astro';
+import SeriesContext from './SeriesContext.astro';
+import { formatDate } from '../data/site';
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+const toc = headings.filter(h=>h.depth===2);
+---
+<Base title={`${post.data.title} · 文氓 WenMang`} description={post.data.description}><header class="post-heading"><p class="reading-breadcrumb"><a href="/">首页</a> / <a href="/articles/">文章</a>{post.data.series && <> / <a href="/articles/speculative-decoding/">投机解码专题</a></>}</p><p class="meta">{formatDate(post.data.date)} · {post.data.tags.join(' / ')}</p><h1>{post.data.title}</h1><p class="lead">{post.data.description}</p>{post.data.series && <p class="evidence-label">源码学习初稿 · 作者报告与本站实测分开记录</p>}</header><div class="reading-layout enhanced-reading"><div class="reading-main">{post.data.series && <SeriesContext id={post.id}/>}<details class="mobile-toc"><summary>本文目录</summary><nav aria-label="移动端目录">{toc.map(h=><a href={`#${h.slug}`}>{h.text}</a>)}</nav></details><article class="prose enhanced-prose"><Content/></article><footer class="article-end"><a href="/articles/">← 全部文章</a>{post.data.series && <a href="/articles/speculative-decoding/">返回综述与全系列 ↗</a>}</footer></div>{toc.length>0 && <aside class="toc reading-toc" aria-label="本文目录"><p class="eyebrow">ON THIS PAGE / 目录</p>{toc.map((h,i)=><a href={`#${h.slug}`}><span>{String(i+1).padStart(2,'0')}</span>{h.text}</a>)}</aside>}</div><ReadingTools/></Base>

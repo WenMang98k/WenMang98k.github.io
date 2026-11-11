@@ -1,0 +1,13 @@
+---
+import { getEntry, render } from 'astro:content';
+import ReadingTools from '../../../components/ReadingTools.astro';
+import Base from '../../../layouts/Base.astro';
+import SeriesDirectory from '../../../components/SeriesDirectory.astro';
+import methods from '../../../data/speculative-series.json';
+import sourceLock from '../../../../research/speculative-decoding/sources.lock.json';
+const readSourceCount = sourceLock.files.filter(file => file.status === 'read').length;
+const post = await getEntry('posts','speculative-decoding-overview');
+if (!post) throw new Error('Missing speculative decoding overview');
+const { Content, headings } = await render(post);
+---
+<Base title="LLM 投机解码综述与源码系列 · 文氓 WenMang" description={post.data.description}><header class="series-hero"><p class="reading-breadcrumb"><a href="/">首页</a> / <a href="/articles/">文章</a> / 投机解码专题</p><p class="eyebrow">SPECULATIVE DECODING / LEARNING SERIES</p><h1>少一点串行等待，<br/>多一点有效<span>推进。</span></h1><p class="series-lead">LLM 投机解码综述与源码学习系列</p><p class="series-hero-description">从概率校正到候选依赖，从训练目标到服务预算。先读全景，再沿源码逐篇深入。</p><div class="series-hero-actions"><a class="button" href="#overview">阅读综述 ↓</a><a class="quiet" href="#series-directory">浏览 {methods.length} 篇方法文章 ↗</a><a class="quiet" href="/articles/sd-source-map/">源码索引 ↗</a></div><div class="series-stats"><span><strong>05</strong>机制路线</span><span><strong>{methods.length}</strong>独立分篇</span><span><strong>{readSourceCount}</strong>锁定源码文件</span><span>文氓 · 2026.11.11<br/><small>学习初稿 / 非 GPU 性能复现</small></span></div></header><div id="series-directory" class="series-directory-anchor"><SeriesDirectory/></div><section id="overview" class="reading-layout enhanced-reading overview-reading"><div class="reading-main"><details class="mobile-toc"><summary>综述目录</summary><nav aria-label="移动端目录">{headings.filter(h=>h.depth===2).map(h=><a href={`#${h.slug}`}>{h.text}</a>)}<a href="#framework-support">框架支持</a></nav></details><article class="prose enhanced-prose"><Content/></article></div><aside class="toc reading-toc" aria-label="综述目录"><p class="eyebrow">OVERVIEW / 全景阅读</p><a href="#series-directory">分篇目录</a><a href="#framework-support">框架支持矩阵</a>{headings.filter(h=>h.depth===2).map((h,i)=><a href={`#${h.slug}`}><span>{String(i+1).padStart(2,'0')}</span>{h.text}</a>)}</aside></section><ReadingTools/></Base>

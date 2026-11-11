@@ -32,7 +32,8 @@ for post in DATA['posts']:
     assert any(t['slug']==post['topic'] for t in DATA[post['section']]['topics'])
     assert post['url'].startswith('/') and not urlsplit(post['url']).netloc
     file=ROOT/post['url'].lstrip('/')
-    assert file.is_file() or (file/'index.html').is_file(),post['url']
+    astro_slug=post['url'].strip('/').removeprefix('articles/')
+    assert file.is_file() or (file/'index.html').is_file() or (ROOT/'src/content/posts'/f'{astro_slug}.md').is_file(),post['url']
 
 home='''<section class="landing-intro"><p class="eyebrow">WENMANG / PERSONAL JOURNAL</p><h1>技术，和生活<span>。</span></h1><p>一边探索模型与系统，一边记录日常与热爱。<br>从这里，走进我的两个世界。</p></section><div class="portal-grid" aria-label="两大内容分类">'''
 for key,n,desc,words in [('tech','01','模型、算法与系统的思考，<br>按 topic 整理的技术笔记。','AI Infra / Agent / 模型与推理'),('life','02','运动、镜头与旅途，<br>按兴趣收藏的生活记录。','摄影 / 运动 / 骑行 / 美食')]:

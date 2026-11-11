@@ -1,2 +1,8 @@
 import { defineConfig } from 'astro/config';
-export default defineConfig({ site: 'https://wenmang98k.github.io', trailingSlash: 'always' });
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+export default defineConfig({
+  site: 'https://wenmang98k.github.io',
+  trailingSlash: 'always',
+  markdown: { remarkPlugins: [remarkMath], rehypePlugins: [rehypeKatex] }
+});

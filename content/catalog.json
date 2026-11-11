@@ -109,6 +109,330 @@
       "date": "2026-11-11",
       "kind": "时间轴",
       "summary": "从早期块预测到 EAGLE、MTP、DFlash 与 DSpark，区分论文提出、代码发布和框架支持。"
+    },
+    {
+      "title": "经典 SD / Speculative Sampling：原理、源码与推理落地",
+      "section": "tech",
+      "topic": "llm-inference",
+      "url": "/articles/sd-classic/",
+      "date": "2026-11-11",
+      "kind": "基础与检索 · 学习初稿",
+      "summary": "从 proposal、接受概率到残差重采样，建立投机解码的正确性地基。"
+    },
+    {
+      "title": "N-gram / Prompt Lookup：原理、源码与推理落地",
+      "section": "tech",
+      "topic": "llm-inference",
+      "url": "/articles/sd-ngram/",
+      "date": "2026-11-11",
+      "kind": "基础与检索 · 学习初稿",
+      "summary": "不用额外神经网络，从输入和已生成上下文寻找候选续写。"
+    },
+    {
+      "title": "Suffix Decoding：原理、源码与推理落地",
+      "section": "tech",
+      "topic": "llm-inference",
+      "url": "/articles/sd-suffix/",
+      "date": "2026-11-11",
+      "kind": "基础与检索 · 学习初稿",
+      "summary": "扩展后缀匹配与候选统计，理解无训练投机的另一条落地路线。"
+    },
+    {
+      "title": "REST：原理、源码与推理落地",
+      "section": "tech",
+      "topic": "llm-inference",
+      "url": "/articles/sd-rest/",
+      "date": "2026-11-11",
+      "kind": "基础与检索 · 学习初稿",
+      "summary": "把检索来的续写构造成候选树，让目标模型验证。"
+    },
+    {
+      "title": "Lookahead Decoding：原理、源码与推理落地",
+      "section": "tech",
+      "topic": "llm-inference",
+      "url": "/articles/sd-lookahead/",
+      "date": "2026-11-11",
+      "kind": "基础与检索 · 学习初稿",
+      "summary": "理解 Jacobi 并行轨迹、n-gram 候选池与验证分支的分工。"
+    },
+    {
+      "title": "Token Recycling：原理、源码与推理落地",
+      "section": "tech",
+      "topic": "llm-inference",
+      "url": "/articles/sd-recycling/",
+      "date": "2026-11-11",
+      "kind": "基础与检索 · 学习初稿",
+      "summary": "把已有计算的候选信息再利用，区别于只匹配文本后缀。"
+    },
+    {
+      "title": "Blockwise Parallel Decoding：原理、源码与推理落地",
+      "section": "tech",
+      "topic": "llm-inference",
+      "url": "/articles/sd-blockwise/",
+      "date": "2026-11-11",
+      "kind": "基础与检索 · 学习初稿",
+      "summary": "回看早期多未来预测与块验证，区分其与现代随机 SD 的关系。"
+    },
+    {
+      "title": "早期 SpecDec / Seq2seq 投机执行：原理、源码与推理落地",
+      "section": "tech",
+      "topic": "llm-inference",
+      "url": "/articles/sd-early-specdec/",
+      "date": "2026-11-11",
+      "kind": "基础与检索 · 学习初稿",
+      "summary": "把 seq2seq 场景的投机执行与今天通用 LLM serving 区分开。"
+    },
+    {
+      "title": "Medusa：原理、源码与推理落地",
+      "section": "tech",
+      "topic": "llm-inference",
+      "url": "/articles/sd-medusa/",
+      "date": "2026-11-11",
+      "kind": "多头与特征 · 学习初稿",
+      "summary": "从同一隐藏状态预测多个未来位置，读懂多头候选树与接受规则。"
+    },
+    {
+      "title": "Hydra：原理、源码与推理落地",
+      "section": "tech",
+      "topic": "llm-inference",
+      "url": "/articles/sd-hydra/",
+      "date": "2026-11-11",
+      "kind": "多头与特征 · 学习初稿",
+      "summary": "让后续预测头感知候选前序，缓解独立多头的不协调。"
+    },
+    {
+      "title": "ReDrafter / Recurrent Drafter：原理、源码与推理落地",
+      "section": "tech",
+      "topic": "llm-inference",
+      "url": "/articles/sd-redrafter/",
+      "date": "2026-11-11",
+      "kind": "多头与特征 · 学习初稿",
+      "summary": "用轻量循环状态提出多条候选，并通过动态树减少重复验证。"
+    },
+    {
+      "title": "EAGLE：原理、源码与推理落地",
+      "section": "tech",
+      "topic": "llm-inference",
+      "url": "/articles/sd-eagle/",
+      "date": "2026-11-11",
+      "kind": "多头与特征 · 学习初稿",
+      "summary": "利用目标模型上下文特征外推，理解 feature/token 对齐和验证。"
+    },
+    {
+      "title": "EAGLE-2：原理、源码与推理落地",
+      "section": "tech",
+      "topic": "llm-inference",
+      "url": "/articles/sd-eagle2/",
+      "date": "2026-11-11",
+      "kind": "多头与特征 · 学习初稿",
+      "summary": "把固定候选树改成上下文相关的动态扩展预算。"
+    },
+    {
+      "title": "EAGLE-3：原理、源码与推理落地",
+      "section": "tech",
+      "topic": "llm-inference",
+      "url": "/articles/sd-eagle3/",
+      "date": "2026-11-11",
+      "kind": "多头与特征 · 学习初稿",
+      "summary": "多层特征融合与 training-time testing，让训练更贴近实际草稿 rollout。"
+    },
+    {
+      "title": "P-EAGLE：原理、源码与推理落地",
+      "section": "tech",
+      "topic": "llm-inference",
+      "url": "/articles/sd-peagle/",
+      "date": "2026-11-11",
+      "kind": "多头与特征 · 学习初稿",
+      "summary": "在特征草稿路线中研究并行 proposal，而非把所有 EAGLE 都看作串行递归。"
+    },
+    {
+      "title": "EAGLE3.1 实现追踪：原理、源码与推理落地",
+      "section": "tech",
+      "topic": "llm-inference",
+      "url": "/articles/sd-eagle31/",
+      "date": "2026-11-11",
+      "kind": "多头与特征 · 学习初稿",
+      "summary": "记录框架中的后续变体，明确已核实范围与未核实细节。"
+    },
+    {
+      "title": "Multi-Token Prediction / MTP：原理、源码与推理落地",
+      "section": "tech",
+      "topic": "llm-inference",
+      "url": "/articles/sd-mtp/",
+      "date": "2026-11-11",
+      "kind": "MTP 与自投机 · 学习初稿",
+      "summary": "从多未来训练目标到原生推理草稿，区分训练模块数与实际发布权重。"
+    },
+    {
+      "title": "Draft & Verify：原理、源码与推理落地",
+      "section": "tech",
+      "topic": "llm-inference",
+      "url": "/articles/sd-draftverify/",
+      "date": "2026-11-11",
+      "kind": "MTP 与自投机 · 学习初稿",
+      "summary": "跳过部分层提出候选，再使用完整模型完成自验证。"
+    },
+    {
+      "title": "LayerSkip：原理、源码与推理落地",
+      "section": "tech",
+      "topic": "llm-inference",
+      "url": "/articles/sd-layerskip/",
+      "date": "2026-11-11",
+      "kind": "MTP 与自投机 · 学习初稿",
+      "summary": "先训练早退能力，再共享浅层计算开展自投机。"
+    },
+    {
+      "title": "UNO：原理、源码与推理落地",
+      "section": "tech",
+      "topic": "llm-inference",
+      "url": "/articles/sd-uno/",
+      "date": "2026-11-11",
+      "kind": "MTP 与自投机 · 学习初稿",
+      "summary": "复用目标 Transformer 与专门 LoRA，分离草稿与 base-only 验证。"
+    },
+    {
+      "title": "DFlash：原理、源码与推理落地",
+      "section": "tech",
+      "topic": "llm-inference",
+      "url": "/articles/sd-dflash/",
+      "date": "2026-11-11",
+      "kind": "块并行草稿 · 学习初稿",
+      "summary": "用轻量块扩散草稿减少串行提案主干调用。"
+    },
+    {
+      "title": "DFlash2：原理、源码与推理落地",
+      "section": "tech",
+      "topic": "llm-inference",
+      "url": "/articles/sd-dflash2/",
+      "date": "2026-11-11",
+      "kind": "块并行草稿 · 学习初稿",
+      "summary": "动态分组卷积与低秩候选路径选择，改善块内关联。"
+    },
+    {
+      "title": "DSpark：原理、源码与推理落地",
+      "section": "tech",
+      "topic": "llm-inference",
+      "url": "/articles/sd-dspark/",
+      "date": "2026-11-11",
+      "kind": "块并行草稿 · 学习初稿",
+      "summary": "通过 Markov 校正和置信度头连接候选依赖、接受概率与验证预算。"
+    },
+    {
+      "title": "Domino：原理、源码与推理落地",
+      "section": "tech",
+      "topic": "llm-inference",
+      "url": "/articles/sd-domino/",
+      "date": "2026-11-11",
+      "kind": "块并行草稿 · 学习初稿",
+      "summary": "在并行草稿后加入便宜 GRU logit correction。"
+    },
+    {
+      "title": "LiLiCorr：原理、源码与推理落地",
+      "section": "tech",
+      "topic": "llm-inference",
+      "url": "/articles/sd-lilicorr/",
+      "date": "2026-11-11",
+      "kind": "块并行草稿 · 学习初稿",
+      "summary": "用小型 correlator 对各位置候选的组合评分。"
+    },
+    {
+      "title": "Sequoia：原理、源码与推理落地",
+      "section": "tech",
+      "topic": "llm-inference",
+      "url": "/articles/sd-sequoia/",
+      "date": "2026-11-11",
+      "kind": "训练与系统优化 · 学习初稿",
+      "summary": "用接受率和硬件成本决定候选树形状。"
+    },
+    {
+      "title": "SpecExec：原理、源码与推理落地",
+      "section": "tech",
+      "topic": "llm-inference",
+      "url": "/articles/sd-specexec/",
+      "date": "2026-11-11",
+      "kind": "训练与系统优化 · 学习初稿",
+      "summary": "考察目标调用昂贵、存在 offloading 时的大规模并行候选预算。"
+    },
+    {
+      "title": "SpecInfer：原理、源码与推理落地",
+      "section": "tech",
+      "topic": "llm-inference",
+      "url": "/articles/sd-specinfer/",
+      "date": "2026-11-11",
+      "kind": "训练与系统优化 · 学习初稿",
+      "summary": "从候选树验证与系统实现理解早期投机服务架构。"
+    },
+    {
+      "title": "DistillSpec：原理、源码与推理落地",
+      "section": "tech",
+      "topic": "llm-inference",
+      "url": "/articles/sd-distillspec/",
+      "date": "2026-11-11",
+      "kind": "训练与系统优化 · 学习初稿",
+      "summary": "将草稿训练目标从通用能力转向与目标模型对齐。"
+    },
+    {
+      "title": "FR-Spec：原理、源码与推理落地",
+      "section": "tech",
+      "topic": "llm-inference",
+      "url": "/articles/sd-frspec/",
+      "date": "2026-11-11",
+      "kind": "训练与系统优化 · 学习初稿",
+      "summary": "从大词表输出头入手，减少 EAGLE 草稿的 lm_head 计算。"
+    },
+    {
+      "title": "自适应草稿步数：SGLang：原理、源码与推理落地",
+      "section": "tech",
+      "topic": "llm-inference",
+      "url": "/articles/sd-adaptive-draft/",
+      "date": "2026-11-11",
+      "kind": "训练与系统优化 · 学习初稿",
+      "summary": "按接受行为与 batch 范围切换草稿步数，避免固定 K 的负收益。"
+    },
+    {
+      "title": "自适应验证预算：vLLM：原理、源码与推理落地",
+      "section": "tech",
+      "topic": "llm-inference",
+      "url": "/articles/sd-adaptive-verify/",
+      "date": "2026-11-11",
+      "kind": "训练与系统优化 · 学习初稿",
+      "summary": "以候选前缀存活概率与硬件成本模型分配验证槽位。"
+    },
+    {
+      "title": "D-PACE 训练目标：原理、源码与推理落地",
+      "section": "tech",
+      "topic": "llm-inference",
+      "url": "/articles/sd-dpace/",
+      "date": "2026-11-11",
+      "kind": "训练与系统优化 · 学习初稿",
+      "summary": "从平均 token 损失走向接受前缀收益的训练视角。"
+    },
+    {
+      "title": "混合与级联投机：原理、源码与推理落地",
+      "section": "tech",
+      "topic": "llm-inference",
+      "url": "/articles/sd-hybrid/",
+      "date": "2026-11-11",
+      "kind": "训练与系统优化 · 学习初稿",
+      "summary": "组合检索、模型草稿与动态路由时，重新定义预算和概率契约。"
+    },
+    {
+      "title": "原始仓库与源码阅读索引",
+      "section": "tech",
+      "topic": "llm-inference",
+      "url": "/articles/sd-source-map/",
+      "date": "2026-11-11",
+      "kind": "学习资料",
+      "summary": "固定提交的源码入口、来源性质与可运行概率参考代码。"
+    },
+    {
+      "title": "LSTM / RNN 轻量草稿：原理、源码与推理落地",
+      "section": "tech",
+      "topic": "llm-inference",
+      "url": "/articles/sd-lstm/",
+      "date": "2026-11-11",
+      "kind": "多头与特征 · 学习初稿",
+      "summary": "循环草稿结构、状态回退与框架接入边界。"
     }
   ]
 }
