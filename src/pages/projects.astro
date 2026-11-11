@@ -1,0 +1,5 @@
+---
+import Base from '../layouts/Base.astro';
+import { projects } from '../data/site';
+---
+<Base title="项目 · WenMang"><section class="page-heading"><p class="eyebrow">BUILD / LEARN / SHARE</p><h1>项目与实践<span>。</span></h1><p class="lead">从模型压缩到硬件实现，把探索留在可阅读的代码里。</p><p class="meta">个人公开实践 · 项目环境与运行条件请参考各仓库说明</p></section><section class="project-grid all-projects" aria-label="公开项目">{projects.map((p,i) => <article class="project-card"><a href={`https://github.com/WenMang98k/${p.repo}`} target="_blank" rel="noopener noreferrer"><div class={`project-art art-${i%3}`}><span>{p.mark}<em>.</em></span><small>{p.category} ↗</small></div><div class="meta">{p.category} / {p.status}</div><h2>{p.name} ↗</h2><p>{p.description}</p><small class="stack">{p.stack}</small></a></article>)}</section></Base>

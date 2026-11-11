@@ -1,0 +1,8 @@
+---
+import '../styles/global.css';
+const { title = 'WenMang · 技术与实践', description = '记录 AI Infra、模型压缩与推理加速。项目、文章，以及持续探索的过程。' } = Astro.props;
+const path = Astro.url.pathname;
+---
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width"/><meta name="description" content={description}/><meta name="theme-color" content="#f5f4ee"/><title>{title}</title><link rel="canonical" href={new URL(path, Astro.site)}/><link rel="alternate" type="application/rss+xml" title="WenMang 的技术文章" href="/rss.xml"/><meta property="og:title" content={title}/><meta property="og:description" content={description}/><meta property="og:type" content="website"/></head>
+<body><a class="skip" href="#main">跳转到正文</a><header class="shell header"><a class="brand" href="/" aria-label="WenMang 首页">W<span>.</span><small>WENMANG / NOTES</small></a><nav aria-label="主导航">{[['/','首页'],['/projects/','项目'],['/articles/','文章'],['/about/','关于']].map(([href,label]) => <a href={href} aria-current={path===href?'page':undefined}>{label}</a>)}<a href="https://github.com/WenMang98k" target="_blank" rel="noopener noreferrer">GitHub ↗</a></nav></header><main id="main" class="shell"><slot/></main><footer class="shell footer"><span>© {new Date().getFullYear()} WenMang</span><span>持续学习，认真记录。</span><a href="/rss.xml">订阅 RSS ↗</a></footer></body></html>

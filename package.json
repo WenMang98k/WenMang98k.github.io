@@ -1,0 +1,19 @@
+{
+  "name": "wenmang-technical-site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "prepare:legacy": "node scripts/prepare-legacy.mjs",
+    "dev": "npm run prepare:legacy && astro dev --host 127.0.0.1",
+    "build": "npm run prepare:legacy && astro build",
+    "preview": "astro preview --host 127.0.0.1",
+    "check": "astro check",
+    "new:post": "node scripts/new-post.mjs"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.12",
+    "@astrojs/rss": "^4.0.19",
+    "astro": "^5.18.2",
+    "typescript": "^5.9.3"
+  }
+}

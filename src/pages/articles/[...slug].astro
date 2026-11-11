@@ -1,0 +1,11 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { formatDate } from '../../data/site';
+export async function getStaticPaths() {
+  return (await getCollection('posts', ({data}) => !data.draft)).map(post=>({ params: { slug: post.id }, props: { post } }));
+}
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+---
+<Base title={`${post.data.title} · WenMang`} description={post.data.description}><div class="post-heading"><a class="quiet" href="/articles/">← 全部文章</a><p class="meta">{formatDate(post.data.date)} · {post.data.tags.join(' / ')}</p><h1>{post.data.title}</h1><p class="lead">{post.data.description}</p></div><div class="reading-layout"><article class="prose"><Content/></article>{headings.length>0 && <aside class="toc"><p class="eyebrow">ON THIS PAGE</p>{headings.filter(h=>h.depth===2).map(h=><a href={`#${h.slug}`}>{h.text}</a>)}</aside>}</div></Base>
