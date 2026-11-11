@@ -1,0 +1,114 @@
+{
+  "tech": {
+    "label": "技术",
+    "english": "TECHNOLOGY",
+    "intro": "从模型到系统，把探索整理成可以回看的知识。",
+    "topics": [
+      {
+        "slug": "llm-inference",
+        "title": "LLM 推理与投机解码",
+        "description": "推理框架、投机采样、解码策略与性能评测。",
+        "symbol": "↗"
+      },
+      {
+        "slug": "agents",
+        "title": "Agent",
+        "description": "智能体、工具调用、工作流与持续学习。",
+        "symbol": "✳"
+      },
+      {
+        "slug": "aigc",
+        "title": "AIGC 与多模态",
+        "description": "DiT、视觉语言模型与图文生成。",
+        "symbol": "◈"
+      },
+      {
+        "slug": "compression",
+        "title": "模型压缩与硬件加速",
+        "description": "量化、剪枝、蒸馏与端云异构计算。",
+        "symbol": "⌘"
+      },
+      {
+        "slug": "infrastructure",
+        "title": "AI Infra 与服务工程",
+        "description": "服务稳定性、调度与推理系统实践。",
+        "symbol": "≋"
+      }
+    ]
+  },
+  "life": {
+    "label": "生活",
+    "english": "LIFE & CURIOSITY",
+    "intro": "动起来，走出去，也留一点时间给简单的快乐。",
+    "topics": [
+      {
+        "slug": "photography",
+        "title": "摄影",
+        "description": "用镜头收藏光影与日常。",
+        "symbol": "◉"
+      },
+      {
+        "slug": "fitness",
+        "title": "健身",
+        "description": "训练时专注，记录一点点变化。",
+        "symbol": "↟"
+      },
+      {
+        "slug": "running",
+        "title": "跑步",
+        "description": "把步子交给路，把时间留给自己。",
+        "symbol": "↗"
+      },
+      {
+        "slug": "motorcycling",
+        "title": "摩托",
+        "description": "关于出发、沿途与骑行。",
+        "symbol": "〰"
+      },
+      {
+        "slug": "badminton",
+        "title": "羽毛球",
+        "description": "在来回之间，享受运动。",
+        "symbol": "✳"
+      },
+      {
+        "slug": "food",
+        "title": "美食",
+        "description": "寻找好吃的，也记录生活的滋味。",
+        "symbol": "◒"
+      },
+      {
+        "slug": "mahjong",
+        "title": "麻将",
+        "description": "和朋友围坐，享受相聚的时间。",
+        "symbol": "▦"
+      },
+      {
+        "slug": "gaming",
+        "title": "游戏",
+        "description": "在另一个世界里放松和探索。",
+        "symbol": "⊞"
+      }
+    ]
+  },
+  "posts": [
+    {
+      "title": "LLM 投机解码综述",
+      "section": "tech",
+      "topic": "llm-inference",
+      "url": "/articles/speculative-decoding/",
+      "date": "2026-11-11",
+      "kind": "综述 · 研究初稿",
+      "summary": "技术谱系、训练与推理流程、概率校正，以及 vLLM / SGLang 支持矩阵。"
+    },
+    {
+      "title": "投机解码技术时间轴",
+      "section": "tech",
+      "topic": "llm-inference",
+      "url": "/articles/speculative-decoding/timeline.html",
+      "date": "2026-11-11",
+      "kind": "时间轴",
+      "summary": "从早期块预测到 EAGLE、MTP、DFlash 与 DSpark，区分论文提出、代码发布和框架支持。"
+    }
+  ]
+}
