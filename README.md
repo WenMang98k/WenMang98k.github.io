@@ -1,4 +1,4 @@
-# WenMang 的个人技术网站
+# 文氓 · WenMang 的个人网站
 
 Astro + Markdown 构建，GitHub Pages 托管。项目介绍、文章归档与个人主页统一在同一站点。
 

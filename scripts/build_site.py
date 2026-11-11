@@ -9,8 +9,8 @@ DATA = json.loads((ROOT / 'content/catalog.json').read_text())
 def shell(title, description, body, prefix='', active=''):
     nav=''.join(f'<a href="{prefix}{k}/"'+(' aria-current="page"' if k==active else '')+f'>{DATA[k]["label"]}</a>' for k in ['tech','life'])
     return f'''<!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="{e(description,quote=True)}"><meta name="theme-color" content="#f6f5ef"><title>{e(title)} · WenMang</title><link rel="stylesheet" href="{prefix}site.css?v=20261111"></head>
-<body class="{active or 'home'}"><a class="skip-link" href="#main">跳转到正文</a><header class="site-header container"><a class="wordmark" href="{prefix or './'}">WenMang<span>.</span></a><nav aria-label="主导航">{nav}</nav></header><main id="main" class="container">{body}</main><footer class="site-footer container"><span>© WenMang · 保持好奇，记录日常</span><a href="mailto:WenMang98k@gmail.com">打个招呼 ↗</a></footer></body></html>'''
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="{e(description,quote=True)}"><meta name="theme-color" content="#f6f5ef"><title>{e(title)} · 文氓 WenMang</title><link rel="stylesheet" href="{prefix}site.css?v=20261111"></head>
+<body class="{active or 'home'}"><a class="skip-link" href="#main">跳转到正文</a><header class="site-header container"><a class="wordmark" href="{prefix or './'}">文氓<span> · WenMang</span></a><nav aria-label="主导航">{nav}</nav></header><main id="main" class="container">{body}</main><footer class="site-footer container"><span>© 文氓 · WenMang · 保持好奇，记录日常</span><a href="mailto:WenMang98k@gmail.com">打个招呼 ↗</a></footer></body></html>'''
 
 def write(path, text):
     p=ROOT/path;p.parent.mkdir(parents=True,exist_ok=True);p.write_text(text)
@@ -38,7 +38,7 @@ home='''<section class="landing-intro"><p class="eyebrow">WENMANG / PERSONAL JOU
 for key,n,desc,words in [('tech','01','模型、算法与系统的思考，<br>按 topic 整理的技术笔记。','AI Infra / Agent / 模型与推理'),('life','02','运动、镜头与旅途，<br>按兴趣收藏的生活记录。','摄影 / 运动 / 骑行 / 美食')]:
     home+=f'<a class="portal portal-{key}" href="{key}/"><div class="portal-top"><span>{n} / {DATA[key]["english"]}</span><span aria-hidden="true">↗</span></div><div class="portal-art" aria-hidden="true"><span class="art-ring"></span><span class="art-inner">'+('⌘' if key=='tech' else '✳')+f'</span></div><div class="portal-copy"><h2>{DATA[key]["label"]}</h2><p>{desc}</p><span class="portal-tags">{words}</span></div><div class="portal-bottom">进入{DATA[key]["label"]}<span aria-hidden="true">→</span></div></a>'
 home+='</div>'
-write('index.html',shell('技术与生活','WenMang 的个人网站：技术笔记与生活记录，两个入口，慢慢探索。',home))
+write('index.html',shell('技术与生活','文氓（WenMang）的个人网站：技术笔记与生活记录，两个入口，慢慢探索。',home))
 
 for key in ['tech','life']:
     section=DATA[key];posts=posts_for(key)
