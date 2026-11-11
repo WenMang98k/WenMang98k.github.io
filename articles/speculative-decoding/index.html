@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-CN" xml:lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>LLM 投机解码综述｜WenMang</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+  body{max-width:980px;margin:40px auto;padding:0 24px;font:16px/1.9 system-ui,"Microsoft YaHei",sans-serif;color:#202a35;background:#fcfcfa}h1,h2,h3{line-height:1.45;color:#172b3a}h1{margin-top:2.3em;font-size:2em}h2{margin-top:2em;border-bottom:1px solid #dce2e5;padding-bottom:12px}h3{margin-top:1.7em}p{margin:1em 0}a{color:#226b87;overflow-wrap:anywhere}table{border-collapse:collapse;width:100%;font-size:14px;display:block;overflow-x:auto}td,th{padding:12px;border:1px solid #d9e1e4;min-width:110px;vertical-align:top}th{background:#edf3f4}blockquote{margin:20px 0;padding:4px 20px;border-left:4px solid #6c8d81;background:#eff4ef;color:#52605c}code{background:#eef1ed;padding:2px 5px;border-radius:3px}pre{overflow:auto;padding:18px;background:#eef1ed}math[display=block]{overflow:auto;padding:15px 0}#TOC{padding:24px;background:#f0f3ed;border-radius:8px}#TOC ul{padding-left:22px}hr{border:0;border-top:1px solid #dce2e5;margin:40px 0}@media print{body{max-width:none;margin:0;padding:0;font-size:10pt}h1,h2,h3{break-after:avoid}tr{break-inside:avoid}#TOC{break-after:page}a{color:inherit}}
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">LLM 投机解码综述｜WenMang</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#llm-投机解码综述从经典双模型到-eaglemtpdflash-与-dspark"
+id="toc-llm-投机解码综述从经典双模型到-eaglemtpdflash-与-dspark">LLM
+投机解码综述：从经典双模型，到 EAGLE、MTP、DFlash 与 DSpark</a>
+<ul>
+<li><a href="#阅读前范围与证据"
+id="toc-阅读前范围与证据">阅读前：范围与证据</a></li>
+</ul></li>
+<li><a href="#第一部分把技术谱系放在同一张地图上"
+id="toc-第一部分把技术谱系放在同一张地图上">第一部分：把技术谱系放在同一张地图上</a>
+<ul>
+<li><a href="#为什么大模型少跑几次可能比小模型更准重要"
+id="toc-为什么大模型少跑几次可能比小模型更准重要">1.
+为什么“大模型少跑几次”可能比“小模型更准”重要？</a></li>
+<li><a href="#一张方法地图草稿来自哪里依赖关系如何建模"
+id="toc-一张方法地图草稿来自哪里依赖关系如何建模">2.
+一张方法地图：草稿来自哪里，依赖关系如何建模？</a></li>
+<li><a href="#面向落地优先研究-vllm-与-sglang-已集成的路线"
+id="toc-面向落地优先研究-vllm-与-sglang-已集成的路线">面向落地：优先研究
+vLLM 与 SGLang 已集成的路线</a></li>
+<li><a href="#无损必须先说清楚是哪一种"
+id="toc-无损必须先说清楚是哪一种">3. “无损”必须先说清楚是哪一种</a></li>
+</ul></li>
+<li><a href="#第二部分逐项讲清训练与推理"
+id="toc-第二部分逐项讲清训练与推理">第二部分：逐项讲清训练与推理</a>
+<ul>
+<li><a href="#经典投机采样正确性地基" id="toc-经典投机采样正确性地基">4.
+经典投机采样：正确性地基</a></li>
+<li><a href="#无训练路线n-gramsuffixrest-与-lookahead"
+id="toc-无训练路线n-gramsuffixrest-与-lookahead">5.
+无训练路线：n-gram、suffix、REST 与 Lookahead</a></li>
+<li><a href="#medusa-与-hydra从独立多头到依赖多头"
+id="toc-medusa-与-hydra从独立多头到依赖多头">6. Medusa 与
+Hydra：从独立多头到依赖多头</a></li>
+<li><a href="#redrafter循环状态复用与动态树压缩"
+id="toc-redrafter循环状态复用与动态树压缩">7.
+ReDrafter：循环状态复用与动态树压缩</a></li>
+<li><a href="#eagle-系列三个版本分别解决什么问题"
+id="toc-eagle-系列三个版本分别解决什么问题">8. EAGLE
+系列：三个版本分别解决什么问题？</a></li>
+<li><a href="#mtp多-token-训练目标不是一个固定的推理算法"
+id="toc-mtp多-token-训练目标不是一个固定的推理算法">9. MTP：多 token
+训练目标，不是一个固定的推理算法</a></li>
+<li><a href="#自投机与-layerskip把目标模型自己当-drafter"
+id="toc-自投机与-layerskip把目标模型自己当-drafter">10. 自投机与
+LayerSkip：把目标模型自己当 drafter</a></li>
+<li><a href="#dflash-与-dflash2把昂贵的草稿主干并行化"
+id="toc-dflash-与-dflash2把昂贵的草稿主干并行化">11. DFlash 与
+DFlash2：把昂贵的草稿主干并行化</a></li>
+<li><a href="#dspark用依赖校正提高候选质量用置信度决定验证预算"
+id="toc-dspark用依赖校正提高候选质量用置信度决定验证预算">12.
+DSpark：用依赖校正提高候选质量，用置信度决定验证预算</a></li>
+<li><a href="#树验证链验证与混合投机系统层不能缺席"
+id="toc-树验证链验证与混合投机系统层不能缺席">13.
+树验证、链验证与混合投机：系统层不能缺席</a></li>
+</ul></li>
+<li><a href="#第三部分如何设计可信的训练与推理实验"
+id="toc-第三部分如何设计可信的训练与推理实验">第三部分：如何设计可信的训练与推理实验</a>
+<ul>
+<li><a href="#统一训练流程先确保训练的东西和上线用的东西一致"
+id="toc-统一训练流程先确保训练的东西和上线用的东西一致">14.
+统一训练流程：先确保“训练的东西”和“上线用的东西”一致</a></li>
+<li><a href="#推理验收正确性性能和稳定性分开测"
+id="toc-推理验收正确性性能和稳定性分开测">15.
+推理验收：正确性、性能和稳定性分开测</a></li>
+<li><a href="#工程选型建议" id="toc-工程选型建议">16.
+工程选型建议</a></li>
+<li><a href="#后续单篇深挖的阅读顺序"
+id="toc-后续单篇深挖的阅读顺序">17. 后续单篇深挖的阅读顺序</a></li>
+</ul></li>
+<li><a href="#参考资料与核对说明"
+id="toc-参考资料与核对说明">参考资料与核对说明</a></li>
+</ul>
+</nav>
+<h1 id="llm-投机解码综述从经典双模型到-eaglemtpdflash-与-dspark">LLM
+投机解码综述：从经典双模型，到 EAGLE、MTP、DFlash 与 DSpark</h1>
+<blockquote>
+<p><a href="../../index.html">返回主页</a> · <a
+href="index.html">网页版</a> · <a
+href="source-notes.md">资料核对说明</a></p>
+</blockquote>
+<blockquote>
+<p>作者：WenMang · 研究初稿 v1 · 资料核对日期：2026-11-11<br />
+适合读者：希望理解投机解码机制，并进一步开展训练、推理实现和服务优化的算法／AI
+Infra 工程师。<br />
+阅读路线：先读第一部分建立全景，再读第二部分理解单点技术，最后用第三部分设计实验。</p>
+</blockquote>
+<h2 id="阅读前范围与证据">阅读前：范围与证据</h2>
+<p>本文讨论 LLM 自回归生成中的 speculative decoding／speculative
+sampling。为方便表述，统一简称“投机解码”；涉及严格随机采样算法时使用“投机采样”。<strong>SD
+在本文中表示 speculative decoding，不表示 Stable
+Diffusion，也不默认指某个独立方法。</strong>“drafter”是草稿生成器的通称；Apple
+的 Recurrent Drafter／ReDrafter 是其中一种具体实现。用户提到的“dlfash”按
+DFlash 处理。</p>
+<p>本文核对了 EAGLE、Medusa、Hydra、ReDrafter、Lookahead、LayerSkip
+的作者仓库，以及 SpecForge、vLLM
+的公开文档与部分训练代码。经典概率校正公式给出推导；DFlash2、DSpark
+的细节明确以所读取的框架实现为依据。<strong>当前环境无法访问 arXiv
+正文，不能把论文链接的存在当作已经通读论文。</strong>文末列出原论文入口、实际读取的材料与待复核项；本文是一份可继续审校的研究初稿，不是对所有论文版本的穷尽评审，也没有运行
+GPU 性能实验。</p>
+<hr />
+<h1
+id="第一部分把技术谱系放在同一张地图上">第一部分：把技术谱系放在同一张地图上</h1>
+<h2 id="为什么大模型少跑几次可能比小模型更准重要">1.
+为什么“大模型少跑几次”可能比“小模型更准”重要？</h2>
+<p>自回归 LLM 每生成一个 token，通常要执行一次目标模型的
+decode。低并发下，这个过程经常受权重与 KV cache 的访存、kernel launch
+和同步开销限制，GPU 的计算能力未必用满。</p>
+<p>投机解码利用这部分余量：</p>
+<ol type="1">
+<li>用便宜的方式提出一段候选 token；</li>
+<li>把这些候选作为已知输入，让目标模型一次前向并行计算多个位置的条件分布；</li>
+<li>按验证规则接受一段前缀，遇到拒绝时校正并回退；</li>
+<li>提交已接受 token 和对应 KV，开始下一轮。</li>
+</ol>
+<p>这里的“并行”有一个必要条件：<strong>验证阶段已经知道整段候选，所以可以像
+teacher forcing
+一样计算各位置；最终提交仍要满足从左到右的依赖。</strong>不能在第二个候选被拒绝后，继续无条件提交第三个候选。</p>
+<p>一句话理解：把“昂贵模型每次只推进一步”，改成“便宜系统先猜，昂贵模型成批核验”。</p>
+<h3 id="一个比接受率更有用的性能模型">一个比接受率更有用的性能模型</h3>
+<p>设一轮提出 K 个候选，接受的候选数为 A，校正／bonus token
+在没有触发停止条件时通常再带来一个输出 token。近似有：</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mo>≈</mo><mfrac><mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>A</mi><mo stretchy="true" form="postfix">]</mo></mrow><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mspace width="0.167em"></mspace><msub><mi>T</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">R</mi></mrow></msub></mrow><mrow><msub><mi>T</mi><mrow><mi mathvariant="normal">d</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">f</mi><mi mathvariant="normal">t</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>K</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mi>T</mi><mrow><mi mathvariant="normal">v</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">f</mi><mi mathvariant="normal">y</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>K</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mi>T</mi><mrow><mi mathvariant="normal">m</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">n</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">g</mi><mi mathvariant="normal">e</mi></mrow></msub></mrow></mfrac><mi>.</mi></mrow><annotation encoding="application/x-tex">
+S \approx \frac{(\mathbb E[A]+1)\,T_{\mathrm{AR}}}
+{T_{\mathrm{draft}}(K)+T_{\mathrm{verify}}(K)+T_{\mathrm{manage}}}.
+</annotation></semantics></math></p>
+<p>其中管理开销包括采样、树构建、KV
+提交／回退、调度和通信。EOS、输出长度上限等会改变实际推进量，不能机械加一。</p>
+<p>这解释了两个常见反例：</p>
+<ul>
+<li>更大的 drafter 虽然更准，但生成太慢，整体反而变慢；</li>
+<li>更长的候选提高单轮输出量，却让验证计算、KV
+占用和回退浪费增长，超过收益。</li>
+</ul>
+<p><strong>优化目标是单位时间提交的有效 token，不是孤立的 acceptance
+rate。</strong></p>
+<h2 id="一张方法地图草稿来自哪里依赖关系如何建模">2.
+一张方法地图：草稿来自哪里，依赖关系如何建模？</h2>
+<table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>路线</th>
+<th>代表方法</th>
+<th>草稿生成方式</th>
+<th>是否需要额外训练</th>
+<th>关键代价／限制</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>独立小模型</td>
+<td>经典 speculative sampling</td>
+<td>小型自回归 LM 逐步生成</td>
+<td>可直接用现成小模型，也可蒸馏</td>
+<td>草稿串行、额外模型与 KV；常需匹配 tokenizer</td>
+</tr>
+<tr class="even">
+<td>无模型检索</td>
+<td>Prompt lookup、n-gram、suffix、REST</td>
+<td>从输入、历史输出或语料检索续写</td>
+<td>通常不需要</td>
+<td>任务相关性强，匹配不到时收益低</td>
+</tr>
+<tr class="odd">
+<td>并行多头</td>
+<td>Medusa</td>
+<td>目标模型特征上的多个未来预测头</td>
+<td>需要</td>
+<td>跨未来位置依赖较弱；验证规则决定质量保证</td>
+</tr>
+<tr class="even">
+<td>依赖多头／循环草稿</td>
+<td>Hydra、ReDrafter</td>
+<td>后续候选显式依赖前序 token 或循环状态</td>
+<td>需要</td>
+<td>增加轻量串行依赖，但通常改善候选质量</td>
+</tr>
+<tr class="odd">
+<td>特征草稿</td>
+<td>EAGLE、EAGLE-2、EAGLE-3</td>
+<td>利用目标模型隐藏特征做轻量扩展</td>
+<td>需要</td>
+<td>目标特征耦合、训练／推理状态分布差异</td>
+</tr>
+<tr class="even">
+<td>原生多 token 预测</td>
+<td>MTP、DeepSeek 式 MTP</td>
+<td>主干共享或原生辅助模块预测后续 token</td>
+<td>通常需模型已有相关训练</td>
+<td>不同模型的 MTP 结构并不统一</td>
+</tr>
+<tr class="odd">
+<td>自投机</td>
+<td>Draft &amp; Verify、LayerSkip</td>
+<td>跳层／浅层作为 drafter，完整模型验证</td>
+<td>有无训练两类</td>
+<td>浅层质量、特征与 KV 复用、基线定义</td>
+</tr>
+<tr class="even">
+<td>迭代并行候选</td>
+<td>Jacobi、Lookahead、后续块解码</td>
+<td>并行迭代构造候选再验证</td>
+<td>部分不需要</td>
+<td>额外迭代、候选复用和注意力开销</td>
+</tr>
+<tr class="odd">
+<td>块并行草稿</td>
+<td>DFlash、DFlash2、P-EAGLE</td>
+<td>一次或少量轻量前向产生一块候选</td>
+<td>需要</td>
+<td>块内 token 依赖建模和长前缀存活率</td>
+</tr>
+<tr class="even">
+<td>半自回归草稿与置信调度</td>
+<td>DSpark</td>
+<td>块并行底座＋便宜的依赖校正＋置信估计</td>
+<td>需要</td>
+<td>草稿训练、置信校准与服务调度共同决定收益</td>
+</tr>
+</tbody>
+</table>
+<p>这些类别会交叉。动态树、动态草稿长度、动态验证预算是可叠加的系统策略，不一定是新的
+drafter 架构。EAGLE-2 主要改进“树怎么长”；DFlash2
+在所核对的实现中主要改进“并行草稿如何表达块内依赖”。</p>
+<h3 id="技术演进的五个问题">技术演进的五个问题</h3>
+<ul>
+<li>经典双模型：能否让小模型的候选被大模型批量验证？</li>
+<li>Medusa／Hydra／ReDrafter：能否省掉独立小模型的完整计算？</li>
+<li>EAGLE 系列：能否利用目标模型特征提高草稿质量？</li>
+<li>MTP：能否把多步预测直接做进模型训练？</li>
+<li>DFlash／DSpark 等：能否在减少草稿串行计算的同时，保留足够的 token
+间依赖，并按负载决定验证预算？</li>
+</ul>
+<p>这不是一条“新方法完全淘汰旧方法”的直线。重复性强的代码／文档任务中，几乎零训练成本的检索草稿仍可能很有竞争力。</p>
+<h2 id="面向落地优先研究-vllm-与-sglang-已集成的路线">面向落地：优先研究
+vLLM 与 SGLang 已集成的路线</h2>
+<p><strong>本节核对日期：2026-11-11；范围为当时公开主分支的文档与代码，不代表任意稳定发行版都支持，也不代表实测采用率排名。</strong>“框架支持”还需满足目标模型、草稿权重、attention
+backend、并行策略和采样模式的组合约束。</p>
+<p>核对时记录到的上游 main：vLLM
+<code>01fba62494f4fd61c6f36c0dafbe4eae13d90833</code>，SGLang
+<code>2c5b680aa6294bcd246366aba197a42f876b75f7</code>。主分支随时更新，复现时应固定提交并重新检查。</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>方法／机制</th>
+<th>vLLM 已核实入口</th>
+<th>SGLang 已核实入口</th>
+<th>本文建议的阅读优先级</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>独立小模型经典 SD</td>
+<td><code>method: draft_model</code></td>
+<td><code>STANDALONE</code></td>
+<td>基础必读；理解 proposal、验证和 KV 回退</td>
+</tr>
+<tr class="even">
+<td>EAGLE／EAGLE-3</td>
+<td><code>eagle</code>、<code>eagle3</code></td>
+<td><code>EAGLE</code> 对应指南中的 EAGLE-2；<code>EAGLE3</code></td>
+<td>核心路线；适合系统学习训练式草稿</td>
+</tr>
+<tr class="odd">
+<td>原生 MTP</td>
+<td><code>mtp</code> 及模型专用 MTP 类型</td>
+<td>官方指南以 <code>EAGLE</code> 路径展示 MTP；<code>NEXTN</code>
+为相关别名</td>
+<td>核心路线；优先利用模型已有能力，不把接口名当架构名</td>
+</tr>
+<tr class="even">
+<td>n-gram／Prompt Lookup</td>
+<td><code>ngram</code>，另有 <code>ngram_gpu</code> 配置类型</td>
+<td><code>NGRAM</code>，指南标注 CUDA-only</td>
+<td>核心基线；无需训练草稿，适合重复性任务</td>
+</tr>
+<tr class="odd">
+<td>Suffix Decoding</td>
+<td><code>suffix</code>，有专门文档</td>
+<td>本轮未核实独立 suffix 入口</td>
+<td>值得补充；不要把它与所有 n-gram 实现视为完全相同</td>
+</tr>
+<tr class="even">
+<td>DFlash／DFlash2</td>
+<td><code>dflash</code>；具体结构由兼容 checkpoint 决定</td>
+<td><code>DFLASH</code>；DFlash2 复用该入口</td>
+<td>重点进阶；比较块并行主干和块内依赖建模</td>
+</tr>
+<tr class="odd">
+<td>DSpark</td>
+<td>配置枚举包含 <code>dspark</code>，adaptive verification
+文档给出示例</td>
+<td>算法枚举包含 <code>DSPARK</code>，验证文档也点名该族</td>
+<td>重点进阶；需核对模型权重与调度支持</td>
+</tr>
+<tr class="even">
+<td>动态草稿／自适应验证</td>
+<td>Dynamic Speculative Decoding、Adaptive Verification</td>
+<td>Adaptive Speculative Decoding</td>
+<td>系统必读；它们是机制组合，不是同一个算法</td>
+</tr>
+<tr class="odd">
+<td>FR-Spec</td>
+<td>本轮未确认对应独立开关</td>
+<td>EAGLE-2 的 <code>--speculative-token-map</code></td>
+<td>补充优化；降低 draft LM head 的词表计算成本</td>
+</tr>
+<tr class="even">
+<td>UNO</td>
+<td>本轮未确认内置对应入口</td>
+<td><code>UNO</code>；官方指南提供 linear／tree 模式</td>
+<td>新近集成路线；目标模型及功能限制较多</td>
+</tr>
+<tr class="odd">
+<td>LiLiCorr</td>
+<td>兼容 correlator checkpoint 走 <code>dflash</code></td>
+<td>兼容 checkpoint 走 <code>DFLASH</code></td>
+<td>跟踪路线；已写入集成文档不等于有可直接下载的公开草稿权重</td>
+</tr>
+</tbody>
+</table>
+<h3 id="本轮最值得新增的四个主题">本轮最值得新增的四个主题</h3>
+<p><strong>1. Suffix Decoding：复用已有续写，而不只是当前
+prompt。</strong>vLLM
+文档说明它是无额外草稿模型的候选来源，可以利用自身历史及既有响应等后缀匹配信息。重点看候选来源、匹配长度、历史统计与缓存成本。与训练式方法相比，它可能更适合快速试验业务是否存在可复用模式。</p>
+<p><strong>2. FR-Spec：优化 drafter
+的输出头。</strong>对于词表很大的目标模型，轻量草稿模块不代表整个 draft
+都便宜，LM head 仍可能占显著时间。SGLang 指南中 FR-Spec 使用高频 token
+子集与 token map 降低这部分计算。它是 EAGLE
+路径的优化维度，不是完全独立的验证算法；被核对文档明确说明 EAGLE-3
+会忽略该 token-map 参数。</p>
+<p><strong>3. 自适应调度：vLLM 与 SGLang 要分开讲。</strong>所读 SGLang
+专门指南以按 batch-size 范围维护的 EMA 等机制切换草稿步数，支持条件是
+<code>EAGLE</code>／<code>EAGLE3</code> 且
+<code>topk=1</code>，不满足时退回静态设置。vLLM 专门指南描述的 adaptive
+verification
+则以请求／位置的存活概率与成本模型分配验证预算。两者优化位置、约束与运行成本不同，不能用一个“动态
+SD”框图覆盖。</p>
+<p><strong>4. UNO：复用目标 Transformer，加上专门训练的 LoRA
+生成候选。</strong>SGLang 指南说明 draft pass 的部分行使用 UNO
+LoRA，目标验证仅使用 base 权重；支持链与树两种候选形态。它省的是独立
+draft
+Transformer，而非完全没有额外训练或计算。当前指南的验证模型范围有限，并明确列出
+grammar、部分 sampling 处理及 deterministic inference
+等限制，不建议作为初学者第一条复现路线。</p>
+<h3
+id="应放在历史脉络后续阅读里的方法">应放在历史脉络／后续阅读里的方法</h3>
+<p>Medusa、Hydra、ReDrafter、Lookahead、LayerSkip
+依然有解释机制的价值，但本轮核对的当前框架方法索引没有把它们全部列成默认内置入口。应按具体版本查实现，不能因历史版本出现过就宣称“最新版本一键可用”。</p>
+<p>另补充 <strong>Sequoia、SpecExec、SpecInfer、DistillSpec、Token
+Recycling</strong> 作为研究路线：</p>
+<ul>
+<li><strong>Sequoia</strong>：候选树形状与硬件开销共同优化。作者仓库提供
+acceptance vector 估计与 growmap
+生成入口，说明树预算不是与硬件无关的抽象超参。[16]</li>
+<li><strong>SpecExec</strong>：大规模并行候选构造与验证，作者仓库同时提供普通与
+offloading
+评测入口。适合对比目标访存开销很高时，较大候选预算为何可能有价值。[17]</li>
+<li><strong>SpecInfer</strong>：树式验证与推理系统协同的重要先行工作；当前
+FlexFlow
+仓库已拆分，旧链接和旧运行步骤需重新核实，本文不提供未经确认的现代框架启动命令。</li>
+<li><strong>DistillSpec</strong>：通过蒸馏提升 draft 与 target
+的对齐，属于“草稿如何训练得更易接受”的路线。原文及官方实现本轮尚未完成核对，先列阅读入口，不写未经验证的训练配方。[18]</li>
+<li><strong>Token
+Recycling</strong>：复用既往目标计算中得到的候选信息，减少独立草稿的需求。本轮仅读取明确标注
+unofficial 的复现说明，不据此宣称主框架已内置或采纳其加速比。[19]</li>
+</ul>
+<p><strong>建议本系列的落地顺序：经典 SD → n-gram／suffix → EAGLE-3 →
+原生 MTP → DFlash／DSpark → 自适应调度。</strong>Medusa
+等用于解释技术演进，UNO、FR-Spec、LiLiCorr
+作为专项扩展。优先级反映本文对可操作性的判断，不是下载量、生产采用率或统一性能排行榜。</p>
+<h2 id="无损必须先说清楚是哪一种">3. “无损”必须先说清楚是哪一种</h2>
+<h3 id="贪心一致">3.1 贪心一致</h3>
+<p>temperature=0 时，验证每个候选是否等于目标模型在对应前缀上的
+argmax。接受连续匹配的前缀，首次不匹配时输出目标模型的 argmax。</p>
+<p>在相同模型、logit 处理规则及理想数值条件下，可与逐 token
+贪心解码一致。现实中的并行 kernel、精度和归约顺序可能让近似平局 token
+出现差异，因此还要区分算法保证与实现中的 bitwise 一致。</p>
+<h3 id="随机采样分布一致">3.2 随机采样分布一致</h3>
+<p>随机采样下，不是“目标模型觉得这个 token 还行就接受”。要用正确的
+proposal
+概率、接受率和拒绝后的残差分布，保证最终输出服从目标采样分布。</p>
+<h3 id="任务指标基本不变">3.3 任务指标基本不变</h3>
+<p>某些近似接受机制在任务评测中质量接近基线，但这不等价于输出分布严格相同。Medusa
+的 typical acceptance 就需要与经典无损拒绝采样区分。[3]</p>
+<p>还有一个基线问题：如果为了获得
+MTP／早退能力而更新了主模型，那么“验证无损”通常是相对于<strong>更新后的目标模型</strong>，不是承诺和原
+checkpoint 分布一致。</p>
+<hr />
+<h1 id="第二部分逐项讲清训练与推理">第二部分：逐项讲清训练与推理</h1>
+<h2 id="经典投机采样正确性地基">4. 经典投机采样：正确性地基</h2>
+<h3
+id="训练可以完全没有也可以让小模型向目标模型靠近">训练：可以完全没有，也可以让小模型向目标模型靠近</h3>
+<p>最简单的办法是选一个现成小模型，不改变目标模型。若要训练
+drafter，可在目标业务的 prompt
+和续写上做监督训练，或蒸馏目标模型分布。</p>
+<p>独立草稿模型的目标不是一般意义上“足够聪明”，而是<strong>在目标模型真正会走到的上下文中，以很低成本提出容易被接受的候选</strong>。同规模但分词器、对齐风格、推理模板和业务数据都不匹配的
+drafter，未必好用。</p>
+<h3 id="推理接受公式与残差重采样">推理：接受公式与残差重采样</h3>
+<p>令当前前缀为 x，目标分布为 p，草稿分布为 q。草稿先提出候选 y：</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>∼</mo><mi>q</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>⋅</mi><mo>∣</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">y\sim q(\cdot\mid x).</annotation></semantics></math></p>
+<p>接受概率是：</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>α</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mo>min</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>,</mo><mfrac><mrow><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>y</mi><mo>∣</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mi>q</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>y</mi><mo>∣</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">\alpha(y)=\min\left(1,\frac{p(y\mid x)}{q(y\mid x)}\right).</annotation></semantics></math></p>
+<p>若拒绝，从残差分布采样替代 token：</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>v</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mfrac><mrow><mo>max</mo><mo stretchy="false" form="prefix">{</mo><mn>0</mn><mo>,</mo><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>v</mi><mo>∣</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mi>q</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>v</mi><mo>∣</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="false" form="postfix">}</mo></mrow><mrow><munder><mo>∑</mo><mi>u</mi></munder><mo>max</mo><mo stretchy="false" form="prefix">{</mo><mn>0</mn><mo>,</mo><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>u</mi><mo>∣</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mi>q</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>u</mi><mo>∣</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="false" form="postfix">}</mo></mrow></mfrac><mi>.</mi></mrow><annotation encoding="application/x-tex">r(v)=\frac{\max\{0,p(v\mid x)-q(v\mid x)\}}
+{\sum_u\max\{0,p(u\mid x)-q(u\mid x)\}}.</annotation></semantics></math></p>
+<p>对 K
+个候选，目标模型一次前向获得沿候选链的各位置分布。然后从左到右执行上述判定，首次拒绝即终止这条链。如果全部通过，则可从最后一个候选之后的目标分布再采一个
+bonus token。[1][2]</p>
+<p><strong>为什么分布正确？</strong>候选 v 被接受的概率质量是 min(p(v),
+q(v))；拒绝分支补回正差 p(v)−q(v)。二者相加就是 p(v)。当 p=q
+时拒绝概率为零，不需要构造分母为零的残差分布。</p>
+<p>这里 q 的零概率 token 不会被 q
+采到；实现仍需正确处理零值、精度和归一化。</p>
+<h3 id="最小数值例子">最小数值例子</h3>
+<p>若词表只有 a、b，p=(0.7, 0.3)，q=(0.4, 0.6)：</p>
+<ul>
+<li>a 总被接受，贡献 0.4；</li>
+<li>b 以 0.3/0.6=0.5 的概率接受，贡献 0.3；</li>
+<li>总拒绝质量为 0.3，残差分布只在 a 上补回这 0.3；</li>
+<li>最终仍为 (0.7, 0.3)。</li>
+</ul>
+<h3 id="容易写错的地方">容易写错的地方</h3>
+<ul>
+<li>实际从 q′ 采样，却在接受公式中代入截断前的 q；</li>
+<li>拒绝后直接从 p 重采样，漏掉残差校正；</li>
+<li>忽略温度、top-k／top-p、重复惩罚、语法约束对 p、q 的变换；</li>
+<li>首次拒绝后继续提交后续位置，或保留它们的无效 KV。</li>
+</ul>
+<p>独立小模型之外，检索、树、块并行方法也可以使用正确的验证机制，但不能把链式公式不加修改地套进任意树搜索或并行采样程序。</p>
+<h2 id="无训练路线n-gramsuffixrest-与-lookahead">5.
+无训练路线：n-gram、suffix、REST 与 Lookahead</h2>
+<h3 id="prompt-lookupn-gramsuffixrest">5.1 Prompt
+lookup／n-gram／suffix／REST</h3>
+<p><strong>训练：</strong>通常不训练额外神经网络。区别主要在候选池：输入
+prompt、当前输出、历史请求续写，或者外部数据存储。</p>
+<p><strong>推理：</strong>用当前后缀查询候选池，取匹配位置之后的 token
+作为草稿；目标模型批量验证并提交有效前缀；未命中则回到普通解码或其他
+drafter。</p>
+<p><strong>适合：</strong>代码补全、重复模板、拷贝式任务、与上下文高度重合的生成。<strong>不适合盲目乐观：</strong>检索命中不代表续写被接受，语义相近也不代表
+token 序列相同。</p>
+<p>REST 将外部检索作为草稿来源，可参考作者仓库与论文入口。[10]
+若把历史请求放进共享候选池，还要处理租户隔离、保留策略和敏感内容边界。</p>
+<h3 id="lookahead不训练草稿模型但仍然有额外计算">5.2
+Lookahead：不训练草稿模型，但仍然有额外计算</h3>
+<p><strong>训练：</strong>不需要训练新的 drafter。</p>
+<p><strong>推理：</strong>Lookahead 使用 Jacobi 迭代的并行轨迹构造
+n-gram 池；lookahead 分支持续生成候选，verification
+分支从池中选择候选并用目标模型验证。关键不在“每次 Jacobi
+都已经得到了正确答案”，而在于收集、缓存并复用其中有价值的片段。[8]</p>
+<p>它以额外并行计算换更少串行推进轮次。不要把“无需额外训练”和“无需额外推理开销”混为一谈。</p>
+<h2 id="medusa-与-hydra从独立多头到依赖多头">6. Medusa 与
+Hydra：从独立多头到依赖多头</h2>
+<h3 id="medusa一个状态预测多个未来位置">6.1
+Medusa：一个状态，预测多个未来位置</h3>
+<p><strong>结构：</strong>在目标模型隐藏状态上附加多个预测头。第 j
+个头预测更远的未来 token。各头产生 top-k 候选，通过组合形成候选树。</p>
+<p><strong>训练流程：</strong></p>
+<ol type="1">
+<li>准备训练序列，使用基座模型得到当前位置隐藏状态；</li>
+<li>将未来不同偏移位置的 token 作为各头监督标签；</li>
+<li>用多头交叉熵等目标优化；</li>
+<li>Medusa-1 冻结主模型，只训练新增头；Medusa-2
+联合更新主模型与头，需另外看它相对哪个目标模型定义质量。[3]</li>
+</ol>
+<p>抽象损失可以写为：</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ℒ</mi><mrow><mi mathvariant="normal">h</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">d</mi><mi mathvariant="normal">s</mi></mrow></msub><mo>=</mo><munder><mo>∑</mo><mi>j</mi></munder><msub><mi>λ</mi><mi>j</mi></msub><mspace width="0.167em"></mspace><mrow><mi mathvariant="normal">C</mi><mi mathvariant="normal">E</mi></mrow><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>H</mi><mi>j</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>h</mi><mi>t</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><msub><mi>y</mi><mrow><mi>t</mi><mo>+</mo><mi>j</mi><mo>+</mo><mn>1</mn></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">\mathcal L_{\mathrm{heads}}=\sum_j\lambda_j\,\mathrm{CE}(H_j(h_t),y_{t+j+1}),</annotation></semantics></math></p>
+<p>其中 j 表示未来偏移；具体索引随实现的 label shift 约定变化。</p>
+<p><strong>推理流程：</strong>目标状态 → 多头并行候选 → 构造候选树 →
+目标模型 tree attention 验证 → 选择被接受路径 → 提交 KV。</p>
+<p><strong>关键边界：</strong>多头从同一个状态预测不同未来位置，远端头没有天然拿到整条候选续写，因此块内依赖不足。原实现介绍的
+typical acceptance 不应直接写成严格的随机采样分布一致。</p>
+<h3 id="hydra让后一个头知道前面猜了什么">6.2
+Hydra：让后一个头知道前面猜了什么</h3>
+<p><strong>结构：</strong>后续头显式条件于候选前序 token／续写，缓解
+Medusa 头间独立造成的候选不协调。[4]</p>
+<p><strong>训练流程：</strong>冻结基座，训练草稿头；根据具体配置，以目标
+token 和／或教师分布提供监督，让各偏移头学习在前序 token
+条件下预测后继。作者训练示例明确只训练 Hydra 头；不同 Hydra／Hydra++
+配置不可混用损失描述。</p>
+<p><strong>推理流程：</strong>生成前几个候选 →
+后续头利用候选续写生成更远 token → 形成树 → 目标模型验证。</p>
+<p><strong>权衡：</strong>条件更充分通常有助于长前缀存活，但增加轻量依赖。它要优化的是“候选质量提升能否覆盖新增串行成本”。</p>
+<h2 id="redrafter循环状态复用与动态树压缩">7.
+ReDrafter：循环状态复用与动态树压缩</h2>
+<p>ReDrafter 全称 Recurrent Drafter，来自 Apple；不是所有 drafter
+的统称。[5]</p>
+<h3 id="训练">训练</h3>
+<p>冻结目标模型，仅训练轻量循环
+drafter。以目标模型隐藏状态作为上下文条件，让 drafter
+在循环展开中吸收前序 token／内部状态，预测一段续写。作者仓库提供
+ShareGPT
+训练和评估入口；具体监督损失应继续对照对应训练实现，不能因为名字里有
+recurrent 就直接断言使用 LSTM。</p>
+<h3 id="推理">推理</h3>
+<ol type="1">
+<li>从目标模型当前状态初始化循环草稿过程；</li>
+<li>使用 beam search 扩展多条候选；</li>
+<li>对共享前缀进行动态树处理／压缩，减少重复验证位置；</li>
+<li>目标模型一次树验证，提交接受路径；</li>
+<li>更新 drafter 和目标模型缓存。</li>
+</ol>
+<p>其系统价值不仅来自草稿模型更小，也来自<strong>候选共享前缀的重复计算被压缩</strong>。</p>
+<h3 id="一个必须保留的实现限定">一个必须保留的实现限定</h3>
+<p>所读取的官方 README
+明确提示：当前非贪心生成实现可能无法做到精确分布匹配；贪心解码不受该项限制。因此不能仅凭“投机解码”四个字给整套代码盖上随机采样无损的章。</p>
+<h2 id="eagle-系列三个版本分别解决什么问题">8. EAGLE
+系列：三个版本分别解决什么问题？</h2>
+<h3 id="eagle利用目标模型特征做草稿">8.1
+EAGLE：利用目标模型特征做草稿</h3>
+<p><strong>思路：</strong>利用目标模型接近输出层的上下文特征，训练轻量网络预测后续特征；同时条件于适当移位的
+token 信息，减少下一 token
+不确定性带来的歧义，再经输出头得到候选分布。[6]</p>
+<p><strong>训练：</strong>冻结目标模型，准备 token
+和隐藏特征；训练轻量特征预测网络，结合特征回归与 token
+层监督。训练时还需缓解“只看真实目标特征，推理却递归使用预测特征”的偏移。具体噪声与损失权重依版本实现核对。</p>
+<p><strong>推理：</strong>目标特征＋已知 token → 轻量草稿递归展开 →
+形成候选树 → 目标模型树验证 → 用验证后的真实特征开启下一轮。</p>
+<p>EAGLE
+仍然有轻量递归步骤，不应描述为“所有未来位置完全一次并行预测”。</p>
+<h3 id="eagle-2从固定树走向上下文自适应树">8.2
+EAGLE-2：从固定树，走向上下文自适应树</h3>
+<p>EAGLE-2
+的主要改进是利用草稿置信度估计候选价值，动态调整树结构与扩展预算。它主要回答“哪些分支值得猜、猜多深”，不是简单多训练了一个更大
+drafter。[6]</p>
+<p><strong>训练：</strong>沿用 EAGLE
+类草稿能力，重点区别不在新建一套与前代完全无关的监督体系。</p>
+<p><strong>推理：</strong>从当前上下文出发，按草稿分数动态扩展候选，组织成受预算约束的树；再由目标模型进行一致的树验证。</p>
+<p>需要注意：draft confidence
+是启发式价值估计，不自动等于校准后的真实接受概率。</p>
+<h3 id="eagle-3面向-rollout-训练减少不必要的特征约束">8.3 EAGLE-3：面向
+rollout 训练，减少不必要的特征约束</h3>
+<p>作者说明的两个核心变化是：去掉 EAGLE
+原有的特征预测约束；融合目标模型低、中、高层信息，并通过 training-time
+testing 模拟推理时的过程。[6]</p>
+<p><strong>训练流程：</strong></p>
+<ol type="1">
+<li>在业务数据或通用数据上运行冻结的目标模型，提取所选层隐藏状态；</li>
+<li>融合多层特征，输入草稿模块；</li>
+<li>在训练中模拟草稿展开，使后续步骤暴露于更接近实际 rollout
+的状态；</li>
+<li>主要围绕 token
+预测／教师分布进行监督，而非要求逐维精确恢复目标未来特征；</li>
+<li>导出与目标 checkpoint、tokenizer 和特征层约定匹配的草稿权重。</li>
+</ol>
+<p><strong>推理：</strong>目标模型提供多层辅助特征 → 轻量 drafter
+递归生成候选 → 验证 → 更新特征和缓存。</p>
+<p><strong>不要误解：</strong>“去掉特征回归损失”不等于“完全不依赖目标模型特征”；“训练时模拟测试”也不是把测试集用于训练。</p>
+<h3 id="后续扩展p-eagleeagle3.1">8.4 后续扩展：P-EAGLE、EAGLE3.1</h3>
+<p>所读取的 SpecForge 主分支列出 P-EAGLE 与 EAGLE3.1。前者被标为
+Parallel EAGLE，后者标注 attention
+drift。它们表明特征草稿内部也在继续探索并行化与分布对齐。本文不依据名称推导完整训练配方；本轮只把它们列为已发现的后续阅读入口。[12]</p>
+<h2 id="mtp多-token-训练目标不是一个固定的推理算法">9. MTP：多 token
+训练目标，不是一个固定的推理算法</h2>
+<p>MTP（Multi-Token Prediction）首先是一类训练设计：在标准下一 token
+目标之外，让模型预测更远未来。不同工作可以采用并行预测头、顺序相连的模块、共享嵌入／输出头等结构；不能把所有
+MTP 都画成一张图。[9]</p>
+<h3 id="训练-1">训练</h3>
+<p>可以概括为：</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ℒ</mi><mo>=</mo><msub><mi>ℒ</mi><mrow><mi mathvariant="normal">n</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">x</mi><mi mathvariant="normal">t</mi></mrow></msub><mo>+</mo><munderover><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow><mi>D</mi></munderover><msub><mi>λ</mi><mi>j</mi></msub><msub><mi>ℒ</mi><mrow><mrow><mi mathvariant="normal">f</mi><mi mathvariant="normal">u</mi><mi mathvariant="normal">t</mi><mi mathvariant="normal">u</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">e</mi></mrow><mo>,</mo><mi>j</mi></mrow></msub><mi>.</mi></mrow><annotation encoding="application/x-tex">\mathcal L=\mathcal L_{\mathrm{next}}+\sum_{j=1}^{D}\lambda_j\mathcal L_{\mathrm{future},j}.</annotation></semantics></math></p>
+<p>DeepSeek-V3 一类设计使用顺序连接的 MTP
+模块，将上一预测阶段的表示与相应未来 token
+嵌入结合，再预测更远未来。训练时可用真实序列做监督；推理草稿需要使用真实可获得的
+token／候选，不能偷看未来标签。</p>
+<p>MTP
+常在主模型训练阶段引入，也可以针对支持的架构训练相关模块。原生已有 MTP
+的模型不一定需要独立小型
+LM，但辅助模块依然有参数、算力与缓存成本。DeepSeek-V3
+的官方权重说明还明确：该次开源权重包含 1 个 MTP
+模块；训练概念中的多偏移能力，不代表发布权重一定附带同样数量的预测模块。</p>
+<h3 id="推理-1">推理</h3>
+<ol type="1">
+<li>主干生成下一 token 所需状态；</li>
+<li>原生 MTP 模块产生额外候选，可按实现递归展开；</li>
+<li>主目标模型批量验证；</li>
+<li>按验证规则提交并回退缓存。</li>
+</ol>
+<p><strong>结论：</strong>“训练时能预测多个
+token”和“推理时可以不验证直接输出多个
+token”是两件事。后者若要保持原目标分布，仍需相应算法保证。</p>
+<h2 id="自投机与-layerskip把目标模型自己当-drafter">10. 自投机与
+LayerSkip：把目标模型自己当 drafter</h2>
+<h3 id="训练-2">训练</h3>
+<p>需区分两类：</p>
+<ul>
+<li>Draft &amp; Verify
+类方法探索通过跳层形成便宜草稿，可不重新训练目标模型，但选层本身是一个质量／成本问题；</li>
+<li>LayerSkip 通过专门的训练配方，让中间层更适合早退；其思路包括层
+dropout 与中间层早退预测监督。作者仓库明确指出，想观察预期加速，应使用按
+LayerSkip 配方训练过的 checkpoint。[7]</li>
+</ul>
+<h3 id="推理-2">推理</h3>
+<p>浅层网络先生成候选；较深层对候选进行批量验证，复用能复用的浅层计算与
+KV；接受后提交对应缓存，拒绝后回退。</p>
+<p>它降低了同时驻留独立草稿模型的需求，但早退太浅时接受率可能很低。自投机的“无损”相对于用于完整验证的那个模型；经过持续预训练的
+LayerSkip checkpoint 不应与原始 checkpoint 的分布混为一谈。</p>
+<h2 id="dflash-与-dflash2把昂贵的草稿主干并行化">11. DFlash 与
+DFlash2：把昂贵的草稿主干并行化</h2>
+<h3 id="dflash块扩散草稿目标模型仍是自回归验证器">11.1
+DFlash：块扩散草稿，目标模型仍是自回归验证器</h3>
+<p>DFlash 官方将其定位为用于投机解码的轻量 block diffusion
+模型。[11]</p>
+<p><strong>关键直觉：</strong>不要为了得到 K 个候选，让草稿 Transformer
+主干串行运行 K
+次。利用目标前缀特征，给未来位置提供掩码／待预测槽位，通过轻量块级计算同时提出一段候选。</p>
+<p>这不等于把目标 LLM
+改造成扩散模型，也不等于每一轮都需要执行传统扩散生成中的大量去噪步数。</p>
+<p><strong>训练流程（按本轮核对的 SpecForge 实现抽象）：</strong></p>
+<ol type="1">
+<li>用冻结目标模型获得所选层隐藏特征和 token 序列；</li>
+<li>从序列选取多个 anchor，构造固定长度草稿块；</li>
+<li>根据配置的掩码与注意力规则，在可见前缀条件下预测后续 token；</li>
+<li>用有效 token mask 过滤 padding
+与不参与监督区域，对草稿块计算预测损失；</li>
+<li>可使用位置权重及实现支持的教师分布对齐目标；不能把所有可选损失说成原始
+DFlash 论文的默认配方。</li>
+</ol>
+<p><strong>推理流程：</strong>目标前缀特征 → 一次块草稿前向 →
+得到候选链／块 → 自回归目标模型并行验证 → 接受连续前缀并修正 →
+更新缓存。</p>
+<p><strong>主要矛盾：</strong>草稿主干更并行，不代表未来 token
+的相关性自动解决。多个位置各自看起来合理，不保证拼在一起后仍有长的可接受前缀。</p>
+<h3 id="dflash2并行主干局部关联候选路径选择">11.2
+DFlash2：并行主干＋局部关联＋候选路径选择</h3>
+<p>DFlash2 官方代码仓库提供独立入口，SpecForge
+的专门说明给出可核对的实现细节：[11][12]</p>
+<ul>
+<li>在草稿 attention／MLP 子层周围加入分组动态卷积，增强局部依赖；</li>
+<li>在各位置 unary top-k 候选中，利用依赖前序 token
+的低秩转移分数选择更连贯路径；</li>
+<li>草稿结构变化发生在 drafter 内，目标特征采集协议与 DFlash
+路线复用。</li>
+</ul>
+<p><strong>训练：</strong>保留底层块预测目标，增加 selector
+的分类交叉熵；所读实现中，selector 只在真实标签落入严格 unary top-k
+候选集合时计算该项损失，另有 warmup／ramp 等可选调度。</p>
+<p><strong>推理：</strong>并行主干产生特征和候选 → 轻量路径选择 →
+目标模型验证。更便宜的依赖校正仍可能含顺序部分；“keep drafting
+parallel”不能误读成整条解码链没有任何串行依赖。</p>
+<p><strong>可观测指标：</strong>unary top-k recall、selector
+条件准确率、连续前缀存活率、草稿主干／选择器耗时。候选池没有覆盖正确
+token 时，再强的 selector 也救不回来。</p>
+<h3 id="相关延伸dominod-pace">11.3 相关延伸：Domino、D-PACE</h3>
+<p>所读 SpecForge README 将 Domino 描述为带 GRU logit correction 的
+DFlash 扩展，将 D-PACE 列为 DFlash
+可选训练目标。它们分别提示两个研究方向：用便宜循环结构补块内依赖，以及让训练更贴近真正的前缀收益。完整算法和原论文结论仍需后续全文核对，不在此编造独立的性能排名。</p>
+<h2 id="dspark用依赖校正提高候选质量用置信度决定验证预算">12.
+DSpark：用依赖校正提高候选质量，用置信度决定验证预算</h2>
+<p>本节依据 SpecForge 的 <code>DSparkDraftModel</code>、训练目标实现和
+vLLM adaptive verification 文档。原论文入口为
+arXiv:2607.05147；本文未读取其全文，因此以下不冒充逐句复述论文。[12][13]</p>
+<h3 id="结构">结构</h3>
+<p>所读代码中，DSpark 复用 DFlash 类块草稿主干，并允许增加：</p>
+<ul>
+<li>Markov 依赖校正头：让后继 token 的 logits 依赖前序 token；支持
+vanilla、gated、RNN 等配置；</li>
+<li>confidence head：估计候选位置的可接受程度，供后续调度参考。</li>
+</ul>
+<p>这意味着“并行生成草稿特征”和“轻量建立 token
+间依赖”可以分工，不必把完整 Transformer 主干重新串行跑一遍。也不能将某个
+RNN 配置直接写成所有 DSpark 都使用 LSTM。</p>
+<h3
+id="训练不只监督对错还监督分布重叠">训练：不只监督对错，还监督分布重叠</h3>
+<p>所读训练实现包含三项可配置目标：</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ℒ</mi><mo>=</mo><msub><mi>λ</mi><mrow><mi mathvariant="normal">C</mi><mi mathvariant="normal">E</mi></mrow></msub><msub><mi>ℒ</mi><mrow><mi mathvariant="normal">C</mi><mi mathvariant="normal">E</mi></mrow></msub><mo>+</mo><msub><mi>λ</mi><mrow><mi mathvariant="normal">L</mi><mn mathvariant="normal">1</mn></mrow></msub><mo stretchy="false" form="prefix">∥</mo><mi>p</mi><mo>−</mo><mi>q</mi><msub><mo stretchy="false" form="postfix">∥</mo><mn>1</mn></msub><mo>+</mo><msub><mi>λ</mi><mrow><mi mathvariant="normal">c</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">n</mi><mi mathvariant="normal">f</mi></mrow></msub><msub><mi>ℒ</mi><mrow><mi mathvariant="normal">c</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">n</mi><mi mathvariant="normal">f</mi></mrow></msub><mi>.</mi></mrow><annotation encoding="application/x-tex">\mathcal L=\lambda_{\mathrm{CE}}\mathcal L_{\mathrm{CE}}+
+\lambda_{\mathrm{L1}}\lVert p-q\rVert_1+
+\lambda_{\mathrm{conf}}\mathcal L_{\mathrm{conf}}.</annotation></semantics></math></p>
+<p>其中 p、q
+是相同条件下、经对应输出头构造的目标／草稿分布。经典采样的单步平均接受概率为：</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><munder><mo>∑</mo><mi>v</mi></munder><mi>q</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>v</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>min</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>,</mo><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>v</mi><mo stretchy="true" form="postfix">)</mo></mrow><mi>/</mi><mi>q</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>v</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><munder><mo>∑</mo><mi>v</mi></munder><mo>min</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>v</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mi>q</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>v</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>1</mn><mo>−</mo><mfrac displaystyle="false"><mn>1</mn><mn>2</mn></mfrac><mo stretchy="false" form="prefix">∥</mo><mi>p</mi><mo>−</mo><mi>q</mi><msub><mo stretchy="false" form="postfix">∥</mo><mn>1</mn></msub><mi>.</mi></mrow><annotation encoding="application/x-tex">\sum_v q(v)\min(1,p(v)/q(v))
+=\sum_v\min(p(v),q(v))
+=1-\tfrac12\lVert p-q\rVert_1.</annotation></semantics></math></p>
+<p>因此分布 L1 对齐直接联系到理论单步接受概率。所读实现将这一数值作为
+detached soft target，通过 BCE-with-logits 训练 confidence head。</p>
+<p><strong>训练流程：</strong>采集目标层特征与所需教师末层特征 → 构造
+anchor 和块 → 并行草稿主干前向 → 用前序 token 做 Markov 校正 → token
+CE／分布 L1／confidence 联合优化 → 导出含 projector、head
+配置的草稿。</p>
+<p>训练中的固定数据、teacher-forced 前序 token
+与真实推理中的生成前缀存在偏移，离线置信准确率不应直接充当线上接受率。</p>
+<h3
+id="推理草稿与验证预算是两个环节">推理：草稿与验证预算是两个环节</h3>
+<ol type="1">
+<li>块并行主干生成 proposal 特征；</li>
+<li>若启用 Markov 头，按实际前序 token 校正并产生候选；</li>
+<li>confidence head 给出位置级估计；</li>
+<li>服务系统可据此截短待验证块、分配全局验证预算；</li>
+<li>目标模型进行真正的验证与采样校正；</li>
+<li>提交有效前缀，回退无效 KV。</li>
+</ol>
+<p><strong>重要区分：</strong>置信度调度不替代接受判定。只要按正确的
+proposal
+与验证规则处理，少验证一些候选可以只改变性能；但如果根据已经采出的具体
+token
+选择性改变候选使用方式，仍需检查实现是否正确处理了由选择机制带来的条件分布变化，不能泛化为“任意裁剪都无损”。</p>
+<h3 id="从位置置信度到前缀收益">从位置置信度到前缀收益</h3>
+<p>若 c_j 近似表示“前面均存活时，第 j 个候选被接受的条件概率”，则：</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>A</mi><mo>≥</mo><mi>i</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>≈</mo><munderover><mo>∏</mo><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow><mi>i</mi></munderover><msub><mi>c</mi><mi>j</mi></msub><mo>,</mo><mspace width="2.0em"></mspace><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>A</mi><mo stretchy="true" form="postfix">]</mo></mrow><mo>≈</mo><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>K</mi></munderover><munderover><mo>∏</mo><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow><mi>i</mi></munderover><msub><mi>c</mi><mi>j</mi></msub><mi>.</mi></mrow><annotation encoding="application/x-tex">P(A\ge i)\approx\prod_{j=1}^{i}c_j,\qquad
+\mathbb E[A]\approx\sum_{i=1}^{K}\prod_{j=1}^{i}c_j.</annotation></semantics></math></p>
+<p>如果这些条件概率是准确的链式条件概率，连乘对应链式法则；真实预测器与实际前缀不完全匹配时，这是估计而非事实。</p>
+<p>vLLM 当前 adaptive verification 文档描述了按前缀 survival probability
+在请求间分配验证 token 预算，并结合启动时 profiling
+的成本模型选取预算。该能力属于服务系统，不应全部归为 DSpark
+架构本身；没有专门 confidence head
+的方法也可以使用其他在线估计器。[13]</p>
+<h2 id="树验证链验证与混合投机系统层不能缺席">13.
+树验证、链验证与混合投机：系统层不能缺席</h2>
+<h3 id="链与树的区别">链与树的区别</h3>
+<p>链只验证一条续写；树同时保留多个可能分支，提高命中连续前缀的机会。tree
+attention
+必须保证节点只能读取自己的合法祖先与共享前缀，不能看到兄弟分支。</p>
+<p>树越宽不一定越快：节点占用验证算力、KV、attention metadata
+和图捕获预算。尤其在高并发时，更多候选可能挤占其他请求的有效
+decode。</p>
+<h3
+id="混合投机不应只是把所有方法叠上去">混合投机不应只是“把所有方法叠上去”</h3>
+<p>可考虑的组合包括：</p>
+<ul>
+<li>n-gram 高命中时优先用检索，未命中再用模型草稿；</li>
+<li>根据负载动态调整 K，负收益时切回普通 decode；</li>
+<li>块并行主干＋轻量循环／Markov 校正；</li>
+<li>按任务域、请求长度或在线接受统计路由不同 drafter；</li>
+<li>级联：极便宜的草稿先被中等模型检查，再由大模型验证。</li>
+</ul>
+<p>组合后需重新定义
+proposal、验证与缓存契约。不能把多个单独正确的方法拼起来，就默认采样分布仍然正确。</p>
+<h3 id="为什么高并发可能让加速消失">为什么高并发可能让加速消失？</h3>
+<p>低并发时目标模型常有空闲计算，额外验证较划算；高并发时普通 decode
+已经有很好的批处理利用率，候选验证开始与真实 token 竞争计算和 KV。</p>
+<p>因此同一方法可能降低单请求 TPOT，却降低整体吞吐，或者使 P99
+延迟恶化。投机解码首先是一个工作负载相关的系统优化，而不是一个可以脱离负载发布的固定倍数。</p>
+<hr />
+<h1
+id="第三部分如何设计可信的训练与推理实验">第三部分：如何设计可信的训练与推理实验</h1>
+<h2 id="统一训练流程先确保训练的东西和上线用的东西一致">14.
+统一训练流程：先确保“训练的东西”和“上线用的东西”一致</h2>
+<ol type="1">
+<li><strong>冻结实验定义。</strong>记录 target／draft
+权重版本、tokenizer、chat template、特征层、精度、mask 与 label
+shift。</li>
+<li><strong>构造业务代表性数据。</strong>覆盖真实 prompt
+分布、长短输入、代码／数学／对话等目标域，隔离训练与评估样本；不要只看容易高接受的任务。</li>
+<li><strong>生成监督。</strong>可用真实 token、目标模型续写、soft logits
+或隐藏特征。记录是离线 teacher forcing、在线目标采集，还是带 rollout
+的训练。</li>
+<li><strong>按机制选择损失。</strong>独立草稿做 token／分布蒸馏；Medusa
+用多偏移监督；EAGLE 类考虑特征与 rollout；DSpark
+类额外对齐接受概率与置信度。</li>
+<li><strong>评估前缀，而非仅评估 token。</strong>逐位置 accuracy
+高，不代表连续前缀长；离线 teacher-forced 指标不等于真实 rollout
+指标。</li>
+<li><strong>导出并实际加载。</strong>保证训练与服务的投影层、Markov／selector
+头、LM head、tokenizer 和层索引一致。</li>
+</ol>
+<p>本文不提供“通吃所有方法”的训练命令。上述项目接口变化较快，直接抄当前
+main 分支命令而不锁定 commit，复现性很差。</p>
+<h2 id="推理验收正确性性能和稳定性分开测">15.
+推理验收：正确性、性能和稳定性分开测</h2>
+<h3 id="正确性">正确性</h3>
+<ul>
+<li>贪心：对相同目标模型比较输出 token 序列，覆盖
+EOS、长度上限、长上下文、重复惩罚与约束解码；记录数值精度。</li>
+<li>随机：先用可枚举小词表验证概率质量与拒绝残差，再做统计分布检验；不能以“同
+seed 输出文本不一样”直接判断算法有损，因为随机数消耗路径不同。</li>
+<li>缓存：专门覆盖第一个候选就拒绝、全部接受、中途拒绝、多分支共享前缀、连续多轮回退。</li>
+<li>混合策略：核对实际采样 q 与验证使用 q
+完全一致；明确置信筛选、树遍历和 bonus token 的实现契约。</li>
+</ul>
+<h3 id="性能">性能</h3>
+<p>至少报告：</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>维度</th>
+<th>应记录的内容</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>模型与软件</td>
+<td>target／draft checkpoint、参数量、精度、服务框架版本／commit、kernel
+配置</td>
+</tr>
+<tr class="even">
+<td>硬件</td>
+<td>GPU／NPU 型号与数量、TP／PP、互联、显存、是否同卡部署</td>
+</tr>
+<tr class="odd">
+<td>负载</td>
+<td>并发／到达率、输入输出长度分布、任务域、warmup、缓存命中策略</td>
+</tr>
+<tr class="even">
+<td>采样</td>
+<td>temperature、top-k／top-p、停止条件、结构化输出约束</td>
+</tr>
+<tr class="odd">
+<td>草稿</td>
+<td>K、树节点预算、块大小、动态调度策略、额外内存</td>
+</tr>
+<tr class="even">
+<td>效果</td>
+<td>平均接受长度、逐位置条件接受率、拒绝位置分布、目标调用次数</td>
+</tr>
+<tr class="odd">
+<td>延迟</td>
+<td>TTFT、TPOT／ITL、端到端延迟，至少 p50／p95／p99</td>
+</tr>
+<tr class="even">
+<td>吞吐与成本</td>
+<td>有效 output tokens/s、满足 SLO 的 goodput、GPU 成本／千 token</td>
+</tr>
+<tr class="odd">
+<td>时间分解</td>
+<td>草稿、验证、采样／selector、KV 操作、通信、调度</td>
+</tr>
+</tbody>
+</table>
+<p>本文没有统一复现以上方法，因此不制作跨论文加速比排行榜。不同论文里的“3×”“5×”没有相同目标模型、负载、精度和基线时，不具有直接排序意义。</p>
+<h3 id="稳定性">稳定性</h3>
+<p>关注 OOM、KV 泄漏、动态形状和 CUDA graph
+覆盖、草稿掉线／加载失败后的降级、负载突增时的自动关闭、量化 target
+更新后 drafter 的兼容性。</p>
+<p>对于 AIGC／多模态服务，还要明确图像编码、prefill 与 decode
+各占多少：若瓶颈主要是视觉编码或排队，文本 decode
+加速不会按相同比例改善端到端时延。本文的概率算法也不能直接迁移为 DiT
+的通用加速方案。</p>
+<h2 id="工程选型建议">16. 工程选型建议</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>你的条件</th>
+<th>优先尝试</th>
+<th>理由与验证重点</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>先验证收益，没有训练预算</td>
+<td>n-gram／suffix 或匹配的小型 draft</td>
+<td>最快获得业务接受长度和端到端成本曲线</td>
+</tr>
+<tr class="even">
+<td>有原生 MTP checkpoint</td>
+<td>框架匹配的 MTP 路径</td>
+<td>复用模型能力；确认当前版本实际支持该模型及采样模式</td>
+</tr>
+<tr class="odd">
+<td>能获得目标特征并训练草稿</td>
+<td>EAGLE-3 与受支持的块并行方案</td>
+<td>比较草稿成本、rollout 接受率与服务兼容性</td>
+</tr>
+<tr class="even">
+<td>目标是降低草稿串行开销</td>
+<td>DFlash／DFlash2／P-EAGLE 等</td>
+<td>单独测主干、选择器与验证耗时，不只看总接受率</td>
+</tr>
+<tr class="odd">
+<td>服务负载变化大</td>
+<td>动态 K／adaptive verification／负收益降级</td>
+<td>与普通 decode 在相同 SLO 下比较 goodput</td>
+</tr>
+<tr class="even">
+<td>显存很紧，想减少独立模型</td>
+<td>有合适 checkpoint 的自投机／LayerSkip</td>
+<td>考察早退质量、缓存复用和模型许可</td>
+</tr>
+<tr class="odd">
+<td>输出高度重复</td>
+<td>检索草稿</td>
+<td>验证命中率、缓存隔离和近乎零训练成本的收益</td>
+</tr>
+</tbody>
+</table>
+<p>建议的落地顺序是：普通 decode 基线 → 最小成本草稿 → 目标业务评测 →
+一个训练式 drafter →
+动态调度。先把“什么时候不该投机”做出来，通常比无条件扩大草稿更有价值。</p>
+<h2 id="后续单篇深挖的阅读顺序">17. 后续单篇深挖的阅读顺序</h2>
+<p>这篇综述已经给出每类方法的训练／推理骨架。若拆成知乎系列，可按下面顺序继续，每篇都包含结构图、张量维度、训练标签、损失、一次完整推理轨迹、KV
+回退与实验：</p>
+<ol type="1">
+<li><strong>经典
+SD：从接受公式到无损性证明。</strong>实现小词表验证器，检查 top-p
+与拒绝残差。</li>
+<li><strong>Medusa → Hydra → ReDrafter：未来 token
+依赖怎么表达？</strong>比较多头、条件头与循环草稿。</li>
+<li><strong>EAGLE 1／2／3：特征预测、动态树与训练时
+rollout。</strong>重点核对 token／feature shift。</li>
+<li><strong>MTP 与自投机：训练目标怎样变成推理能力？</strong>分开讲不同
+MTP 结构与基线问题。</li>
+<li><strong>DFlash → DFlash2：块并行草稿与轻量路径关联。</strong>比较
+unary 覆盖率、selector 与前缀存活。</li>
+<li><strong>DSpark：从分布重叠到置信度调度。</strong>逐项解释
+CE、L1、confidence 和验证预算。</li>
+<li><strong>服务实战：投机解码为何在低并发快、高并发不一定快？</strong>测量
+SLO、goodput 与动态降级。</li>
+</ol>
+<hr />
+<h1 id="参考资料与核对说明">参考资料与核对说明</h1>
+<p>以下编号用于对应正文。论文入口用于进一步核验；“已读取”仅指明确列出的仓库、文档或代码，不代表论文全文已读取。</p>
+<p><strong>[1] 经典投机解码。</strong>Leviathan et al., <em>Fast
+Inference from Transformers via Speculative Decoding</em>（ICML
+2023）。<a
+href="https://proceedings.mlr.press/v202/leviathan23a.html">论文页面</a>；<a
+href="https://arxiv.org/abs/2211.17192">arXiv</a>。本轮原论文正文未读取；公式在文中独立推导，并用小词表数值校验。</p>
+<p><strong>[2] 经典投机采样。</strong>Chen et al., <em>Accelerating
+Large Language Model Decoding with Speculative Sampling</em>。<a
+href="https://arxiv.org/abs/2302.01318">论文</a>。已读取<a
+href="https://github.com/romsto/Speculative-Decoding">第三方复现说明</a>作为交叉线索，不将其当作者官方实现。</p>
+<p><strong>[3] Medusa。</strong><a
+href="https://github.com/FasterDecoding/Medusa">作者仓库</a>；<a
+href="https://arxiv.org/abs/2401.10774">论文</a>。已读取 README
+中的结构、Medusa-1／2、训练说明和 typical acceptance 描述。</p>
+<p><strong>[4] Hydra。</strong><a
+href="https://github.com/zankner/Hydra">作者仓库</a>；<a
+href="https://arxiv.org/abs/2402.05109">论文</a>。已读取 README 的
+sequentially dependent heads、训练配置示例和冻结基座说明。</p>
+<p><strong>[5] Recurrent Drafter。</strong><a
+href="https://github.com/apple/ml-recurrent-drafter">Apple
+官方仓库</a>；<a
+href="https://arxiv.org/abs/2403.09919">论文</a>。已读取 README
+与文档索引，包含非贪心分布匹配的 Known Issues。</p>
+<p><strong>[6] EAGLE 系列。</strong><a
+href="https://github.com/SafeAILab/EAGLE">作者仓库</a>；<a
+href="https://arxiv.org/abs/2401.15077">EAGLE</a>、<a
+href="https://arxiv.org/abs/2406.16858">EAGLE-2</a>、<a
+href="https://arxiv.org/abs/2503.01840">EAGLE-3</a>。已读取 README 和
+<code>eagle/train/main.py</code>，并交叉核对 SpecForge 训练说明。</p>
+<p><strong>[7] 自投机与 LayerSkip。</strong><a
+href="https://github.com/facebookresearch/LayerSkip">LayerSkip
+官方仓库</a>；<a href="https://arxiv.org/abs/2404.16710">论文</a>；Draft
+&amp; Verify <a
+href="https://arxiv.org/abs/2309.08168">论文入口</a>。本轮已读 LayerSkip
+README；后者列为进一步阅读，未完整核对原实现。</p>
+<p><strong>[8] Lookahead。</strong><a
+href="https://github.com/hao-ai-lab/LookaheadDecoding">作者仓库</a>；<a
+href="https://arxiv.org/abs/2402.02057">论文</a>。已读取 README 的
+Jacobi、候选池和双分支验证说明。</p>
+<p><strong>[9] MTP。</strong><a
+href="https://github.com/deepseek-ai/DeepSeek-V3">DeepSeek-V3
+官方仓库</a>；<a
+href="https://arxiv.org/abs/2412.19437">技术报告</a>；Gloeckle et
+al. <em>Better &amp; Faster Large Language Models via Multi-token
+Prediction</em> <a href="https://arxiv.org/abs/2404.19737">论文</a>；<a
+href="https://github.com/vllm-project/vllm/blob/main/docs/features/speculative_decoding/mtp.md">vLLM
+MTP 文档</a>。本轮已读 DeepSeek README、官方权重结构说明和 vLLM
+文档；详细模块公式须继续对照技术报告全文，不把不同 MTP 架构合并。</p>
+<p><strong>[10] 检索路线。</strong>REST <a
+href="https://github.com/FasterDecoding/REST">作者仓库入口</a>、<a
+href="https://arxiv.org/abs/2311.08252">论文</a>；<a
+href="https://github.com/vllm-project/vllm/blob/main/docs/features/speculative_decoding/README.md">vLLM
+方法索引</a>。本轮已读框架方法索引与 REST 官方 README 的检索、Trie
+剪枝及树验证说明；具体采样实现待进一步逐文件核对。</p>
+<p><strong>[11] DFlash 系列。</strong><a
+href="https://github.com/z-lab/dflash">作者仓库</a>；<a
+href="https://arxiv.org/abs/2602.06036">DFlash 论文</a>；<a
+href="https://inco.ai/blog/dflash2/">DFlash2
+官方博客入口</a>。本轮已读取官方仓库 README 与 SpecForge DFlash2
+文档；博客全文未读取，不独立引用其性能宣称。</p>
+<p><strong>[12] SpecForge。</strong><a
+href="https://github.com/sgl-project/SpecForge">官方仓库</a>；<a
+href="https://github.com/sgl-project/SpecForge/blob/main/docs/sections/basic_usage/training.md">训练文档</a>；<a
+href="https://github.com/sgl-project/SpecForge/blob/main/docs/sections/concepts/DFlash2.md">DFlash2
+文档</a>；<a
+href="https://github.com/sgl-project/SpecForge/blob/main/specforge/modeling/draft/dspark.py">DSpark
+草稿结构</a>；<a
+href="https://github.com/sgl-project/SpecForge/blob/main/specforge/algorithms/common/dflash_family_model.py">DSpark
+训练目标所在文件</a>。已读取上述文档与相关代码。README 给出 <a
+href="https://arxiv.org/abs/2607.05147">DSpark 论文入口</a>、<a
+href="https://arxiv.org/abs/2602.01469">P-EAGLE</a>、<a
+href="https://arxiv.org/abs/2605.18810">D-PACE</a>、<a
+href="https://arxiv.org/abs/2605.29707">Domino</a>；这些论文全文本轮未读。</p>
+<p><strong>[13] 服务调度。</strong><a
+href="https://github.com/vllm-project/vllm/blob/main/docs/features/speculative_decoding/adaptive_verification.md">vLLM
+Adaptive Verification</a>。已读取该文档。其与同仓库 README
+的支持范围描述存在不同步，本文对具体调度机制优先使用专门文档，并要求实验锁定实际部署版本。</p>
+<p>资料获取与代码快照的本地记录见 <a
+href="source-notes.md">资料核对说明</a>。框架 main
+分支持续变化，实际实验应固定
+commit；本文不将“当前主分支存在”表述为“任意已发布版本都支持”。</p>
+<p><strong>[14] SGLang 投机解码指南。</strong><a
+href="https://github.com/sgl-project/sglang/blob/main/docs/docs/advanced_features/speculative_decoding.mdx">主指南</a>；<a
+href="https://github.com/sgl-project/sglang/blob/main/docs/docs/advanced_features/adaptive_speculative_decoding.mdx">自适应指南</a>；<a
+href="https://github.com/sgl-project/sglang/blob/main/python/sglang/srt/speculative/spec_info.py">算法枚举</a>。本轮已读取；接口和限制以对应提交为准。</p>
+<p><strong>[15] vLLM 当前接口。</strong><a
+href="https://github.com/vllm-project/vllm/blob/main/vllm/config/speculative.py">配置枚举</a>；<a
+href="https://github.com/vllm-project/vllm/blob/main/docs/features/speculative_decoding/suffix.md">Suffix</a>；<a
+href="https://github.com/vllm-project/vllm/blob/main/docs/features/speculative_decoding/n_gram.md">N-gram</a>；<a
+href="https://github.com/vllm-project/vllm/blob/main/docs/features/speculative_decoding/lilicorr.md">LiLiCorr</a>。本轮已读取，实际模型／采样约束需实验核验。</p>
+<p><strong>[16] Sequoia。</strong><a
+href="https://github.com/Infini-AI-Lab/Sequoia">作者仓库</a>；<a
+href="https://arxiv.org/abs/2402.12374">论文入口</a>。已读作者 README
+的硬件 growmap 与接受率向量构造说明。</p>
+<p><strong>[17] SpecExec。</strong><a
+href="https://github.com/yandex-research/specexec">作者仓库</a>；<a
+href="https://arxiv.org/abs/2406.02532">论文入口</a>。已读 README
+的预算和 offloading 评测入口。</p>
+<p><strong>[18] DistillSpec。</strong><a
+href="https://arxiv.org/abs/2310.08461">论文入口</a>。仅列为待全文核实的草稿蒸馏路线；本轮不引用训练细节或性能数字。</p>
+<p><strong>[19] Token Recycling。</strong><a
+href="https://arxiv.org/abs/2408.08696">论文入口</a>；<a
+href="https://github.com/smpanaro/token-recycling">第三方复现说明</a>。已读取第三方
+README；不是官方实现核验。</p>
+</body>
+</html>
