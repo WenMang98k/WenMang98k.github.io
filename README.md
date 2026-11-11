@@ -32,7 +32,7 @@ npm run new:post -- my-topic "我的文章标题"
 - `src/data/site.ts`：项目名称、描述、技术栈与仓库地址；旧文章的列表元数据。
 - `src/pages/index.astro`：技术首页。
 - `src/styles/global.css`：新版网站样式。
-- 根目录 `index.html` 与 `style.css`：原有个人介绍，构建时保留为 `/about/`。
+- `tech/about/index.html` 与 `style.css`：原有个人介绍，构建时也保留为 `/about/`。
 - `articles/speculative-decoding/`：原有综述及原有地址，构建时复制保留。
 
 旧综述继续用 Pandoc 更新，但请仅在主动修改文章时运行其构建脚本：
@@ -53,3 +53,7 @@ python3 articles/speculative-decoding/scripts/verify_probabilities.py
 正式地址：https://wenmang98k.github.io 。修改站点域名时同步调整 `astro.config.mjs` 与 `src/pages/rss.xml.ts`。此代码不需要服务端密钥或数据库。
 
 本地验证不等于已经发布；GitHub Pages 设置与远程 Actions 运行需在推送后确认。
+
+## 保留的分类站点
+
+远程最新的 `/tech/`、`/life/` 与主题页，以及投机解码时间轴均保留。旧分类目录维护在 `content/catalog.json`，说明见 [docs/WRITING.md](docs/WRITING.md)。`python3 scripts/build_site.py` 会重写根目录的旧首页和分类页；Astro 正式首页由 `src/pages/index.astro` 生成。新 Markdown 文章通过新版 `/articles/` 自动收录，旧目录仍使用 catalog 维护。

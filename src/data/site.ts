@@ -6,7 +6,10 @@ export const legacyArticle = {
 };
 export async function articles() {
   const posts = await getCollection('posts', ({ data }) => !data.draft);
-  return [legacyArticle, ...posts.map(p => ({ ...p.data, href: `/articles/${p.id}/` }))]
+  return [legacyArticle, {
+    title: '投机解码技术时间轴', description: '从早期块预测到 EAGLE、MTP、DFlash 与 DSpark，区分论文提出、代码发布和框架支持。',
+    date: new Date('2026-11-11T00:00:00+08:00'), tags: ['LLM', '推理加速'], href: '/articles/speculative-decoding/timeline.html'
+  }, ...posts.map(p => ({ ...p.data, href: `/articles/${p.id}/` }))]
     .sort((a,b) => b.date.getTime() - a.date.getTime());
 }
 export const projects = [

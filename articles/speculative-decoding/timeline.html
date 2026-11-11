@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-CN" xml:lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>投机解码技术时间轴｜WenMang</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+  body{max-width:980px;margin:40px auto;padding:0 24px;font:16px/1.9 system-ui,"Microsoft YaHei",sans-serif;color:#202a35;background:#fcfcfa}h1,h2,h3{line-height:1.45;color:#172b3a}h1{margin-top:2.3em;font-size:2em}h2{margin-top:2em;border-bottom:1px solid #dce2e5;padding-bottom:12px}h3{margin-top:1.7em}p{margin:1em 0}a{color:#226b87;overflow-wrap:anywhere}table{border-collapse:collapse;width:100%;font-size:14px;display:block;overflow-x:auto}td,th{padding:12px;border:1px solid #d9e1e4;min-width:110px;vertical-align:top}th{background:#edf3f4}blockquote{margin:20px 0;padding:4px 20px;border-left:4px solid #6c8d81;background:#eff4ef;color:#52605c}code{background:#eef1ed;padding:2px 5px;border-radius:3px}pre{overflow:auto;padding:18px;background:#eef1ed}math[display=block]{overflow:auto;padding:15px 0}#TOC{padding:24px;background:#f0f3ed;border-radius:8px}#TOC ul{padding-left:22px}hr{border:0;border-top:1px solid #dce2e5;margin:40px 0}@media print{body{max-width:none;margin:0;padding:0;font-size:10pt}h1,h2,h3{break-after:avoid}tr{break-inside:avoid}#TOC{break-after:page}a{color:inherit}}
+  </style>
+</head>
+<body>
+<nav aria-label="文章导航" style="display:flex;flex-wrap:wrap;gap:18px;font-size:14px;margin-bottom:28px"><a href="../../">首页</a><a href="../../tech/">技术</a><a href="../../tech/llm-inference/">LLM 推理与投机解码</a><a href="../../life/">生活</a></nav>
+<header id="title-block-header">
+<h1 class="title">投机解码技术时间轴｜WenMang</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#llm-投机解码技术时间轴"
+id="toc-llm-投机解码技术时间轴">LLM 投机解码技术时间轴</a>
+<ul>
+<li><a href="#一研究主线先解决正确性再改善候选与系统效率"
+id="toc-一研究主线先解决正确性再改善候选与系统效率">一、研究主线：先解决正确性，再改善候选与系统效率</a></li>
+<li><a href="#二用五条支线理解演进"
+id="toc-二用五条支线理解演进">二、用五条支线理解演进</a></li>
+<li><a href="#三框架时间线有证据的节点与当前快照"
+id="toc-三框架时间线有证据的节点与当前快照">三、框架时间线：有证据的节点与当前快照</a></li>
+<li><a href="#四建议的精读顺序"
+id="toc-四建议的精读顺序">四、建议的精读顺序</a></li>
+<li><a href="#来源与限制" id="toc-来源与限制">来源与限制</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="llm-投机解码技术时间轴">LLM 投机解码技术时间轴</h1>
+<p><a href="README.md">返回综述</a> · <a
+href="index.html">网页阅读</a></p>
+<p>整理日期：2026-11-11。按“论文登记年月／有据可查的公开发布”排列；<strong>不是优先权裁决，也不是框架支持日期表</strong>。论文年月主要依据
+arXiv 编号的 YYMM，未逐项访问 submission history
+核对具体日期；若官方仓库给出代码／博客发布时间，另行注明。早期工作可能首先针对机器翻译、seq2seq，不能全部等同于今天的通用
+LLM 服务。</p>
+<h2
+id="一研究主线先解决正确性再改善候选与系统效率">一、研究主线：先解决正确性，再改善候选与系统效率</h2>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>时间</th>
+<th>方法／事件</th>
+<th>主要变化</th>
+<th>与后续技术的关系</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>2018-11</td>
+<td><a href="https://arxiv.org/abs/1811.03115">Blockwise Parallel
+Decoding</a></td>
+<td>用多个未来位置预测与验证减少串行解码步骤</td>
+<td>多 token
+候选与块验证的早期思想；不是现代无损随机投机采样公式的同义词</td>
+</tr>
+<tr class="even">
+<td>2022-03</td>
+<td><a href="https://arxiv.org/abs/2203.16487">Speculative
+Decoding：面向 seq2seq 的投机执行</a></td>
+<td>借助便宜预测与验证加速生成</td>
+<td>体现投机执行思路向序列生成迁移的早期路线</td>
+</tr>
+<tr class="odd">
+<td>2022-11</td>
+<td><a href="https://arxiv.org/abs/2211.17192">Leviathan 等：Fast
+Inference from Transformers via Speculative Decoding</a></td>
+<td>小模型提案、大模型批验，结合概率校正保持目标分布</td>
+<td>现代经典 SD 的基础；论文发表于 ICML 2023</td>
+</tr>
+<tr class="even">
+<td>2023-02</td>
+<td><a href="https://arxiv.org/abs/2302.01318">Chen 等：Speculative
+Sampling</a></td>
+<td>系统阐述草稿、接受／拒绝与残差重采样</td>
+<td>与经典 SD 共同奠定无损随机采样路线</td>
+</tr>
+<tr class="odd">
+<td>2023-05</td>
+<td><a href="https://arxiv.org/abs/2305.09781">SpecInfer</a></td>
+<td>候选树验证与推理系统协同</td>
+<td>后续树验证、批处理和系统集成的重要背景</td>
+</tr>
+<tr class="even">
+<td>2023-09</td>
+<td><a href="https://arxiv.org/abs/2309.08168">Draft &amp;
+Verify</a></td>
+<td>用跳层构造便宜草稿，完整模型验证</td>
+<td>自投机路线，减少独立小模型需求</td>
+</tr>
+<tr class="odd">
+<td>2023-10</td>
+<td><a href="https://arxiv.org/abs/2310.08461">DistillSpec</a></td>
+<td>通过蒸馏改善 draft／target 对齐</td>
+<td>开始更明确地优化“容易被目标接受”，而非只选现成小模型</td>
+</tr>
+<tr class="even">
+<td>2023-11</td>
+<td><a href="https://arxiv.org/abs/2311.08252">REST</a>；<a
+href="https://lmsys.org/blog/2023-11-21-lookahead-decoding/">Lookahead
+公开博客</a></td>
+<td>检索续写／复用 Jacobi 轨迹中的 n-gram</td>
+<td>“草稿不一定来自额外神经网络”成为重要分支</td>
+</tr>
+<tr class="odd">
+<td>2024-01</td>
+<td><a href="https://arxiv.org/abs/2401.10774">Medusa 论文</a>；<a
+href="https://arxiv.org/abs/2401.15077">EAGLE 论文</a></td>
+<td>Medusa 用多个未来预测头；EAGLE 利用目标特征预测后续</td>
+<td>多头路线与特征草稿路线并行发展；Medusa
+存在更早演示，本表此处记论文年月</td>
+</tr>
+<tr class="even">
+<td>2024-02</td>
+<td><a href="https://arxiv.org/abs/2402.05109">Hydra</a>；<a
+href="https://arxiv.org/abs/2402.12374">Sequoia</a>；<a
+href="https://arxiv.org/abs/2402.02057">Lookahead 论文</a></td>
+<td>依赖多头、硬件感知树、并行轨迹复用</td>
+<td>不同层次分别改善候选相关性、树预算与候选来源</td>
+</tr>
+<tr class="odd">
+<td>2024-03</td>
+<td><a href="https://arxiv.org/abs/2403.09919">Recurrent
+Drafter／ReDrafter</a></td>
+<td>轻量循环草稿与动态树处理</td>
+<td>在草稿质量、串行成本和共享前缀计算之间折中</td>
+</tr>
+<tr class="even">
+<td>2024-04</td>
+<td><a href="https://arxiv.org/abs/2404.19737">Multi-token
+Prediction</a>；<a
+href="https://arxiv.org/abs/2404.16710">LayerSkip</a></td>
+<td>前者引入多未来位置训练目标；后者训练早退能力</td>
+<td>将“适合投机”的能力做进训练，目标模型与草稿不再总是两个独立 LM</td>
+</tr>
+<tr class="odd">
+<td>2024-06</td>
+<td><a href="https://arxiv.org/abs/2406.16858">EAGLE-2</a>；<a
+href="https://arxiv.org/abs/2406.02532">SpecExec</a></td>
+<td>动态候选树；大规模并行候选与验证</td>
+<td>从固定候选结构走向上下文／硬件相关的预算分配</td>
+</tr>
+<tr class="even">
+<td>2024-08</td>
+<td><a href="https://arxiv.org/abs/2408.08696">Token Recycling</a></td>
+<td>复用已有计算产生的候选信息</td>
+<td>无额外训练／模型方向继续发展；与 prompt lookup 并非完全相同</td>
+</tr>
+<tr class="odd">
+<td>2024-12</td>
+<td><a href="https://arxiv.org/abs/2412.19437">DeepSeek-V3
+技术报告</a></td>
+<td>将 MTP 融入大规模模型训练设计</td>
+<td>原生 MTP 成为后续部署的重要候选能力；具体发布模块数需查权重说明</td>
+</tr>
+<tr class="even">
+<td>2025-02</td>
+<td><a href="https://arxiv.org/abs/2502.14856">FR-Spec</a></td>
+<td>用高频词表等机制减少草稿输出头成本</td>
+<td>草稿瓶颈不只有 Transformer 主干，也可能是大词表 LM head</td>
+</tr>
+<tr class="odd">
+<td>2025-03</td>
+<td><a href="https://arxiv.org/abs/2503.01840">EAGLE-3</a></td>
+<td>多层特征融合、移除原特征回归约束、training-time testing</td>
+<td>更关注 rollout 状态与训练分布；官方仓库另记代码发布于
+2025-03-19</td>
+</tr>
+<tr class="even">
+<td>2026-02</td>
+<td><a href="https://arxiv.org/abs/2602.01469">P-EAGLE</a>；<a
+href="https://arxiv.org/abs/2602.06036">DFlash</a></td>
+<td>特征草稿的并行化／块并行草稿</td>
+<td>减少轻量 drafter 仍然存在的逐 token 串行调用</td>
+</tr>
+<tr class="odd">
+<td>2026-05</td>
+<td><a href="https://arxiv.org/abs/2605.18810">D-PACE</a>；<a
+href="https://arxiv.org/abs/2605.29707">Domino</a></td>
+<td>训练目标优化／GRU logit 校正等扩展</td>
+<td>分别关注接受收益与块内依赖；本轮仅核对框架索引，待原文详读</td>
+</tr>
+<tr class="even">
+<td>2026-07</td>
+<td><a href="https://arxiv.org/abs/2607.05147">DSpark</a></td>
+<td>置信度调度的半自回归生成；实现包含 Markov／confidence 头</td>
+<td>将草稿质量、可接受性预测和验证资源分配联系起来</td>
+</tr>
+<tr class="odd">
+<td>2026-08</td>
+<td><a href="https://github.com/z-lab/dflash">DFlash2
+官方发布资料</a>；<a
+href="https://arxiv.org/abs/2608.20530">LiLiCorr</a></td>
+<td>动态分组卷积、候选路径选择／候选关联</td>
+<td>继续改善块并行草稿中的 token 间相关性；DFlash2 日期按官方 README
+BibTeX 的 August 2026，不臆造 arXiv 首发日</td>
+</tr>
+</tbody>
+</table>
+<p><strong>这是一张分支图，不是一条替代链。</strong>检索草稿、自投机、MTP、特征草稿、块并行草稿长期并存；动态树与负载调度也可叠加到多种草稿模型上。</p>
+<h2 id="二用五条支线理解演进">二、用五条支线理解演进</h2>
+<pre class="text"><code>概率校正：经典 SD / Sampling ───────────────────→ 各种正确验证与采样实现
+候选来源：独立小 LM → 检索 / n-gram / suffix → 候选复用与混合路由
+依赖建模：Medusa → Hydra / ReDrafter → 块内校正、路径选择、相关性建模
+模型训练：EAGLE → EAGLE-2 → EAGLE-3；MTP / LayerSkip 是相邻的训练分支
+并行系统：树验证 / Sequoia / SpecExec → 块并行草稿 → 置信度与负载自适应</code></pre>
+<p>上图的箭头表示问题延续与阅读顺序，不意味着方法间存在严格继承或作者归属关系。特别是
+EAGLE-2 主要改进动态树，EAGLE-3 主要改进特征与训练；MTP 不是 EAGLE
+的下一版本。</p>
+<h2
+id="三框架时间线有证据的节点与当前快照">三、框架时间线：有证据的节点与当前快照</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>时间／口径</th>
+<th>核实到的事件</th>
+<th>能说明什么，不能说明什么</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>2025-07-23，EAGLE 官方仓库公告</td>
+<td>作者推荐用 SpecForge 进行 EAGLE-3 训练并衔接 SGLang</td>
+<td>是可核实的工具链推荐节点，不是 SGLang 首次支持 EAGLE-3 的日期</td>
+</tr>
+<tr class="even">
+<td>2026-01，SpecForge README 自述</td>
+<td>记录 DFlash 块并行在线训练与 SGLang serving 支持</td>
+<td>属仓库维护者的历史记录；早于其论文编号月份，不据此推断论文首发或所有版本已发布</td>
+</tr>
+<tr class="odd">
+<td>2026-06，SpecForge README 自述</td>
+<td>记录加入 D-PACE 可选损失、Domino 在线训练</td>
+<td>是训练工具支持节点，不自动等于 vLLM／SGLang 推理端全功能支持</td>
+</tr>
+<tr class="even">
+<td>2026-07，SpecForge README 自述</td>
+<td>记录 DSpark 在线训练及相关草稿支持</td>
+<td>不能直接当作两推理框架的首个稳定 release 日期</td>
+</tr>
+<tr class="odd">
+<td>2026-08，SpecForge README 自述</td>
+<td>记录 DFlash2 在线训练</td>
+<td>同样要区分训练代码、权重发布和 serving loader／kernel 集成</td>
+</tr>
+<tr class="even">
+<td>截至本轮文档核对，2026-11-11</td>
+<td>vLLM／SGLang 当前主分支已包含经典双模型、EAGLE
+类、MTP、n-gram、DFlash、DSpark 等入口；部分方法只在一侧核实</td>
+<td>证明当前主分支存在相关实现／文档，不证明最早集成时间、生产成熟度或任意
+release 都支持</td>
+</tr>
+</tbody>
+</table>
+<p>SGLang 指南的 UNO、LiLiCorr
+等入口，本轮没有进一步考证首次合入日期，因此不在表中硬填日期。vLLM
+adaptive verification 与 SGLang adaptive speculative decoding
+也应分别追溯，不归并成一次共同发布。</p>
+<p>要做“正式框架版本演进表”，下一步需要逐方法记录首个合入 PR、merge
+commit、首次包含该 commit 的 release tag、对应模型权重和功能限制，不能拿
+README 当前内容反推历史。</p>
+<h2 id="四建议的精读顺序">四、建议的精读顺序</h2>
+<ol type="1">
+<li>经典 SD／Sampling：先弄清接受公式、拒绝残差与 KV 回退。</li>
+<li>Medusa → Hydra → ReDrafter：理解未来 token 之间为什么需要依赖。</li>
+<li>EAGLE → EAGLE-2 → EAGLE-3：分清特征、树结构和训练 rollout
+三个问题。</li>
+<li>MTP、LayerSkip：理解训练赋予的多步／早退能力如何变成推理加速。</li>
+<li>DFlash → DFlash2、DSpark：理解块并行和便宜依赖校正的分工。</li>
+<li>vLLM／SGLang 调度：最后看负载、验证预算与真实 SLO。</li>
+</ol>
+<h2 id="来源与限制">来源与限制</h2>
+<p>方法细节及已读来源见<a
+href="README.md#参考资料与核对说明">综述参考资料</a>和<a
+href="source-notes.md">核对清单</a>。2018／2022
+早期路线作为背景补充，仅列原论文入口，尚未做全文评审。arXiv
+正文访问限制仍然存在；表中 arXiv 年月由编号可判断，不冒充已核实到日的
+submission
+history。没有使用网页最后更新时间替代论文提出时间，也没有按发布日期排列加速比高低。</p>
+</body>
+</html>
