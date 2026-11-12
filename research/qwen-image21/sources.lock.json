@@ -1,0 +1,132 @@
+{
+  "date": "2026-11-12",
+  "scope": "Documentation and source inspection only; no checkpoint download or GPU benchmark.",
+  "files": [
+    {
+      "key": "qwen21-readme",
+      "repo": "QwenLM/Qwen-Image-2.1",
+      "commit": "ab96caa944157ca28a4f36b695c3047549f48f98",
+      "path": "README.md",
+      "url": "https://github.com/QwenLM/Qwen-Image-2.1/blob/ab96caa944157ca28a4f36b695c3047549f48f98/README.md",
+      "sha256": "2e6c584006dff79402808446182e6fe15ce5f279e46c321e07ac90257ed2c07c",
+      "bytes": 44582,
+      "status": "read"
+    },
+    {
+      "key": "qwen21-license",
+      "repo": "QwenLM/Qwen-Image-2.1",
+      "commit": "ab96caa944157ca28a4f36b695c3047549f48f98",
+      "path": "LICENSE",
+      "url": "https://github.com/QwenLM/Qwen-Image-2.1/blob/ab96caa944157ca28a4f36b695c3047549f48f98/LICENSE",
+      "sha256": "8dc973f024ff95966bea25866efa443fd16776dcb1001e681e3d467ea572b28d",
+      "bytes": 7831,
+      "status": "read"
+    },
+    {
+      "key": "transformer",
+      "repo": "huggingface/diffusers",
+      "commit": "f9316b0d4d69555c5e3f625585262e79cd299d34",
+      "path": "src/diffusers/models/transformers/transformer_qwenimage21.py",
+      "url": "https://github.com/huggingface/diffusers/blob/f9316b0d4d69555c5e3f625585262e79cd299d34/src/diffusers/models/transformers/transformer_qwenimage21.py",
+      "sha256": "3a583a8d70f54d1926b7ce4a9109a098c8d9054d944197820aca29db4e1183e1",
+      "bytes": 48187,
+      "status": "read"
+    },
+    {
+      "key": "pipeline",
+      "repo": "huggingface/diffusers",
+      "commit": "f9316b0d4d69555c5e3f625585262e79cd299d34",
+      "path": "src/diffusers/pipelines/qwenimage21/pipeline_qwenimage21.py",
+      "url": "https://github.com/huggingface/diffusers/blob/f9316b0d4d69555c5e3f625585262e79cd299d34/src/diffusers/pipelines/qwenimage21/pipeline_qwenimage21.py",
+      "sha256": "e75e4ce38d38e194edaac818bba99b2115b4bb2bfdbd15ce03a2813b0fe8856c",
+      "bytes": 42974,
+      "status": "read"
+    },
+    {
+      "key": "pipeline-guide",
+      "repo": "huggingface/diffusers",
+      "commit": "f9316b0d4d69555c5e3f625585262e79cd299d34",
+      "path": "docs/source/en/api/pipelines/qwenimage21.md",
+      "url": "https://github.com/huggingface/diffusers/blob/f9316b0d4d69555c5e3f625585262e79cd299d34/docs/source/en/api/pipelines/qwenimage21.md",
+      "sha256": "23cbcc02f42ba40e44687cbcf9b2fb94763a70ef6134e84a20e26e57658fdb73",
+      "bytes": 6290,
+      "status": "read"
+    },
+    {
+      "key": "lightx-guide",
+      "repo": "ModelTC/LightX2V",
+      "commit": "5c5a8c8e98ebf8a6e3cfac746cb2fdfd8d03ff4f",
+      "path": "scripts/qwen_image_21/README.md",
+      "url": "https://github.com/ModelTC/LightX2V/blob/5c5a8c8e98ebf8a6e3cfac746cb2fdfd8d03ff4f/scripts/qwen_image_21/README.md",
+      "sha256": "ca9e474dfd9e1cc9eb7300e2621baba87fcd49af393c43b34df306830b355980",
+      "bytes": 7338,
+      "status": "read"
+    },
+    {
+      "key": "lightx-config",
+      "repo": "ModelTC/LightX2V",
+      "commit": "5c5a8c8e98ebf8a6e3cfac746cb2fdfd8d03ff4f",
+      "path": "configs/qwen_image_21/qwen_image_21.json",
+      "url": "https://github.com/ModelTC/LightX2V/blob/5c5a8c8e98ebf8a6e3cfac746cb2fdfd8d03ff4f/configs/qwen_image_21/qwen_image_21.json",
+      "sha256": "f5628ec4afe4683a23e85056bfce115b5cc4e3ca20b49ba2aa0c0879635b8f34",
+      "bytes": 392,
+      "status": "read"
+    },
+    {
+      "key": "lightx-runner",
+      "repo": "ModelTC/LightX2V",
+      "commit": "5c5a8c8e98ebf8a6e3cfac746cb2fdfd8d03ff4f",
+      "path": "lightx2v/models/runners/qwen_image_21/qwen_image_21_runner.py",
+      "url": "https://github.com/ModelTC/LightX2V/blob/5c5a8c8e98ebf8a6e3cfac746cb2fdfd8d03ff4f/lightx2v/models/runners/qwen_image_21/qwen_image_21_runner.py",
+      "sha256": "09899a4d3cf37b28d75693db6236583537c827a690b8a41eefe881f5fe27b325",
+      "bytes": 18800,
+      "status": "read"
+    },
+    {
+      "key": "lightx-model",
+      "repo": "ModelTC/LightX2V",
+      "commit": "5c5a8c8e98ebf8a6e3cfac746cb2fdfd8d03ff4f",
+      "path": "lightx2v/models/networks/qwen_image_21/model.py",
+      "url": "https://github.com/ModelTC/LightX2V/blob/5c5a8c8e98ebf8a6e3cfac746cb2fdfd8d03ff4f/lightx2v/models/networks/qwen_image_21/model.py",
+      "sha256": "0711e4787fe7598da82154cbf11e41fe16876e67e57a64949e8f1d58cf61124a",
+      "bytes": 18350,
+      "status": "read"
+    },
+    {
+      "key": "lightx-lora",
+      "repo": "ModelTC/LightX2V",
+      "commit": "5c5a8c8e98ebf8a6e3cfac746cb2fdfd8d03ff4f",
+      "path": "lightx2v/models/networks/qwen_image_21/lora.py",
+      "url": "https://github.com/ModelTC/LightX2V/blob/5c5a8c8e98ebf8a6e3cfac746cb2fdfd8d03ff4f/lightx2v/models/networks/qwen_image_21/lora.py",
+      "sha256": "3d3fd592a4ee713870b3a9a65bec95337136fcb1d80975d47e01e2d734fee325",
+      "bytes": 3957,
+      "status": "read"
+    },
+    {
+      "key": "lightx-infer",
+      "repo": "ModelTC/LightX2V",
+      "commit": "5c5a8c8e98ebf8a6e3cfac746cb2fdfd8d03ff4f",
+      "path": "lightx2v/models/networks/qwen_image_21/infer/transformer_infer.py",
+      "url": "https://github.com/ModelTC/LightX2V/blob/5c5a8c8e98ebf8a6e3cfac746cb2fdfd8d03ff4f/lightx2v/models/networks/qwen_image_21/infer/transformer_infer.py",
+      "sha256": "7d2bf5067f2b43120f5385d2053841a1f6ac660e1aee0b0e1f25b6810b918f06",
+      "bytes": 6963,
+      "status": "read"
+    },
+    {
+      "key": "lightning-legacy",
+      "repo": "ModelTC/Qwen-Image-Lightning",
+      "commit": "115d41afa959f0bc858d25d3b3fddd44054767ad",
+      "path": "README.md",
+      "url": "https://github.com/ModelTC/Qwen-Image-Lightning/blob/115d41afa959f0bc858d25d3b3fddd44054767ad/README.md",
+      "sha256": "f455f743abe6b78a56cf9297bd97c0940dea0c2a814218f1a47d58738528dd27",
+      "bytes": 36876,
+      "status": "read"
+    },
+    {
+      "key": "provided-lightning-card",
+      "url": "https://huggingface.co/lightx2v/Qwen-Image-2.1-Lightning",
+      "status": "blocked",
+      "reason": "Environment proxy denied Hugging Face access (403); card, filenames, step/sigma/CFG recipe and license not read."
+    }
+  ]
+}

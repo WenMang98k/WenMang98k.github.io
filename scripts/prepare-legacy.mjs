@@ -11,3 +11,6 @@ await writeFile('public/about/index.html', html);
 
 await mkdir('public/learning/speculative-decoding', { recursive: true });
 await cp('research/speculative-decoding', 'public/learning/speculative-decoding', { recursive: true });
+
+await mkdir('public/learning/qwen-image21', { recursive: true });
+await cp('research/qwen-image21', 'public/learning/qwen-image21', { recursive: true });

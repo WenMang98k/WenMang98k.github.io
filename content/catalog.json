@@ -93,6 +93,15 @@
   },
   "posts": [
     {
+      "title": "Qwen-Image-2.1：从模型结构到产品落地",
+      "section": "tech",
+      "topic": "aigc",
+      "url": "/articles/qwen-image-21/",
+      "date": "2026-11-12",
+      "kind": "主流模型技术观察",
+      "summary": "单流 DiT、RGBA、前缀缓存、Turbo 与 Lightning 的区别，以及产品场景、成本、许可和验收指标。"
+    },
+    {
       "title": "LLM 投机解码综述",
       "section": "tech",
       "topic": "llm-inference",

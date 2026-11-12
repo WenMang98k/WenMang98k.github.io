@@ -68,3 +68,8 @@ python3 articles/speculative-decoding/scripts/verify_probabilities.py
 - 数学公式使用本地 KaTeX 资源。文章目录、复制代码和阅读进度在普通阅读器中统一提供。
 
 更新内容后执行 `python3 scripts/build_site.py` 刷新技术 Topic 归档，再运行 `npm run check && npm run build`。新增分篇需同步系列 JSON 与 catalog；构建脚本会校验文章目标是否存在。
+
+## 主流模型技术观察
+
+- [Qwen-Image-2.1：从模型结构到产品落地](src/content/posts/qwen-image-21.md) · [网页阅读](https://wenmang98k.github.io/articles/qwen-image-21/)。归档在 AIGC 与多模态主题，覆盖技术结构、Lightning／Turbo 区别、产品经理验收和许可边界。
+- [研究来源、参考脚本与产品验收模板](research/qwen-image21/README.md)。源码／文档检查不是 GPU 性能实测；Lightning 模型卡仍待补核。

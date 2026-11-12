@@ -1,0 +1,8 @@
+case_id,scenario,required_behavior,model_revision,lora_revision,steps_or_sigma,cfg,resolution,reference_count,seed,p50_seconds,p95_seconds,peak_memory_gb,accepted,retries,notes
+text_001,中文海报,指定标题与金额逐字正确且布局可读,,,,,,,,,,,,,
+product_001,商品换背景,SKU外形与商标不漂移且指定背景生效,,,,,,,,,,,,,
+multi_001,多参考图关系,主体身份及图片顺序关系正确,,,,,,,,,,,,,
+local_001,局部修改,目标区域修改生效且保护区符合约定,,,,,,,,,,,,,
+alpha_001,透明素材,alpha有效且多底色检查边缘无明显污染,,,,,,,,,,,,,
+portrait_001,人物编辑,人物身份与关键特征符合验收标准,,,,,,,,,,,,,
+texture_001,写实纹理,材质与光影满足人工盲评要求,,,,,,,,,,,,,
