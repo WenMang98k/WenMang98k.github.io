@@ -1,1 +1,109 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800" viewBox="0 0 1280 800" role="img" aria-labelledby="title desc"><title id="title">Qwen-Image-2.1 模型与推理数据流</title><desc id="desc">文本与参考图由Qwen3-VL编码；参考图还经VAE编码。条件前缀与目标噪声进入32层单流DiT，Euler调度重复更新目标latent，最后VAE解码为RGBA图像。条件前缀KV只在首步计算并在后续去噪步复用。</desc><defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#8a9a78"/></marker></defs><rect width="1280" height="800" rx="12" fill="#f0f3e9"/><style>text{font-family:system-ui,"Microsoft YaHei",sans-serif;fill:#344332}.title{font-size:27px;font-weight:600}.head{font-size:21px;font-weight:600}.small{font-size:15px;fill:#6d7b62}.eyebrow{font-size:12px;letter-spacing:2px;fill:#81916f}.arrow{fill:none;stroke:#8a9a78;stroke-width:2;marker-end:url(#arrow)}</style><text x="36" y="48" class="eyebrow">QWEN-IMAGE-2.1 / ARCHITECTURE &amp; INFERENCE</text><text x="36" y="90" class="title">统一理解条件，循环生成目标图像。</text><rect x="36" y="130" width="250" height="90" rx="8" fill="#fcfcf8" stroke="#d1dac4"/><text x="56" y="165" class="head">文本指令</text><text x="56" y="195" class="small">Prompt / 编辑要求</text><rect x="36" y="275" width="250" height="115" rx="8" fill="#fcfcf8" stroke="#d1dac4"/><text x="56" y="310" class="head">参考图（可选）</text><text x="56" y="340" class="small">最多 10 张；顺序有意义</text><text x="56" y="364" class="small">RGB / RGBA 条件</text><rect x="350" y="130" width="340" height="115" rx="8" fill="#fcfcf8" stroke="#d1dac4"/><text x="370" y="165" class="head">Qwen3-VL 8B</text><text x="370" y="195" class="small">联合编码文本与图像语义</text><text x="370" y="219" class="small">这不是可省略的 7B 内部组件</text><rect x="350" y="290" width="340" height="100" rx="8" fill="#fcfcf8" stroke="#d1dac4"/><text x="370" y="325" class="head">RGBA VAE 编码</text><text x="370" y="355" class="small">参考图 → 条件 latent</text><rect x="760" y="160" width="475" height="190" rx="8" fill="#fcfcf8" stroke="#d1dac4"/><text x="780" y="195" class="head">条件前缀</text><text x="780" y="225" class="small">交错文本与条件图像 token</text><text x="780" y="249" class="small">首步进入 DiT 计算各层 K/V</text><text x="780" y="273" class="small">causal_condition=true 时跨步复用</text><text x="780" y="297" class="small">不是缓存所有 target latent</text><rect x="36" y="465" width="250" height="110" rx="8" fill="#fcfcf8" stroke="#d1dac4"/><text x="56" y="500" class="head">目标 latent xₜ</text><text x="56" y="530" class="small">随机噪声初始化</text><text x="56" y="554" class="small">只有目标部分随时间变化</text><rect x="350" y="450" width="470" height="155" rx="8" fill="#e2e9d5" stroke="#d1dac4"/><text x="370" y="485" class="head">单流 DiT · 32 层 / 7B</text><text x="370" y="515" class="small">块因果注意力 + 共享调制</text><text x="370" y="539" class="small">文本 token 因果；图像块内双向</text><text x="370" y="563" class="small">读取固定条件 KV，预测流场</text><rect x="900" y="450" width="335" height="155" rx="8" fill="#fcfcf8" stroke="#d1dac4"/><text x="920" y="485" class="head">Flow Matching / Euler</text><text x="920" y="515" class="small">按 sigma / timestep 更新 xₜ</text><text x="920" y="539" class="small">重复 N 次（依模型采样配方）</text><text x="920" y="563" class="small">不能把少步配方任意互换</text><rect x="900" y="680" width="335" height="90" rx="8" fill="#fcfcf8" stroke="#d1dac4"/><text x="920" y="715" class="head">VAE 解码 → RGB / RGBA</text><text x="920" y="745" class="small">最后解码；保留真实 alpha</text><path class="arrow" d="M286 175 H350"/><path class="arrow" d="M286 305 L320 305 V225 H350"/><path class="arrow" d="M286 350 H350"/><path class="arrow" d="M690 190 H760"/><path class="arrow" d="M690 340 H760"/><path class="arrow" d="M1000 350 V400 H585 V450"/><path class="arrow" d="M286 520 H350"/><path class="arrow" d="M820 520 H900"/><path class="arrow" d="M1060 605 V680"/><path class="arrow" d="M940 605 V640 H160 V575"/><text x="345" y="665" class="small">循环：更新目标 latent，再计算下一步；条件前缀保持不变。</text><text x="36" y="749" class="small">说明：示意数据流，不代表精确显存布局。7B 是视觉生成组件，非整条流水线参数量。</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="1180" viewBox="0 0 1120 1180" role="img" aria-labelledby="title desc">
+<title id="title">Qwen-Image-2.1 Backbone 与单层 DiT 结构</title><desc id="desc">左侧为联合条件与目标 latent 构成单流序列，右侧展开 32 个 Transformer block 中的一层；蓝色表示目标，绿色表示条件，虚线表示调制或缓存。</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="context-stroke"/></marker><pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r=".8" fill="#dae3db"/></pattern></defs>
+<rect width="1120" height="1180" fill="#f7f9f5"/><rect width="1120" height="1180" fill="url(#grid)"/>
+<text x="36" y="37" font-family="ui-monospace, SFMono-Regular, Consolas, monospace" font-size="12" font-weight="600" fill="#64766e">WENMANG / MODEL NOTES                                      QWEN-IMAGE-2.1 / 01</text>
+<text x="36" y="82" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="31" font-weight="700" fill="#20352f">Backbone：一个联合序列，32 层单流 DiT</text>
+<text x="36" y="114" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16" font-weight="400" fill="#64766e">从输入投影到单层算子展开 · 对齐 Diffusers QwenImage21Transformer2DModel</text>
+<rect x="36" y="143" width="1048" height="61" rx="14" fill="#edf4ed" stroke="#d6e1d8" stroke-width="1.4"/>
+<text x="55" y="168" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18" font-weight="650" fill="#19735c">7B 视觉生成组件</text>
+<text x="290" y="168" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18" font-weight="650" fill="#20352f">32 × Single-Stream Block</text>
+<text x="680" y="168" font-family="ui-monospace, SFMono-Regular, Consolas, monospace" font-size="17" font-weight="600" fill="#366baf">width 4096 · heads 32 × 128</text>
+<text x="55" y="191" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="14" font-weight="400" fill="#64766e">结构参数采用已固定源码的构造默认值；不等同于本轮直接读取了 checkpoint config。</text>
+<text x="36" y="237" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="700" fill="#19735c">A / 构造联合序列</text>
+<text x="574" y="237" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="700" fill="#19735c">B / 展开一个 Transformer Block</text>
+<rect x="36" y="255" width="222" height="105" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="36" y="270" width="3" height="22" rx="1.5" fill="#19735c"/>
+<text x="54" y="287" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18" font-weight="650" fill="#19735c">文本 + 参考图</text>
+<text x="54" y="313" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">Qwen3-VL 8B 联合编码</text>
+<text x="54" y="336" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">输出 encoder_hidden_states</text>
+<rect x="282" y="255" width="224" height="105" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="282" y="270" width="3" height="22" rx="1.5" fill="#366baf"/>
+<text x="300" y="287" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18" font-weight="650" fill="#366baf">参考图 / 目标噪声</text>
+<text x="300" y="313" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">VAE → 条件 latent</text>
+<text x="300" y="336" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">xₜ → 目标 latent</text>
+<polyline points="147,360 147,387" fill="none" stroke="#19735c" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="394,360 394,387" fill="none" stroke="#366baf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="36" y="387" width="222" height="103" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="36" y="402" width="3" height="22" rx="1.5" fill="#19735c"/>
+<text x="54" y="419" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="19" font-weight="650" fill="#19735c">txt_in</text>
+<text x="54" y="445" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">RMSNorm → Linear</text>
+<text x="54" y="468" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">GELU → Linear</text>
+<rect x="282" y="387" width="224" height="103" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="282" y="402" width="3" height="22" rx="1.5" fill="#366baf"/>
+<text x="300" y="419" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="19" font-weight="650" fill="#366baf">img_in</text>
+<text x="300" y="445" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">Linear：64 → 4096</text>
+<text x="300" y="468" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">latent patch_size = 1</text>
+<polyline points="147,490 147,518" fill="none" stroke="#19735c" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="394,490 394,518" fill="none" stroke="#366baf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="36" y="518" width="470" height="190" rx="14" fill="#edf4ed" stroke="#d6e1d8" stroke-width="1.4"/>
+<text x="54" y="549" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18" font-weight="650" fill="#20352f">图像占位展开并替换，再附加目标块</text>
+<rect x="54" y="567" width="70" height="39" rx="7" fill="#e0eee4" stroke="#e0eee4" stroke-width="1.4"/>
+<text x="63" y="592" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="13" font-weight="600" fill="#19735c">文本</text>
+<rect x="130" y="567" width="100" height="39" rx="7" fill="#e0eee4" stroke="#e0eee4" stroke-width="1.4"/>
+<text x="139" y="592" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="13" font-weight="600" fill="#19735c">参考图 1</text>
+<rect x="236" y="567" width="56" height="39" rx="7" fill="#e0eee4" stroke="#e0eee4" stroke-width="1.4"/>
+<text x="245" y="592" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="13" font-weight="600" fill="#19735c">文本</text>
+<rect x="298" y="567" width="77" height="39" rx="7" fill="#e0eee4" stroke="#e0eee4" stroke-width="1.4"/>
+<text x="307" y="592" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="13" font-weight="600" fill="#19735c">参考图 N</text>
+<rect x="381" y="567" width="107" height="39" rx="7" fill="#e5edf9" stroke="#e5edf9" stroke-width="1.4"/>
+<text x="390" y="592" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="13" font-weight="600" fill="#366baf">目标 xₜ</text>
+<text x="54" y="634" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#19735c">固定条件前缀 c</text>
+<text x="359" y="634" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#366baf">目标 token</text>
+<text x="54" y="664" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">文本与图像交错；不同参考图保持独立 block。</text>
+<text x="54" y="689" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">RoPE：frame / height / width 三轴位置编码</text>
+<polyline points="271,708 271,752" fill="none" stroke="#19735c" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="36" y="752" width="470" height="104" rx="14" fill="#e5efdf" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="36" y="767" width="3" height="22" rx="1.5" fill="#19735c"/>
+<text x="54" y="784" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="23" font-weight="650" fill="#19735c">Single-Stream DiT × 32</text>
+<text x="54" y="810" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">同一套 block 处理联合序列</text>
+<text x="54" y="833" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">条件 t = 0；目标 t = 当前去噪时间</text>
+<polyline points="506,803 539,803 539,299 574,299" fill="none" stroke="#19735c" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+<text x="36" y="901" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="700" fill="#19735c">输出头</text>
+<rect x="36" y="920" width="470" height="97" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="36" y="935" width="3" height="22" rx="1.5" fill="#366baf"/>
+<text x="54" y="952" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18" font-weight="650" fill="#366baf">norm_out → proj_out</text>
+<text x="54" y="978" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">自适应 LayerNorm → Linear：4096 → 64</text>
+<text x="54" y="1001" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">Pipeline 仅取末尾目标 token 的预测</text>
+<polyline points="271,856 271,920" fill="none" stroke="#366baf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="574" y="255" width="510" height="762" rx="14" fill="#ffffff" stroke="#d6e1d8" stroke-width="1.4"/>
+<text x="598" y="288" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="17" font-weight="650" fill="#20352f">h：联合序列 / cached 时仅目标</text>
+<polyline points="825,300 825,326" fill="none" stroke="#19735c" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="610" y="326" width="430" height="77" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="610" y="341" width="3" height="22" rx="1.5" fill="#a76326"/>
+<text x="628" y="358" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="17" font-weight="650" fill="#a76326">LayerNorm → scale modulation</text>
+<text x="628" y="384" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">scale 来自共享 modulation；按 token 选 t / 0</text>
+<polyline points="825,403 825,427" fill="none" stroke="#19735c" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="610" y="427" width="430" height="102" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="610" y="442" width="3" height="22" rx="1.5" fill="#19735c"/>
+<text x="628" y="459" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="19" font-weight="650" fill="#19735c">Block-Causal Attention</text>
+<text x="628" y="485" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">Q / K RMSNorm → 3-axis RoPE → Attention</text>
+<text x="628" y="508" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">输出投影；条件前缀 K/V 在此写入或读取</text>
+<polyline points="825,529 825,555" fill="none" stroke="#19735c" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="610" y="555" width="430" height="61" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="610" y="570" width="3" height="22" rx="1.5" fill="#366baf"/>
+<text x="628" y="587" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="17" font-weight="650" fill="#366baf">h + tanh(gate₁) × Attention(h)</text>
+<polyline points="825,312 1061,312 1061,585 1040,585" fill="none" stroke="#366baf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="825,616 825,642" fill="none" stroke="#19735c" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="610" y="642" width="430" height="77" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="610" y="657" width="3" height="22" rx="1.5" fill="#a76326"/>
+<text x="628" y="674" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="17" font-weight="650" fill="#a76326">LayerNorm → scale modulation</text>
+<text x="628" y="700" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">第二组 scale / gate；仍由同一共享投影产生</text>
+<polyline points="825,719 825,743" fill="none" stroke="#19735c" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="610" y="743" width="430" height="80" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="610" y="758" width="3" height="22" rx="1.5" fill="#19735c"/>
+<text x="628" y="775" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="19" font-weight="650" fill="#19735c">SwiGLU Feed-Forward</text>
+<text x="628" y="801" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">gate: SiLU(Wg h) ⊙ Wp h → Wo；ratio = 3</text>
+<polyline points="825,823 825,847" fill="none" stroke="#19735c" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="610" y="847" width="430" height="61" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="610" y="862" width="3" height="22" rx="1.5" fill="#366baf"/>
+<text x="628" y="879" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="17" font-weight="650" fill="#366baf">h + tanh(gate₂) × SwiGLU(h)</text>
+<polyline points="825,629 590,629 590,877 610,877" fill="none" stroke="#366baf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="825,908 825,935" fill="none" stroke="#19735c" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="704" y="963" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="17" font-weight="650" fill="#20352f">送往下一层 / 最终输出头</text>
+<text x="598" y="997" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="14" font-weight="400" fill="#64766e">图中省略 batch、padding 与张量并行切分。</text>
+<rect x="36" y="1041" width="1048" height="103" rx="14" fill="#f7efdf" stroke="#e5d8bc" stroke-width="1.4"/>
+<text x="55" y="1072" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18" font-weight="650" fill="#a76326">共享时间调制 ≠ 每层各自计算一套调制参数</text>
+<text x="55" y="1100" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16" font-weight="400" fill="#20352f">time_text_embed(t 与 0) → SiLU + Linear → 两组 scale / gate → 供所有 32 层读取。</text>
+<text x="55" y="1125" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">缓存前缀每层保存 post-RoPE K/V；正在变化的目标 latent 与目标 K/V 仍需逐步计算。</text>
+</svg>

@@ -20,3 +20,7 @@ dry-run 不导入 GPU 框架、不下载模型、不执行推理，只展示所�
 `evaluation-template.csv` 是产品测试用例模板，结果字段刻意留空，并非已通过的评测。可以扩充任务后隔离调参与验收样本。
 
 官方 2.1 仓库的 Qwen Research License 明确商用需要单独许可；推理代码或 LoRA 的其他许可不替代基座材料条款。不要将本目录的源码链接记录当作授予模型许可。
+
+## 结构与推理图
+
+`build_diagrams.py` 使用 Python 标准库生成本站原创 SVG；运行 `python3 research/qwen-image21/build_diagrams.py` 可更新 `public/images/qwen-image21/architecture.svg` 与 `inference.svg`。图中展开单层 DiT 算子，并分开表示首步 extract 与后续 cached；源码映射见文章。图不代表已验证 checkpoint 配置或实测吞吐。

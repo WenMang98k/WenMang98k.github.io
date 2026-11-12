@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="1250" viewBox="0 0 1120 1250" role="img" aria-labelledby="title desc">
+<title id="title">Qwen-Image-2.1 推理调用链与条件 KV 生命周期</title><desc id="desc">上方为请求预处理与时间网格；中间对比首步 extract 与后续 cached；下方为 scheduler 更新、循环与 VAE 输出。</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="context-stroke"/></marker><pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r=".8" fill="#dae3db"/></pattern></defs>
+<rect width="1120" height="1250" fill="#f7f9f5"/><rect width="1120" height="1250" fill="url(#grid)"/>
+<text x="36" y="37" font-family="ui-monospace, SFMono-Regular, Consolas, monospace" font-size="12" font-weight="600" fill="#64766e">WENMANG / MODEL NOTES                                      QWEN-IMAGE-2.1 / 02</text>
+<text x="36" y="82" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="31" font-weight="700" fill="#20352f">Inference：首步写缓存，后续只重算目标</text>
+<text x="36" y="114" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16" font-weight="400" fill="#64766e">按 QwenImage21Pipeline.__call__ 的执行顺序绘制 · 默认展示无 true CFG 的路径</text>
+<rect x="36" y="148" width="318" height="111" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="36" y="163" width="3" height="22" rx="1.5" fill="#19735c"/>
+<text x="54" y="180" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18" font-weight="650" fill="#19735c">01 / 请求与条件编码</text>
+<text x="54" y="206" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">prompt + 最多 10 张参考图</text>
+<text x="54" y="229" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">encode_prompt：联合语义表示</text>
+<text x="54" y="252" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">VAE encode：参考图 latent</text>
+<rect x="392" y="148" width="300" height="111" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="392" y="163" width="3" height="22" rx="1.5" fill="#366baf"/>
+<text x="410" y="180" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18" font-weight="650" fill="#366baf">02 / 目标初始化</text>
+<text x="410" y="206" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">prepare_latents：随机 xₜ</text>
+<text x="410" y="229" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">seed / 输出尺寸 / 参考图顺序</text>
+<text x="410" y="252" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">图像布局、padding 与位置元数据</text>
+<rect x="730" y="148" width="354" height="111" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="730" y="163" width="3" height="22" rx="1.5" fill="#a76326"/>
+<text x="748" y="180" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18" font-weight="650" fill="#a76326">03 / 设置时间网格</text>
+<text x="748" y="206" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">显式 sigmas &gt; sample_sigmas</text>
+<text x="748" y="229" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">否则按 num_inference_steps 构造</text>
+<text x="748" y="252" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">retrieve_timesteps + dynamic shifting</text>
+<polyline points="195,259 195,299 555,299" fill="none" stroke="#19735c" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="542,259 542,299 555,299" fill="none" stroke="#366baf" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="907,259 907,299 555,299" fill="none" stroke="#a76326" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="555,299 555,337" fill="none" stroke="#19735c" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="36" y="337" width="1048" height="561" rx="20" fill="#f0f5ee" stroke="#b8cebd" stroke-width="1.4"/>
+<text x="56" y="370" font-family="ui-monospace, SFMono-Regular, Consolas, monospace" font-size="19" font-weight="700" fill="#19735c">DENOISING LOOP / i, t in timesteps</text>
+<text x="56" y="397" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16" font-weight="400" fill="#64766e">同一个 Transformer，按步数切换计算范围；缓存开启且 causal_condition = true。</text>
+<rect x="64" y="427" width="470" height="83" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="64" y="442" width="3" height="22" rx="1.5" fill="#19735c"/>
+<text x="82" y="459" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="21" font-weight="650" fill="#19735c">首步 i = 0 · extract</text>
+<text x="82" y="485" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">联合序列：条件前缀 c + 目标 xₜ</text>
+<text x="82" y="508" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">计算全部 token；使用 block-causal 注意力</text>
+<rect x="586" y="427" width="470" height="83" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="586" y="442" width="3" height="22" rx="1.5" fill="#366baf"/>
+<text x="604" y="459" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="21" font-weight="650" fill="#366baf">后续 i &gt; 0 · cached</text>
+<text x="604" y="485" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">block 前切掉条件前缀，只保留目标查询</text>
+<text x="604" y="508" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">读取前缀 K/V；重算目标 Q/K/V 与 MLP</text>
+<polyline points="299,510 299,539" fill="none" stroke="#19735c" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="821,510 821,539" fill="none" stroke="#366baf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="64" y="539" width="470" height="89" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="64" y="554" width="3" height="22" rx="1.5" fill="#19735c"/>
+<text x="82" y="571" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18" font-weight="650" fill="#19735c">32 × Transformer Block</text>
+<text x="82" y="597" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">条件用 t = 0；目标用当前 t</text>
+<text x="82" y="620" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">每层写出 prefix K/V（post-RoPE）</text>
+<rect x="586" y="539" width="470" height="89" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="586" y="554" width="3" height="22" rx="1.5" fill="#366baf"/>
+<text x="604" y="571" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18" font-weight="650" fill="#366baf">32 × Transformer Block</text>
+<text x="604" y="597" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">Attention：[cached K/V | target K/V]</text>
+<text x="604" y="620" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">目标读取全部合法前缀 + 自己的图像块</text>
+<polyline points="299,628 299,659" fill="none" stroke="#19735c" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+<rect x="64" y="659" width="470" height="75" rx="14" fill="#dfeee4" stroke="#b8cebd" stroke-width="1.4"/>
+<text x="83" y="689" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="19" font-weight="650" fill="#19735c">每层条件缓存 Kᶜ / Vᶜ</text>
+<text x="83" y="713" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">固定 prompt、参考图、权重、LoRA 与位置协议</text>
+<polyline points="534,697 556,697 556,584 586,584" fill="none" stroke="#19735c" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+<text x="573" y="656" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="14" font-weight="400" fill="#19735c">只读复用</text>
+<polyline points="821,628 821,757" fill="none" stroke="#366baf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="299,628 299,641 50,641 50,757 299,757" fill="none" stroke="#366baf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="299,757 821,757" fill="none" stroke="#366baf" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="560,757 560,782" fill="none" stroke="#366baf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="230" y="782" width="662" height="87" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="230" y="797" width="3" height="22" rx="1.5" fill="#366baf"/>
+<text x="248" y="814" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18" font-weight="650" fill="#366baf">取目标预测 → scheduler.step(noise_pred, t, latents)</text>
+<text x="248" y="840" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">截取 noise_pred[:, -latents.size(1):] → 更新 xₜ → x_next</text>
+<text x="248" y="863" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">只循环目标 latent；条件前缀保持固定</text>
+<polyline points="892,826 1103,826 1103,403 821,403 821,427" fill="none" stroke="#366baf" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+<text x="929" y="796" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="650" fill="#366baf">下一步</text>
+<polyline points="560,898 560,934" fill="none" stroke="#366baf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="230" y="934" width="662" height="99" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="230" y="949" width="3" height="22" rx="1.5" fill="#19735c"/>
+<text x="248" y="966" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="19" font-weight="650" fill="#19735c">04 / 完成去噪 → VAE decode → postprocess</text>
+<text x="248" y="992" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">unpack → 恢复 latent mean / std → VAE 解码</text>
+<text x="248" y="1015" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">RGB / RGBA → alpha、文字与主体质量检查 → 返回结果</text>
+<rect x="36" y="1061" width="1048" height="150" rx="14" fill="#f7efdf" stroke="#e5d8bc" stroke-width="1.4"/>
+<text x="55" y="1094" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="19" font-weight="700" fill="#a76326">三条执行边界</text>
+<text x="55" y="1126" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16" font-weight="400" fill="#20352f">① Base 常用 40 步；官方 Turbo 为 8 步配方。实际循环次数以时间网格为准。</text>
+<text x="55" y="1156" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16" font-weight="400" fill="#20352f">② true CFG 启用时另跑 negative 分支，使用独立 neg_cache，再合并预测。</text>
+<text x="55" y="1186" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16" font-weight="400" fill="#20352f">③ 关闭缓存时每步重算联合序列；换条件 / 适配器后必须重新建立相应缓存。</text>
+</svg>

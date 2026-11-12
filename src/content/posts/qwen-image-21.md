@@ -37,9 +37,16 @@ draft: false
 
 ## 模型结构：7B 主干之外还有什么
 
-[![Qwen-Image-2.1模型数据流：Qwen3-VL联合编码文本与参考图，VAE提供图像latent，32层单流DiT在固定条件前缀上反复更新目标latent，最终VAE解码图像](/images/qwen-image21/architecture.svg)](/images/qwen-image21/architecture.svg)
+先把结构分成两层看：左侧是 **Backbone 的输入、联合序列与输出头**，右侧展开一个 DiT block。绿色代表条件与缓存，蓝色代表目标计算，琥珀色代表时间调制。
 
-*点击结构图可查看大图；各模块和缓存边界在下文展开。*
+<figure class="model-diagram">
+  <div class="model-diagram-scroll" tabindex="0" role="region" aria-label="Backbone 结构图，可横向滚动">
+    <a href="/images/qwen-image21/architecture.svg" target="_blank" rel="noopener"><img src="/images/qwen-image21/architecture.svg" width="1120" height="1180" alt="Qwen-Image-2.1 Backbone：txt_in 与 img_in 构造联合序列，经过 32 层单流 DiT；右侧展开 LayerNorm、调制、block-causal attention、SwiGLU 和两次门控残差。" /></a>
+  </div>
+  <figcaption>图 1 · Backbone 与单层算子。手机端可横向滑动，点击图片可打开 SVG 原图。</figcaption>
+</figure>
+
+**读图时留意三个细节。**参考图不只是拼接在文本后面，而是其 latent 替换预留图像位置；共享 modulation 给每层提供两组 scale / gate；缓存保存各层条件前缀的 K/V，而非缓存所有目标计算。图中序列块是示意，真实布局由输入指令与图像占位决定。
 
 ### 1. Qwen3-VL 8B：理解指令与参考图
 
@@ -110,6 +117,15 @@ Diffusers 中对应 `kv_cache_mode="extract"` 与后续的 `"cached"`；LightX2V
 
 ## 一次请求怎么走：从上传到 RGBA 结果
 
+下面按 `QwenImage21Pipeline.__call__` 的调用顺序画推理过程。中间左右两栏是**同一个模型在不同去噪步的执行方式**，不是两套 Backbone；首步建立缓存，后续步读取缓存。
+
+<figure class="model-diagram">
+  <div class="model-diagram-scroll" tabindex="0" role="region" aria-label="推理流程图，可横向滚动">
+    <a href="/images/qwen-image21/inference.svg" target="_blank" rel="noopener"><img src="/images/qwen-image21/inference.svg" width="1120" height="1250" loading="lazy" alt="Qwen-Image-2.1 推理流程：联合条件编码与目标初始化，设置时间网格；首步 extract 写入每层条件 KV，后续 cached 只重算目标；scheduler 更新 latent 并循环，最后 VAE 解码。" /></a>
+  </div>
+  <figcaption>图 2 · 从输入到输出，以及条件 KV 的写入、读取与失效边界。虚线表示缓存读取或下一步回环。</figcaption>
+</figure>
+
 1. **校验输入**：文本、参考图数量与顺序、尺寸、输出格式；区分生成与编辑场景。
 2. **预处理**：按面积与长宽比调整参考图。LightX2V 显式 `size` 使用 `HEIGHT WIDTH`；示例要求尺寸按 32 对齐。
 3. **联合条件编码**：Qwen3-VL 编码文本与参考图；VAE 提供条件图像 latent。
@@ -119,6 +135,45 @@ Diffusers 中对应 `kv_cache_mode="extract"` 与后续的 `"cached"`；LightX2V
 7. **产品后处理**：透明度检查、必要的 OCR／素材校验、存储、结果回传与计费。
 
 参考图顺序是语义的一部分。前端若支持拖动重排，必须把最终顺序和 prompt 中的“第一张、第二张”对应起来。局部标注／mask 能力也不等于每个后端都有相同 `mask_image` 参数，接入时要核对真实接口。
+
+### 图中的模块，对应哪段推理代码
+
+以下链接固定到本文读取的 Diffusers 提交，方便从图跳到实际实现。图中的「只重算目标」指 Transformer block 的主体计算；Pipeline 仍会准备输入布局，不能理解成所有前处理都消失。
+
+| 图中位置 | 代码入口 | 关注什么 |
+|---|---|---|
+| 图 1：文本与图像投影 | [`txt_in` / `img_in`](https://github.com/huggingface/diffusers/blob/f9316b0d4d69555c5e3f625585262e79cd299d34/src/diffusers/models/transformers/transformer_qwenimage21.py#L188-L200) | 文本投影包含 RMSNorm 与两层 Linear；图像 latent 走独立输入投影 |
+| 图 1：单层算子 | [`QwenImage21TransformerBlock.forward`](https://github.com/huggingface/diffusers/blob/f9316b0d4d69555c5e3f625585262e79cd299d34/src/diffusers/models/transformers/transformer_qwenimage21.py#L615-L656) | 归一化、scale 调制、attention、SwiGLU，以及两次 `tanh(gate)` 残差 |
+| 图 1：联合序列与时间调制 | [`QwenImage21Transformer2DModel.forward`](https://github.com/huggingface/diffusers/blob/f9316b0d4d69555c5e3f625585262e79cd299d34/src/diffusers/models/transformers/transformer_qwenimage21.py#L918-L953) | 图像槽位展开替换；目标追加；条件用 t=0，目标用当前 t |
+| 图 2：后续步的目标裁剪 | [`kv_cache_mode == "cached"`](https://github.com/huggingface/diffusers/blob/f9316b0d4d69555c5e3f625585262e79cd299d34/src/diffusers/models/transformers/transformer_qwenimage21.py#L969-L999) | 进入 block 前切掉条件前缀，保留目标 query 和对应位置 |
+| 图 2：K/V 缓存读写 | [attention QKV 准备函数](https://github.com/huggingface/diffusers/blob/f9316b0d4d69555c5e3f625585262e79cd299d34/src/diffusers/models/transformers/transformer_qwenimage21.py#L328-L369) | 保存 post-RoPE prefix K/V；后续拼接 cached K/V 与新目标 K/V |
+| 图 2：时间网格与去噪循环 | [`QwenImage21Pipeline.__call__`](https://github.com/huggingface/diffusers/blob/f9316b0d4d69555c5e3f625585262e79cd299d34/src/diffusers/pipelines/qwenimage21/pipeline_qwenimage21.py#L731-L816) | sigmas 优先级、首步 extract / 后续 cached、CFG 分支与 scheduler 更新 |
+| 图 2：最终解码 | [unpack / VAE decode](https://github.com/huggingface/diffusers/blob/f9316b0d4d69555c5e3f625585262e79cd299d34/src/diffusers/pipelines/qwenimage21/pipeline_qwenimage21.py#L839-L855) | latent 反归一化后解码；随后处理输出格式 |
+
+把执行骨架缩到最短，可以这样阅读。下面是**省略 padding、并行、回调和可选 CFG 的伪代码**，不替代实际 Pipeline：
+
+```python
+condition = encode_prompt(prompt, reference_images)
+x, reference_latents = prepare_latents(seed, size, reference_images)
+timesteps = configure_schedule(explicit_sigmas, checkpoint_sigmas, steps)
+cache = make_per_layer_prefix_cache()  # use_kv_cache && causal_condition
+
+for i, t in enumerate(timesteps):
+    prediction = transformer(
+        hidden_states=concat(reference_latents, x),
+        encoder_hidden_states=condition,
+        timestep=t / 1000,
+        kv_cache=cache,
+        kv_cache_mode="extract" if i == 0 else "cached",
+    )
+    # cached 分支会在 block 前裁掉条件前缀，而不是重复算全部 token。
+    target_prediction = prediction[:, -x.shape[1]:]
+    x = scheduler.step(target_prediction, t, x)
+
+image = vae.decode(restore_latent_statistics(unpack(x)))
+```
+
+图的[可复现绘制脚本](/learning/qwen-image21/build_diagrams.py)也随文章保留，便于后续跟随源码修订。图是本站根据代码重新绘制的，不是官方原图；算子尺寸采用构造默认值，未宣称完成 GPU 实测。
 
 ### 分辨率为什么会明显改变成本
 
