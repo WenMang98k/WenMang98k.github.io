@@ -88,10 +88,25 @@
         "title": "游戏",
         "description": "在另一个世界里放松和探索。",
         "symbol": "⊞"
+      },
+      {
+        "slug": "gardening",
+        "title": "养花",
+        "description": "从一束鲜花到一盆绿意，记录花期、养护与日常。",
+        "symbol": "❀"
       }
     ]
   },
   "posts": [
+    {
+      "title": "把花期留在日常里：百合与郁金香的养护笔记",
+      "section": "life",
+      "topic": "gardening",
+      "url": "/articles/lilies-and-tulips/",
+      "date": "2026-11-16",
+      "kind": "养花 · 鲜花与种球",
+      "summary": "认识百合与郁金香，分清瓶插与盆栽的养护方法，聊聊花语与送花心意。"
+    },
     {
       "title": "Qwen-Image-2.1：从模型结构到产品落地",
       "section": "tech",
