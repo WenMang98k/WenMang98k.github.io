@@ -99,6 +99,15 @@
   },
   "posts": [
     {
+      "title": "FastVideo 技术解读：从稀疏蒸馏到图文与视频生成落地",
+      "section": "tech",
+      "topic": "aigc",
+      "url": "/articles/fastvideo-generation-acceleration/",
+      "date": "2026-11-17",
+      "kind": "技术解读 · 视觉生成加速",
+      "summary": "拆解 DMD2、VSA、量化、缓存和流式生成，分析商品图、图像编辑、短视频与实时交互的收益和边界。"
+    },
+    {
       "title": "把花期留在日常里：百合与郁金香的养护笔记",
       "section": "life",
       "topic": "gardening",
