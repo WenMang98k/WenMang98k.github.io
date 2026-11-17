@@ -24,3 +24,9 @@ dry-run 不导入 GPU 框架、不下载模型、不执行推理，只展示所�
 ## 结构与推理图
 
 `build_diagrams.py` 使用 Python 标准库生成本站原创 SVG；运行 `python3 research/qwen-image21/build_diagrams.py` 可更新 `public/images/qwen-image21/architecture.svg` 与 `inference.svg`。图中展开单层 DiT 算子，并分开表示首步 extract 与后续 cached；源码映射见文章。图不代表已验证 checkpoint 配置或实测吞吐。
+
+## attn_mask 源码补充（2026-11-17）
+
+文章新增块因果掩码、分段切片与 cached 目标 query 的调用链，继续使用 sources.lock.json 中已固定的 Transformer 提交与 SHA256；本次重新下载核对，hash 一致。
+
+`python3 research/qwen-image21/attention_mask_demo.py` 使用标准库打印 token 可见性矩阵，验证两层简化注意力中的条件独立性。已在 CPU 执行；它不是官方模型推理，不验证 GPU、实际 KV 缓存或生成质量。构建时由现有 prepare:legacy 流程复制到 `/learning/qwen-image21/`。

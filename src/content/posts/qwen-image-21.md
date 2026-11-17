@@ -230,6 +230,158 @@ $$
 
 与 LLM KV Cache 相比，这里的复用轴是**去噪步**：条件长度不随每步增长，目标块整体重算；与近似复用目标特征的缓存方法相比，它依赖固定条件的独立性，不以“目标变化很小”为前提。多参考图可能首步更贵、缓存更大，后续则避免重复处理条件；这既不意味着参考图免费，也不意味着两个用户的请求天然能共享缓存。
 
+## 结合代码理解 attn_mask：它在限制什么
+
+`attn_mask` 决定一个 query 可以读取哪些 key。对 Qwen-Image-2.1 而言，它既表达联合文本／图像的块因果结构，也可以屏蔽 padding；它不是编辑时圈选修改位置的像素 mask。
+
+本节沿用本文固定的 Diffusers 提交 `f9316b0d4d69555c5e3f625585262e79cd299d34`。代码片段保留关键语句，省略类型、并行与部分元数据准备，不是可独立运行的完整推理实现。
+
+### 1. 源码规则：文本因果，图像块内部双向
+
+[`build_qwenimage21_block_causal_mask`](https://github.com/huggingface/diffusers/blob/f9316b0d4d69555c5e3f625585262e79cd299d34/src/diffusers/models/transformers/transformer_qwenimage21.py#L257-L305) 用 `image_ids` 标记联合序列：文本位置为 `-1`，每张参考图与目标图分别使用不同的非负 ID。
+
+```python
+# 源码关键语句，q_idx 是 query 位置，kv_idx 是 key 位置。
+q_image_id, kv_image_id = image_ids[q_idx], image_ids[kv_idx]
+same_image_block = (q_image_id == kv_image_id) & (q_image_id >= 0)
+allowed = ((q_idx >= kv_idx) | same_image_block) & key_valid[batch_idx, kv_idx]
+return allowed & ~is_padding
+```
+
+逐句看：
+
+- `q_idx >= kv_idx`：允许读取当前位置及历史位置，包括文本的自身位置。
+- `same_image_block`：同一张图内部额外开放双向读取；`>= 0` 防止全部文本因共享 `-1` 被误判成一个图像块。
+- `key_valid`：排除 prompt 中无效的 padding key。
+- `~is_padding`：排除为 FlexAttention 内核对齐而补出的 query／key 位置；它与原始 prompt 的右侧 padding 是不同层次的处理。
+
+参考图 token 会替换预留图像槽，因此真实联合序列可能是文本与参考图交错，而不是简单的三个连续大块。下面用一个七 token 的例子理解：
+
+```text
+序列：T0 T1 R0a R0b T2 Xa Xb
+类型：文本   参考图0  文本  目标图1
+
+行 = query，列 = key；1 表示允许读取，0 表示禁止。
+
+       T0 T1 R0a R0b T2 Xa Xb
+T0      1  0   0   0  0  0  0
+T1      1  1   0   0  0  0  0
+R0a     1  1   1   1  0  0  0
+R0b     1  1   1   1  0  0  0
+T2      1  1   1   1  1  0  0
+Xa      1  1   1   1  1  1  1
+Xb      1  1   1   1  1  1  1
+```
+
+`R0a` 能读取后面的 `R0b`，因为它们属于同一张参考图；它不能读取更后面的文本 `T2` 或目标图。最后两行则能读取所有有效条件和整个目标块。两张参考图即使相邻，也要用不同 ID，不能合并成同一双向块。
+
+注意：这是二维 token 可见性矩阵，不是图片像素空间中的黑白选区。
+
+### 2. 为什么不能直接去掉 mask，或者换成普通 causal
+
+若把首步联合序列改成完全双向注意力，条件 query 就会读取目标图的 K/V。目标随去噪变化，第一层条件输出便会变化，下一层条件 K/V 也会变化。此时直接复用首步条件缓存，会改变原本的模型计算。
+
+这里有一个层间细节：本层 K/V 是在本层注意力输出之前生成的。因此并非“只要看见目标，所有层的 K/V 当场都变化”，而是目标依赖通过条件输出传播到后续层，使**整套逐层前缀缓存不再成立**。
+
+反过来，简单使用全序列下三角 `is_causal=True`，会禁止同一图像块里的前 token 读取后 token，也不符合模型的图像块双向语义。所需的是块因果结构，不是普通语言模型的逐 token 因果结构。
+
+### 3. 源码里有两种实现：完整 mask 与按段切片
+
+首步联合序列包含条件 query 和目标 query，需要保留上述规则。代码提供两条处理器路径：
+
+| 路径 | 如何表达限制 | `attn_mask` 的含义 |
+| --- | --- | --- |
+| `QwenImage21FlexAttnProcessor` | 构造 `BlockMask`，交给 flex 后端 | 包含完整块因果规则 |
+| `QwenImage21AttnProcessor` | 每段只传入合法范围的 K/V；文本段额外加因果 mask | 图像段可能无需显式 mask；边界已由切片限制 |
+
+默认分段路径的[关键调用](https://github.com/huggingface/diffusers/blob/f9316b0d4d69555c5e3f625585262e79cd299d34/src/diffusers/models/transformers/transformer_qwenimage21.py#L505-L544)可概括为：
+
+```python
+# 每段 query 只访问到本段结束的 key/value。
+# 文本段的 seg_mask = [对历史全开放 | 本段内部下三角]。
+# 图像段内部双向，若没有 padding，seg_mask 可以为 None。
+out = dispatch_attention_fn(
+    query[:, start:end],
+    key[:, :end],
+    value[:, :end],
+    attn_mask=seg_mask,
+    dropout_p=0.0,
+    backend=None,
+    parallel_config=self._parallel_config,
+)
+```
+
+对参考图段而言，后面的目标 K/V 根本没有传进该次调用，所以 `attn_mask=None` 仍然可以正确隔离目标。**调试时应同时看传入的 Q/K/V 范围与 mask，不能只搜索参数是否为 None。**
+
+Flex 路径则把同样的结构写入 `BlockMask`，由一次 flex 调用处理；这是执行组织不同，不是两套模型语义。`BlockMask` 是专用对象，也不等同于手工分配一个完整的 $N\times N$ 布尔矩阵。固定版本还提示，未编译的 flex 路径在高分辨率下可能产生很大的中间显存开销，因此启用时要核对处理器与编译配置。
+
+### 4. 为什么后续 cached 步反而可以不带完整 mask
+
+[`forward` 的 cached 分支](https://github.com/huggingface/diffusers/blob/f9316b0d4d69555c5e3f625585262e79cd299d34/src/diffusers/models/transformers/transformer_qwenimage21.py#L967-L995)先裁掉前缀 query：
+
+```python
+joint_hidden_states = joint_hidden_states[:, prefix_len:]
+rotary_emb = rotary_emb[prefix_len:]
+modulation_mask = modulation_mask[prefix_len:]
+attention_mask = (
+    None if joint_key_valid is None
+    else joint_key_valid[:, None, None, :]
+)
+```
+
+之后每层将已缓存的条件 K/V 与新目标 K/V 拼接。此时张量范围是：
+
+```text
+Q：     [当前目标]
+K/V：   [缓存条件前缀 | 当前目标]
+mask：  [原矩阵最后的目标 query 行]
+```
+
+观察前面矩阵，最后两行都是 1，因此没有无效 key 时，剩下的结构就是完全可见，`attention_mask=None` 合法；有 padding 时仍要保留 key 有效性掩码。
+
+后续步可以省略完整块因果 mask，**是因为条件 query 已经不参加计算**，而不是取消了建立缓存时所需的依赖约束。普通 `is_causal=True` 也不能替代这里的目标对完整前缀及整个目标块的读取。
+
+### 5. mask 与固定时间调制要一起看
+
+只屏蔽目标还不够。源码在 `causal_condition=True` 时，[追加固定的 t=0 输入](https://github.com/huggingface/diffusers/blob/f9316b0d4d69555c5e3f625585262e79cd299d34/src/diffusers/models/transformers/transformer_qwenimage21.py#L944-L953)，再按 token 类型选取调制：
+
+```python
+# forward：增加条件专用的固定时间输入。
+timestep = torch.cat([timestep, timestep.new_zeros(1)], dim=0)
+modulation_mask = target_token_mask
+
+# _select_modulation_rows：real/zero 是调制参数，不是原始时间值。
+real, zero = params[:-1].unsqueeze(1), params[-1:].unsqueeze(0)
+return torch.where(target_token_mask.view(1, -1, 1), real, zero)
+```
+
+目标 token 使用当前时间调制，条件使用固定 t=0 调制。变量 `zero` 指由 t=0 计算得到的参数，不代表参数本身全为零。
+
+所以可复用性的完整依据是：**条件输入固定、注意力不读取变化目标、条件调制固定，并保持位置、权重和执行协议一致。**
+
+### 6. 三种 mask 不要混用
+
+| 名称 | 在代码中的作用 | 不代表什么 |
+| --- | --- | --- |
+| `attention_mask`／`attn_mask` | 控制 query 对 key 的读取，可含块结构或 padding 限制 | 图像编辑选区 |
+| `img_mask`／`image_pad_mask` | 标记图像槽与展开后的图像 token 位置，用于联合序列组装和元数据 | True 位置需要被遮蔽、不参与注意力 |
+| `target_token_mask` | 区分目标与条件，选择时间调制等 | 目标图中的局部修改区域 |
+
+另外，布尔语义要按接口判断。本节的 mask predicate 及 PyTorch SDPA 布尔 `attn_mask` 使用 **True=允许**；某些其他 API（例如 `MultiheadAttention` 的布尔掩码）采用 True=屏蔽，不能原样照搬。加性 mask 则通常用 0 表示不惩罚、负无穷表示禁止。
+
+### 7. 一个可在 CPU 上运行的依赖关系示例
+
+本站提供 [attention_mask_demo.py](/learning/qwen-image21/attention_mask_demo.py)，只使用 Python 标准库：
+
+```bash
+python3 research/qwen-image21/attention_mask_demo.py
+```
+
+它打印上述七 token 矩阵，并用两层简化注意力比较“改变目标后，条件输出是否改变”：块因果 mask 下条件差异为零；完全双向注意力下条件会受到目标影响。脚本已执行通过。
+
+这是对依赖关系的教学验证，没有加载 Qwen 权重，没有模拟完整 RoPE、时间调制或推理缓存，也不构成真实模型的缓存一致性或性能基准。
+
+
 ## 一次请求怎么走：从上传到 RGBA 结果
 
 下面按 `QwenImage21Pipeline.__call__` 的调用顺序画推理过程。中间左右两栏是**同一个模型在不同去噪步的执行方式**，不是两套 Backbone；首步建立缓存，后续步读取缓存。
