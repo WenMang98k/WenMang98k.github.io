@@ -127,6 +127,45 @@
       "url": "https://huggingface.co/lightx2v/Qwen-Image-2.1-Lightning",
       "status": "blocked",
       "reason": "Environment proxy denied Hugging Face access (403); card, filenames, step/sigma/CFG recipe and license not read."
+    },
+    {
+      "key": "edit2511-official-readme",
+      "repo": "QwenLM/Qwen-Image",
+      "commit": "6b5e1f5cec987d404be5ac6657db3b9aacb56a89",
+      "path": "README.md",
+      "url": "https://github.com/QwenLM/Qwen-Image/blob/6b5e1f5cec987d404be5ac6657db3b9aacb56a89/README.md",
+      "sha256": "12878946f055f1e1bd5f58e90891b845ad178171a71154dbb6a841dcb1fed5c6",
+      "bytes": 41767,
+      "status": "read",
+      "review_date": "2026-11-17"
+    },
+    {
+      "key": "edit2511-pipeline",
+      "repo": "huggingface/diffusers",
+      "commit": "f9316b0d4d69555c5e3f625585262e79cd299d34",
+      "path": "src/diffusers/pipelines/qwenimage/pipeline_qwenimage_edit_plus.py",
+      "url": "https://github.com/huggingface/diffusers/blob/f9316b0d4d69555c5e3f625585262e79cd299d34/src/diffusers/pipelines/qwenimage/pipeline_qwenimage_edit_plus.py",
+      "sha256": "9ce666ed3e0029a35e8743e558f23fc8143d888f418d9fe924e05df43d46856f",
+      "bytes": 43995,
+      "status": "read",
+      "review_date": "2026-11-17"
+    },
+    {
+      "key": "edit2511-transformer",
+      "repo": "huggingface/diffusers",
+      "commit": "f9316b0d4d69555c5e3f625585262e79cd299d34",
+      "path": "src/diffusers/models/transformers/transformer_qwenimage.py",
+      "url": "https://github.com/huggingface/diffusers/blob/f9316b0d4d69555c5e3f625585262e79cd299d34/src/diffusers/models/transformers/transformer_qwenimage.py",
+      "sha256": "d160a9c871d65d5446544b7bca0e9d093d76115f07254f72ec775092e8793d0a",
+      "bytes": 45576,
+      "status": "read",
+      "review_date": "2026-11-17"
+    },
+    {
+      "key": "edit2511-model-index",
+      "url": "https://huggingface.co/Qwen/Qwen-Image-Edit-2511/raw/main/model_index.json",
+      "status": "blocked",
+      "reason": "HTTP 403; checkpoint model_index/config not read. Comparison uses official GitHub pipeline example and pinned Diffusers implementations, with constructor defaults explicitly identified."
     }
   ]
 }

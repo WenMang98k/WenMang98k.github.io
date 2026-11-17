@@ -454,6 +454,144 @@ $$
 
 同理，不能用 7B×BF16 算完显存就结束。若粗略把 7B 视觉主干与 8B 编码器都按 BF16 全驻留，权重本身就是约 30 GB 的十进制量级，另有 VAE、激活和 KV。**这不是显存最低要求**：offload、分阶段驻留、量化与并行会改变实际占用，必须测目标部署配置。
 
+## 与 Qwen-Image-Edit-2511 对比：Pipeline 与 Backbone 怎样变化
+
+本节的 **2511 指 `Qwen/Qwen-Image-Edit-2511`**，对应官方 README 的 `QwenImageEditPlusPipeline`，不是另一个名为“Qwen-Image-2511”的纯文生图检查点。对比双方使用同一个 Diffusers 提交 `f9316b0d4d69555c5e3f625585262e79cd299d34`，重点看原生实现的推理依赖，不把第三方加速器能力混入基线。
+
+本轮没有读取到 Hugging Face 的 2511 `model_index.json`／checkpoint config（请求返回 403），因此下列层数、头数与通道数字明确区分为**源码构造默认值和标准 VAE 路径的算例**，不冒充权重配置实测。模型名称与 Pipeline 绑定由官方 GitHub 示例核实。
+
+### 1. Pipeline：参考图两条路径都存在，但组织不同
+
+| 环节 | Edit-2511：`QwenImageEditPlusPipeline` | 2.1：`QwenImage21Pipeline` |
+| --- | --- | --- |
+| 条件理解 | Qwen2.5-VL，源码文档标明 7B；编码文字与参考图 | Qwen3-VL；官方标明 8B；编码文字与参考图 |
+| 参考图的另一条路径 | `AutoencoderKLQwenImage` 编码参考 latent | 专用 `AutoencoderKLQwenImage21` 编码参考 latent |
+| 图像 token 准备 | VAE latent 做 2×2 打包；图像流排列为 `[目标, 参考图]` | latent 直接空间展平；输入图像张量为 `[参考图, 目标]` |
+| 进入 Backbone | 多模态条件 embedding 作为独立 context 流；目标与参考 latent 作为 image 流 | 展开图像占位，将参考 latent 替换进条件位置，再附加目标，组成单流序列 |
+| 去噪循环 | 每步把当前目标与固定参考 latent 再拼接，重新执行双流 Backbone | 首步 `extract`，后续 `cached` 可只计算目标 query 与目标 block 状态 |
+| 预测截取 | 取图像输出的开头 `:latents.size(1)` | 取输出末尾 `-latents.size(1):` |
+| 调度更新 | scheduler 只更新目标 latent，不更新参考 latent | 同样只更新目标 latent |
+| 输出 | 旧版标准 RGB VAE 路径 | 原生 RGBA VAE 路径 |
+
+两版都不能简单理解成“参考图只走 VAE”。2511 的参考图也进入 VLM 以提供语义条件，并单独经过 VAE 提供视觉 latent。差异在于 DiT 如何接收和更新这些表示，而不只是换了一个文字编码器。
+
+2511 的图像预处理还区分 VLM 条件图与 VAE 图的尺寸路径。不能把同一个经过任意缩放的张量同时塞给两个编码器，期待自动得到相同效果。
+
+### 2. 先看循环代码：目标的位置恰好相反
+
+[2511 的去噪循环](https://github.com/huggingface/diffusers/blob/f9316b0d4d69555c5e3f625585262e79cd299d34/src/diffusers/pipelines/qwenimage/pipeline_qwenimage_edit_plus.py#L805-L849)关键代码可缩写为：
+
+```python
+# Edit-2511：目标在前，固定参考 latent 在后。
+latent_model_input = torch.cat([latents, image_latents], dim=1)
+noise_pred = transformer(
+    hidden_states=latent_model_input,
+    encoder_hidden_states=prompt_embeds,
+    # 另传 timestep、img_shapes、padding mask 等
+)[0]
+noise_pred = noise_pred[:, :latents.size(1)]
+latents = scheduler.step(noise_pred, t, latents, return_dict=False)[0]
+```
+
+[2.1 的循环](https://github.com/huggingface/diffusers/blob/f9316b0d4d69555c5e3f625585262e79cd299d34/src/diffusers/pipelines/qwenimage21/pipeline_qwenimage21.py#L759-L816)则包含显式的逐层条件 KV 缓存协议：
+
+```python
+# 2.1：输入图像 latent 中，参考在前、目标在后。
+latent_model_input = torch.cat([input_images_latents, latents], dim=1)
+kv_mode = "extract" if i == 0 else "cached"  # 此处假定缓存启用
+noise_pred = transformer(
+    hidden_states=latent_model_input,
+    encoder_hidden_states=prompt_embeds,
+    img_mask=image_pad_mask,
+    kv_cache=cond_cache,
+    kv_cache_mode=kv_mode,
+    # 另传 timestep、img_shapes、padding mask 等
+)[0]
+noise_pred = noise_pred[:, -latents.size(1):]
+latents = scheduler.step(noise_pred, t, latents, return_dict=False)[0]
+```
+
+这些片段是省略参数的阅读骨架，不可直接作为完整调用复制运行。2.1 在 Pipeline 层仍会拼接和准备部分输入；真正“只计算目标”的裁剪发生在 Transformer cached 分支中，不能误写成后续步完全不处理任何前缀元数据。
+
+迁移时如果照搬旧版的输出截取位置、`img_shapes`、位置编码或 mask，会把参考与目标弄反。权重文件、latent 和编码器 embedding 也不能因为都叫 Qwen-Image 就直接互换。
+
+### 3. Backbone：双流 joint attention 变成单流 block-causal
+
+| 结构项 | `QwenImageTransformer2DModel`（2511 使用的类） | `QwenImage21Transformer2DModel` |
+| --- | --- | --- |
+| block 数，源码默认 | 60 | 32 |
+| 注意力宽度，源码默认 | 24 头 × 128 = 3072 | 32 头 × 128 = 4096 |
+| 数据流 | image / context 分别投影、调制及更新 | 联合 token 序列通过同一套 block |
+| 注意力 | 两流各自产生 Q/K/V，拼接做双向 joint attention，再拆回两流 | 联合序列遵循块因果；图像块内部双向 |
+| FFN | 图像 `img_mlp` 与文本 `txt_mlp` 分开，GELU 类激活 | 单流 SwiGLU，默认 ratio=3 |
+| 调制 | 每层独立 `img_mod`、`txt_mod`；包含 shift/scale/gate | 共享 modulation；按目标与条件选当前 t／固定 0，使用 scale 与门控 |
+| 条件跨步独立性 | 不能由固定输入直接推出，联合注意力会重新混入目标 | 块因果隔离 + 固定条件时间调制，使前缀可独立于目标 |
+
+2511 的 [attention processor](https://github.com/huggingface/diffusers/blob/f9316b0d4d69555c5e3f625585262e79cd299d34/src/diffusers/models/transformers/transformer_qwenimage.py#L514-L587)中，有这样的调用：
+
+```python
+# 两流分别投影、QK norm 和 RoPE 后：
+joint_query = torch.cat([txt_query, img_query], dim=1)
+joint_key   = torch.cat([txt_key,   img_key], dim=1)
+joint_value = torch.cat([txt_value, img_value], dim=1)
+
+joint_hidden_states = dispatch_attention_fn(
+    joint_query, joint_key, joint_value,
+    attn_mask=attention_mask,  # 正常路径主要用于屏蔽无效文本 key
+    is_causal=False,
+    # 省略 dropout、backend、parallel_config
+)
+# 随后按 seq_txt 拆回文本与图像输出，并分别执行残差和 MLP。
+```
+
+“joint”不代表它已经是 2.1 的单流 block：2511 在 attention 处联合交互，投影、调制、输出和 FFN 仍分成两套。它的文本流会被当前图像流影响，参考图的高层状态也会与目标交互。
+
+### 4. 为什么不能把 2.1 的前缀缓存直接搬给 2511
+
+即使参考图文件、VLM embedding 和初始参考 latent 都不变，也不等于参考条件在每个 DiT 层里的 K/V 不变。2511 的双向联合注意力让条件输出依赖当前目标；这些输出进入下一层，就会改变下一层条件 K/V。
+
+源码还存在 `zero_cond_t` 可选分支：启用时参考图可以选 t=0 调制，但这**不等价于 2.1 的 `causal_condition`**。2511 的该分支并未同时建立“条件不能读取目标”的块因果隔离，文本流也仍使用当前时间对应的调制。因此仅启用固定参考时间，不足以得到整套精确条件缓存。
+
+同样，两版都能看到 `cache_context("cond")` 之类的框架上下文，不能仅根据这个名称判断缓存内容。2.1 的证据是具体的 `QwenImage21KVCache`、每层写入／拼接逻辑与 `extract/cached` 执行模式；2511 所比较的原生路径没有这套前缀协议。第三方框架的近似特征缓存、编译缓存或其他加速，是另一项需独立核对的能力。
+
+### 5. VAE 与 token：同为 64 维输入不代表相同编码
+
+旧版标准路径将 16 通道、空间压缩 8× 的 latent 按 2×2 打包：每 token 包含 $16\times4=64$ 个数。2.1 则直接消费 64 通道、空间压缩 16× 的 latent，不再做这层 2×2 打包。
+
+以 1024×1024 目标图像为算例：
+
+```text
+2511 标准路径：1024² → 128×128×16 latent → 64×64 个 token，每个 64 维
+2.1 路径：    1024² →  64×64×64 latent → 64×64 个 token，每个 64 维
+
+两边目标 token 均为 4096；表示语义、VAE 和输出通道能力不同。
+```
+
+因此不能说“VAE 压缩率从 8× 到 16×，目标序列就一定少四倍”。还要计入打包。参考图 token、VLM 展开长度、模型宽度、层数、步数和缓存会共同决定总成本。标准旧版路径的数值来自类默认与代码注释，真实部署仍须检查所加载配置。
+
+### 6. CFG、调度与输出也不能直接照搬
+
+两条 Pipeline 都使用 FlowMatch Euler 类调度，并可按条件启用正／负两次前向的 true CFG；但固定版本的代码还有具体区别：
+
+- 2511 在 CFG 线性组合后，额外按正条件预测的范数进行重缩放；2.1 对应循环没有同一段范数重缩放逻辑。
+- 2.1 的正负分支各自持有前缀缓存，不应混用；旧版 `cond/uncond` 上下文名称不是这套缓存机制的证明。
+- scheduler shift、时间网格、negative prompt、步数以及 Turbo／Lightning 适配权重，应使用各自匹配的配置，不能为了公平而机械复用一组值。
+- RGB 输出与 RGBA 输出需要不同的交付检查；PNG 扩展名不能替代 alpha 有效性验证。
+
+因此迁移评估应对齐任务、尺寸、质量目标、精度和实际前向次数，分别测编码、首步、缓存后续步及 VAE，而不是把 60/32 的层数比当成整体加速倍率。
+
+### 7. 并排可视化：从输入到每一步计算
+
+<figure>
+  <div style="overflow-x:auto">
+    <a href="/images/qwen-image21/2511-vs-21.svg" target="_blank" rel="noopener"><img src="/images/qwen-image21/2511-vs-21.svg" width="1120" height="1480" loading="lazy" alt="Qwen-Image-Edit-2511 与 Qwen-Image-2.1 并排对比：上半部分比较条件编码、latent 排列、循环和解码，下半部分比较双流联合注意力与单流块因果、缓存首步和后续步；底部解释相同图像尺寸的 token 数。" /></a>
+  </div>
+  <figcaption>图 3 · Pipeline 与 Backbone 的两级对比。层数等为固定源码默认，图中箭头表示数据依赖，不代表实测速度；手机端可横向滑动，点击查看 SVG 原图。</figcaption>
+</figure>
+
+源码入口：[官方 2511 用法](https://github.com/QwenLM/Qwen-Image/blob/6b5e1f5cec987d404be5ac6657db3b9aacb56a89/README.md#qwen-image-edit-2511-for-image-editing-multiple-image-support-and-improved-consistency)、[2511 Pipeline](https://github.com/huggingface/diffusers/blob/f9316b0d4d69555c5e3f625585262e79cd299d34/src/diffusers/pipelines/qwenimage/pipeline_qwenimage_edit_plus.py)、[旧版 Transformer](https://github.com/huggingface/diffusers/blob/f9316b0d4d69555c5e3f625585262e79cd299d34/src/diffusers/models/transformers/transformer_qwenimage.py)、[2.1 Pipeline](https://github.com/huggingface/diffusers/blob/f9316b0d4d69555c5e3f625585262e79cd299d34/src/diffusers/pipelines/qwenimage21/pipeline_qwenimage21.py)、[2.1 Transformer](https://github.com/huggingface/diffusers/blob/f9316b0d4d69555c5e3f625585262e79cd299d34/src/diffusers/models/transformers/transformer_qwenimage21.py)。图的[可复现脚本](/learning/qwen-image21/build_comparison.py)随文章提供。
+
+
 ## Lightning LoRA：应该怎样理解与验证
 
 用户提供的入口为：[lightx2v/Qwen-Image-2.1-Lightning](https://huggingface.co/lightx2v/Qwen-Image-2.1-Lightning)。本轮无法直接读取该模型卡，以下区分“已确认的加载能力”与“这个权重仍待确认的配方”。

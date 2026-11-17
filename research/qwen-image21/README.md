@@ -30,3 +30,9 @@ dry-run 不导入 GPU 框架、不下载模型、不执行推理，只展示所�
 文章新增块因果掩码、分段切片与 cached 目标 query 的调用链，继续使用 sources.lock.json 中已固定的 Transformer 提交与 SHA256；本次重新下载核对，hash 一致。
 
 `python3 research/qwen-image21/attention_mask_demo.py` 使用标准库打印 token 可见性矩阵，验证两层简化注意力中的条件独立性。已在 CPU 执行；它不是官方模型推理，不验证 GPU、实际 KV 缓存或生成质量。构建时由现有 prepare:legacy 流程复制到 `/learning/qwen-image21/`。
+
+## Edit-2511 与 2.1 对比（2026-11-17）
+
+新增核对官方 Qwen-Image README、旧版 Diffusers EditPlus Pipeline 和双流 Transformer，共 3 个文件；固定提交和 SHA256 已追加到 sources.lock.json。2511 Hugging Face model_index 请求 403，未读取 checkpoint config，因此文章明确区分源码默认与已加载权重。没有模型推理或 GPU 基准。
+
+运行 `python3 research/qwen-image21/build_comparison.py` 生成 `public/images/qwen-image21/2511-vs-21.svg`，对比 Pipeline 与 Backbone，显示两条条件路径、目标位置、双流／单流注意力、缓存依赖及 token 数算例。它复用 build_diagrams.py 的标准库绘图组件，不会修改旧图。
