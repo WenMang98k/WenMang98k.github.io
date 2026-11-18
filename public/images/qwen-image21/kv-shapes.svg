@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="1700" viewBox="0 0 1120 1700" role="img" aria-labelledby="title desc">
+<title id="title">Qwen-Image-2.1 KV 数据流：带 shape 的完整实例</title><desc id="desc">参考图宽1024高1204缩放至宽960高1120；有效非图像token2048，条件前缀6248，目标4096，首步联合10344；每层KV及最终输出形状。</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="context-stroke"/></marker><pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r=".8" fill="#dae3db"/></pattern></defs>
+<rect width="1120" height="1700" fill="#f7f9f5"/><rect width="1120" height="1700" fill="url(#grid)"/>
+<text x="36" y="38" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="13" font-weight="600" fill="#64766e">WENMANG / QWEN-IMAGE-2.1 · TENSOR SHAPES</text>
+<text x="36" y="80" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="31" font-weight="700" fill="#20352f">把实际尺寸放进 KV 数据流</text>
+<text x="36" y="113" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">B=1 · 无 TP · 32 头 × 128 · 宽度 4096 · 单分支 BF16 · 图像尺寸为 W×H</text>
+<rect x="36" y="135" width="1048" height="55" rx="14" fill="#fbf0df" stroke="#d6e1d8" stroke-width="1.4"/>
+<text x="54" y="158" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="17" font-weight="650" fill="#a76326">2048 = 进入 DiT 的有效非图像 token，不含图像槽；非原始 prompt 长度保证。</text>
+<text x="54" y="179" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="14" font-weight="400" fill="#64766e">模板 / 特殊 token 若另有 δ，条件与联合序列长度要同步加 δ；processor 必须匹配。</text>
+<text x="36" y="224" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18" font-weight="700" fill="#20352f">A / 输入准备：参考图会缩放；目标图固定为 1024×1024</text>
+<rect x="36" y="245" width="510" height="145" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="36" y="260" width="3" height="22" rx="1.5" fill="#19735c"/>
+<text x="54" y="277" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="19" font-weight="650" fill="#19735c">参考图：原始 W1024 × H1204</text>
+<text x="54" y="303" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">默认缩放 → W960 × H1120</text>
+<text x="54" y="326" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">VAE 像素 [1,4,1,1120,960]</text>
+<text x="54" y="349" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">VAE latent [1,64,1,70,60]</text>
+<text x="54" y="372" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">展平参考 [1,4200,64]</text>
+<rect x="574" y="245" width="510" height="145" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="574" y="260" width="3" height="22" rx="1.5" fill="#366baf"/>
+<text x="592" y="277" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="20" font-weight="650" fill="#366baf">目标：W1024 × H1024</text>
+<text x="592" y="303" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">目标 latent 空间 H64 × W64</text>
+<text x="592" y="326" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">展平目标 x [1,4096,64]</text>
+<text x="592" y="349" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">目标占位槽 = 4096 / 4 = 1024</text>
+<text x="592" y="372" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">img_in 后目标 [1,4096,4096]</text>
+<polyline points="829,390 829,414" fill="none" stroke="#366baf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="36" y="414" width="510" height="124" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="36" y="429" width="3" height="22" rx="1.5" fill="#19735c"/>
+<text x="54" y="446" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="19" font-weight="650" fill="#19735c">参考图另一路 → VLM 条件</text>
+<text x="54" y="472" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">2048 非图像 token + 1050 图像槽</text>
+<text x="54" y="495" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">prompt_embeds [1,3098,4096]</text>
+<text x="54" y="518" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">1050 槽 × 4 → 4200 参考 latent token</text>
+<rect x="574" y="414" width="510" height="124" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="574" y="429" width="3" height="22" rx="1.5" fill="#366baf"/>
+<text x="592" y="446" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="19" font-weight="650" fill="#366baf">追加目标槽，再展开、替换</text>
+<text x="592" y="472" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">img_mask [1,4122] = 3098 + 1024</text>
+<text x="592" y="495" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">图像输入 [1,8296,64] → [1,8296,4096]</text>
+<text x="592" y="518" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">参考与目标占位均展开；文本长度不变</text>
+<rect x="36" y="562" width="1048" height="88" rx="14" fill="#e6f0e5" stroke="#d6e1d8" stroke-width="1.4"/>
+<text x="54" y="591" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="21" font-weight="650" fill="#19735c">条件 P = 2048 + 4200 = 6248；目标 T = 4096；联合 N = 10344</text>
+<text x="54" y="622" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16" font-weight="400" fill="#64766e">联合隐藏状态 [1,10344,4096] = [条件前缀 | 目标]；图像槽被替换，不重复追加参考。</text>
+<text x="36" y="687" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18" font-weight="700" fill="#20352f">B / 首步 extract：每一层都做同一形状的计算，缓存数值各不相同</text>
+<rect x="36" y="708" width="691" height="145" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="36" y="723" width="3" height="22" rx="1.5" fill="#366baf"/>
+<text x="54" y="740" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="21" font-weight="650" fill="#366baf">第 ℓ 层：联合序列全部参与计算</text>
+<text x="54" y="766" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">新算 Q / K / V：各 [1,10344,32,128]</text>
+<text x="54" y="789" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">K 在 QK norm + RoPE 后切片；V 不做 RoPE</text>
+<text x="54" y="812" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">attention 合头 → [1,10344,4096]</text>
+<text x="54" y="835" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">FFN 后 → 下一层；共 L=32 层</text>
+<rect x="797" y="708" width="287" height="145" rx="14" fill="#e6f0e5" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="797" y="723" width="3" height="22" rx="1.5" fill="#19735c"/>
+<text x="815" y="740" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="20" font-weight="650" fill="#19735c">cache[ℓ]</text>
+<text x="815" y="766" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">K [1,6248,32,128]</text>
+<text x="815" y="789" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">V [1,6248,32,128]</text>
+<text x="815" y="812" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">从前 6248 个 token 切出</text>
+<text x="815" y="835" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">不缓存目标、不缓存 Q</text>
+<polyline points="727,778 797,778" fill="none" stroke="#19735c" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="744" y="763" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="14" font-weight="650" fill="#19735c">写</text>
+<rect x="36" y="877" width="1048" height="80" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="36" y="892" width="3" height="22" rx="1.5" fill="#366baf"/>
+<text x="54" y="909" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="19" font-weight="650" fill="#366baf">输出头：全序列 [1,10344,64] → 取末尾目标 [1,4096,64]</text>
+<text x="54" y="935" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">scheduler 更新目标 x，shape 仍为 [1,4096,64]；逐层条件缓存原样保留。</text>
+<polyline points="381,853 381,877" fill="none" stroke="#366baf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="36" y="995" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18" font-weight="700" fill="#20352f">C / 每个后续 cached 步：目标重新从第 1 层进入；按层号读取缓存</text>
+<rect x="36" y="1016" width="691" height="145" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="36" y="1031" width="3" height="22" rx="1.5" fill="#366baf"/>
+<text x="54" y="1048" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="20" font-weight="650" fill="#366baf">第 ℓ 层：只新算目标，仍读取完整条件</text>
+<text x="54" y="1074" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">目标隐藏状态 [1,4096,4096]</text>
+<text x="54" y="1097" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">新算 Q_x / K_x / V_x：各 [1,4096,32,128]</text>
+<text x="54" y="1120" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">拼接 K/V：[缓存条件6248 | 本步目标4096]</text>
+<text x="54" y="1143" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">K_all / V_all：各 [1,10344,32,128]</text>
+<rect x="797" y="1016" width="287" height="145" rx="14" fill="#e6f0e5" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="797" y="1031" width="3" height="22" rx="1.5" fill="#19735c"/>
+<text x="815" y="1048" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="19" font-weight="650" fill="#19735c">只读 cache[ℓ]</text>
+<text x="815" y="1074" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">K [1,6248,32,128]</text>
+<text x="815" y="1097" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">V [1,6248,32,128]</text>
+<text x="815" y="1120" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">每个后续步长度不变</text>
+<text x="815" y="1143" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">目标 K/V 不追加进缓存</text>
+<polyline points="797,1086 727,1086" fill="none" stroke="#19735c" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+<text x="744" y="1071" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="14" font-weight="650" fill="#19735c">读</text>
+<rect x="36" y="1185" width="1048" height="118" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="36" y="1200" width="3" height="22" rx="1.5" fill="#366baf"/>
+<text x="54" y="1217" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="20" font-weight="650" fill="#366baf">Q_x 查询 K_all / V_all → 仅目标输出</text>
+<text x="54" y="1243" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">逻辑 score [1,32,4096,10344]；高效内核不必物化完整矩阵</text>
+<text x="54" y="1266" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">attention 输出 [1,4096,32,128] → 合头 / FFN [1,4096,4096]</text>
+<text x="54" y="1289" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">各层后 → 目标预测 [1,4096,64] → scheduler；下一步仍只重算目标</text>
+<polyline points="381,1161 381,1185" fill="none" stroke="#366baf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="36" y="1329" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18" font-weight="700" fill="#20352f">D / 结束去噪后：目标 latent 还原，才做最终 VAE 解码</text>
+<rect x="36" y="1350" width="1048" height="104" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="36" y="1365" width="3" height="22" rx="1.5" fill="#19735c"/>
+<text x="54" y="1382" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18" font-weight="650" fill="#19735c">[1,4096,64] → [1,64,1,64,64] → VAE → [1,4,1,1024,1024]</text>
+<text x="54" y="1408" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">去掉单帧轴 → [1,4,1024,1024]；最终 PIL：1024×1024，RGBA</text>
+<text x="54" y="1431" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">VAE 不读取 DiT 的条件 KV；C=64 是 latent 通道，C=4 是 RGBA 通道。</text>
+<rect x="36" y="1482" width="1048" height="142" rx="14" fill="#edf1f3" stroke="#d6e1d8" stroke-width="1.4"/>
+<text x="54" y="1515" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="21" font-weight="650" fill="#20352f">缓存纯数据：每层 K+V 约 97.625 MiB；32 层约 3.051 GiB。</text>
+<text x="54" y="1548" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="17" font-weight="400" fill="#64766e">不含权重、临时拼接、激活和工作区；true CFG 负分支长度要独立计算。</text>
+<text x="54" y="1578" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">Q/K/V 布局 [B,tokens,heads,head_dim]；内核可能换轴。无 padding 时 cached mask 可为 None。</text>
+<text x="54" y="1605" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">参考槽数需核对实际 image_pad_mask；这是源码协议下的 shape 算例，不是 GPU 实测。</text>
+<text x="36" y="1664" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="14" font-weight="400" fill="#64766e">来源：Diffusers f9316b0 · shape_example.py 复核算术 · build_kv_shapes.py 重绘</text>
+</svg>

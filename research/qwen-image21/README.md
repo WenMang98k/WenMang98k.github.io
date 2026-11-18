@@ -42,3 +42,9 @@ dry-run 不导入 GPU 框架、不下载模型、不执行推理，只展示所�
 原文章新增一次编辑请求从 VLM/VAE 输入准备、extract 逐层写缓存、cached 每层读取，到 scheduler 和最终 VAE 解码的图文导读；解释网络层与去噪步两条轴、目标每步从第一层重算、前缀长度不增长、正负 CFG 分支隔离及请求缓存生命周期。沿用已固定 Diffusers 源码，无新增权重或 GPU 实测。
 
 `PYTHONDONTWRITEBYTECODE=1 python3 research/qwen-image21/build_kv_dataflow.py` 可重绘 `public/images/qwen-image21/kv-dataflow.svg`，采用现有标准库绘图组件。正文 token 长度为教学算例，不是吞吐测量。
+
+## 具体尺寸 shape 算例（2026-11-18）
+
+新增输出 W1024×H1024、参考 W1024×H1204（默认缩放到 W960×H1120）、有效非图像token 2048 的完整张量表和 `kv-shapes.svg`。明确原始prompt与模板后有效长度、VLM图像槽与DiT参考token的差别。单分支、B=1、无TP、BF16，结构采用源码默认；processor需匹配并验证槽数，不宣称执行真实模型。
+
+`PYTHONDONTWRITEBYTECODE=1 python3 research/qwen-image21/shape_example.py` 输出shape与缓存大小，验证算术；`PYTHONDONTWRITEBYTECODE=1 python3 research/qwen-image21/build_kv_shapes.py` 重绘插图。脚本不分配模型张量、不下载权重。
