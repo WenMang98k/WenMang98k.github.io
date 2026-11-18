@@ -36,3 +36,9 @@ dry-run 不导入 GPU 框架、不下载模型、不执行推理，只展示所�
 新增核对官方 Qwen-Image README、旧版 Diffusers EditPlus Pipeline 和双流 Transformer，共 3 个文件；固定提交和 SHA256 已追加到 sources.lock.json。2511 Hugging Face model_index 请求 403，未读取 checkpoint config，因此文章明确区分源码默认与已加载权重。没有模型推理或 GPU 基准。
 
 运行 `python3 research/qwen-image21/build_comparison.py` 生成 `public/images/qwen-image21/2511-vs-21.svg`，对比 Pipeline 与 Backbone，显示两条条件路径、目标位置、双流／单流注意力、缓存依赖及 token 数算例。它复用 build_diagrams.py 的标准库绘图组件，不会修改旧图。
+
+## 条件 KV 完整数据流（2026-11-18）
+
+原文章新增一次编辑请求从 VLM/VAE 输入准备、extract 逐层写缓存、cached 每层读取，到 scheduler 和最终 VAE 解码的图文导读；解释网络层与去噪步两条轴、目标每步从第一层重算、前缀长度不增长、正负 CFG 分支隔离及请求缓存生命周期。沿用已固定 Diffusers 源码，无新增权重或 GPU 实测。
+
+`PYTHONDONTWRITEBYTECODE=1 python3 research/qwen-image21/build_kv_dataflow.py` 可重绘 `public/images/qwen-image21/kv-dataflow.svg`，采用现有标准库绘图组件。正文 token 长度为教学算例，不是吞吐测量。
