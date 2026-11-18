@@ -48,3 +48,7 @@ dry-run 不导入 GPU 框架、不下载模型、不执行推理，只展示所�
 新增输出 W1024×H1024、参考 W1024×H1204（默认缩放到 W960×H1120）、有效非图像token 2048 的完整张量表和 `kv-shapes.svg`。明确原始prompt与模板后有效长度、VLM图像槽与DiT参考token的差别。单分支、B=1、无TP、BF16，结构采用源码默认；processor需匹配并验证槽数，不宣称执行真实模型。
 
 `PYTHONDONTWRITEBYTECODE=1 python3 research/qwen-image21/shape_example.py` 输出shape与缓存大小，验证算术；`PYTHONDONTWRITEBYTECODE=1 python3 research/qwen-image21/build_kv_shapes.py` 重绘插图。脚本不分配模型张量、不下载权重。
+
+## 原数据流图内联 shape（2026-11-18）
+
+将输入、联合序列、首步 QKV、逐层缓存、后续目标 QKV、拼接 KV 与 scheduler/VAE 输出 shape 直接整合到原 `kv-dataflow.svg` 节点中，保留读写、跨步保留和目标回环箭头。原图高更新为2320；脚本复用 shape_example.py 的假设与算术校验，未做GPU推理。

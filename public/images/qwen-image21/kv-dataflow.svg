@@ -1,129 +1,180 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="1740" viewBox="0 0 1120 1740" role="img" aria-labelledby="title desc">
-<title id="title">Qwen-Image-2.1：条件 KV 完整数据流</title><desc id="desc">输入条件双路径编码，首步逐层提取前缀KV，后续目标逐层读取对应缓存，scheduler仅更新目标latent，最后VAE解码。</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="2320" viewBox="0 0 1120 2320" role="img" aria-labelledby="title desc">
+<title id="title">Qwen-Image-2.1：带 tensor shape 的完整 KV 数据流</title><desc id="desc">同一张原数据流图中标注输入、首步联合QKV、每层缓存、后续目标QKV与拼接KV，以及最终RGBA输出。首步10344个query变成后续4096个query；条件KV6248始终固定。</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="context-stroke"/></marker><pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r=".8" fill="#dae3db"/></pattern></defs>
-<rect width="1120" height="1740" fill="#f7f9f5"/><rect width="1120" height="1740" fill="url(#grid)"/>
-<text x="36" y="38" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="13" font-weight="600" fill="#64766e">WENMANG / QWEN-IMAGE-2.1 · PREFIX KV DATAFLOW</text>
-<text x="36" y="80" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="29" font-weight="700" fill="#20352f">固定条件只建一次 KV，目标每步仍完整过网</text>
-<text x="36" y="113" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16" font-weight="400" fill="#64766e">纵向看网络层；先后两段看去噪步。层号与去噪步号是两条不同的轴。</text>
-<text x="36" y="158" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18" font-weight="700" fill="#20352f">A / 循环之前：两条参考图路径 + 目标噪声</text>
-<rect x="36" y="181" width="334" height="100" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
-<rect x="36" y="196" width="3" height="22" rx="1.5" fill="#19735c"/>
-<text x="54" y="213" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18" font-weight="650" fill="#19735c">文字 + 参考图 → Qwen3-VL</text>
-<text x="54" y="239" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">联合条件 embedding</text>
-<text x="54" y="262" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">不是 DiT 每层的 K/V</text>
-<rect x="393" y="181" width="334" height="100" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
-<rect x="393" y="196" width="3" height="22" rx="1.5" fill="#19735c"/>
-<text x="411" y="213" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="19" font-weight="650" fill="#19735c">参考图 → RGBA VAE</text>
-<text x="411" y="239" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">固定参考 latent</text>
-<text x="411" y="262" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">替换联合序列的图像槽</text>
-<rect x="750" y="181" width="334" height="100" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
-<rect x="750" y="196" width="3" height="22" rx="1.5" fill="#366baf"/>
-<text x="768" y="213" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18" font-weight="650" fill="#366baf">随机噪声 → 目标 latent</text>
-<text x="768" y="239" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">当前 x；后续由 scheduler 更新</text>
-<text x="768" y="262" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">目标不是参考图 latent</text>
-<polyline points="203,281 203,310 388,310 388,335" fill="none" stroke="#19735c" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<polyline points="560,281 560,310 388,310" fill="none" stroke="#19735c" stroke-width="2" stroke-linejoin="round"/>
-<polyline points="917,281 917,335" fill="none" stroke="#366baf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<rect x="36" y="335" width="691" height="82" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
-<rect x="36" y="350" width="3" height="22" rx="1.5" fill="#19735c"/>
-<text x="54" y="367" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="20" font-weight="650" fill="#19735c">条件前缀 c = 交错文本 + 参考图 token</text>
-<text x="54" y="393" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">条件时间固定为 0；准备图像块 ID、位置与 key 有效性</text>
-<rect x="750" y="335" width="334" height="82" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
-<rect x="750" y="350" width="3" height="22" rx="1.5" fill="#366baf"/>
-<text x="768" y="367" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="20" font-weight="650" fill="#366baf">目标 token x</text>
-<text x="768" y="393" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">使用当前去噪时间 t</text>
-<text x="36" y="458" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18" font-weight="700" fill="#20352f">B / 首个去噪步：extract · 正常预测，同时逐层写缓存</text>
-<polyline points="388,417 388,435 738,435 738,468 388,468 388,479" fill="none" stroke="#19735c" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<polyline points="917,417 917,435 738,435" fill="none" stroke="#366baf" stroke-width="2" stroke-linejoin="round"/>
-<rect x="36" y="479" width="691" height="116" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
-<rect x="36" y="494" width="3" height="22" rx="1.5" fill="#366baf"/>
-<text x="54" y="511" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="20" font-weight="650" fill="#366baf">第 1 层：输入 [条件 h_c⁰ | 目标 h_x⁰]</text>
-<text x="54" y="537" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">LN / 调制 → 投影 → QK norm / RoPE → Q、K、V</text>
-<text x="54" y="560" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">保存本层条件 K/V；再做 attention、残差与 FFN</text>
-<text x="54" y="583" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">条件与目标的输出一起进入第 2 层</text>
-<rect x="797" y="479" width="287" height="116" rx="14" fill="#e6f0e5" stroke="#d6e1d8" stroke-width="1.4"/>
-<rect x="797" y="494" width="3" height="22" rx="1.5" fill="#19735c"/>
-<text x="815" y="511" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="20" font-weight="650" fill="#19735c">cache[0]</text>
-<text x="815" y="537" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">第 1 层条件 K_c、V_c</text>
-<text x="815" y="560" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">K：norm + RoPE 后</text>
-<text x="815" y="583" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">V：投影后，不做 RoPE</text>
-<polyline points="727,535 797,535" fill="none" stroke="#19735c" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<text x="738" y="520" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="14" font-weight="650" fill="#19735c">写</text>
-<polyline points="381,595 381,620" fill="none" stroke="#366baf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<rect x="36" y="620" width="691" height="93" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
-<rect x="36" y="635" width="3" height="22" rx="1.5" fill="#366baf"/>
-<text x="54" y="652" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="20" font-weight="650" fill="#366baf">第 2 层 → … → 第 L 层</text>
-<text x="54" y="678" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">每层用自己的输入状态和投影，写自己的前缀 K/V</text>
-<text x="54" y="701" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">第一层缓存不能给第二层使用</text>
-<rect x="797" y="620" width="287" height="93" rx="14" fill="#e6f0e5" stroke="#d6e1d8" stroke-width="1.4"/>
-<rect x="797" y="635" width="3" height="22" rx="1.5" fill="#19735c"/>
-<text x="815" y="652" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="17" font-weight="650" fill="#19735c">cache[1] … cache[L−1]</text>
-<text x="815" y="678" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">每层独立保存固定前缀</text>
-<text x="815" y="701" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">每份长度都是 P，不含目标</text>
-<polyline points="727,663 797,663" fill="none" stroke="#19735c" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<polyline points="381,713 381,738" fill="none" stroke="#366baf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<rect x="36" y="738" width="691" height="81" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
-<rect x="36" y="753" width="3" height="22" rx="1.5" fill="#366baf"/>
-<text x="54" y="770" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="19" font-weight="650" fill="#366baf">输出头 → 末尾目标预测 → scheduler</text>
-<text x="54" y="796" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">更新目标 latent；不更新参考 latent 和已建条件缓存</text>
-<rect x="797" y="738" width="287" height="81" rx="14" fill="#e6f0e5" stroke="#d6e1d8" stroke-width="1.4" stroke-dasharray="6 5"/>
-<text x="815" y="769" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="17" font-weight="650" fill="#19735c">缓存保留，供下一步读取</text>
-<text x="815" y="794" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">固定长度；不追加目标 K/V</text>
-<text x="36" y="863" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18" font-weight="700" fill="#20352f">C / 每个后续去噪步：cached · 新目标重新从第 1 层进入</text>
-<polyline points="381,819 738,819 738,874 381,874 381,885" fill="none" stroke="#366baf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<rect x="36" y="885" width="691" height="93" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
-<rect x="36" y="900" width="3" height="22" rx="1.5" fill="#366baf"/>
-<text x="54" y="917" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="19" font-weight="650" fill="#366baf">更新后的目标 latent → 输入投影</text>
-<text x="54" y="943" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">准备布局后裁掉条件 query，block 内只剩目标状态</text>
-<text x="54" y="966" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">不是把上一去噪步最后一层的隐藏状态直接送回第一层</text>
-<polyline points="381,978 381,1003" fill="none" stroke="#366baf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<rect x="36" y="1003" width="691" height="131" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
-<rect x="36" y="1018" width="3" height="22" rx="1.5" fill="#366baf"/>
-<text x="54" y="1035" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="19" font-weight="650" fill="#366baf">第 1 层：重新计算目标 Q_x、K_x、V_x</text>
-<text x="54" y="1061" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">Q = 当前目标 Q_x</text>
-<text x="54" y="1084" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">K/V = [本层缓存条件 K_c/V_c | 当前目标 K_x/V_x]</text>
-<text x="54" y="1107" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">目标 attention → 残差 → 目标 FFN → 第 2 层</text>
-<rect x="797" y="1003" width="287" height="131" rx="14" fill="#e6f0e5" stroke="#d6e1d8" stroke-width="1.4"/>
-<rect x="797" y="1018" width="3" height="22" rx="1.5" fill="#19735c"/>
-<text x="815" y="1035" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="19" font-weight="650" fill="#19735c">读取 cache[0]</text>
-<text x="815" y="1061" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">只读第 1 层的条件 K/V</text>
-<text x="815" y="1084" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">目标仍要读取前缀！</text>
-<text x="815" y="1107" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">不计算条件 Q / FFN</text>
-<polyline points="797,1060 727,1060" fill="none" stroke="#19735c" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
-<text x="745" y="1045" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="14" font-weight="650" fill="#19735c">读</text>
-<polyline points="381,1134 381,1159" fill="none" stroke="#366baf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<rect x="36" y="1159" width="691" height="93" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
-<rect x="36" y="1174" width="3" height="22" rx="1.5" fill="#366baf"/>
-<text x="54" y="1191" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="20" font-weight="650" fill="#366baf">第 2 层 → … → 第 L 层</text>
-<text x="54" y="1217" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">每层重新计算本步目标，读取相同层号的固定缓存</text>
-<text x="54" y="1240" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">目标 query 可读全部有效前缀与整个目标块</text>
-<rect x="797" y="1159" width="287" height="93" rx="14" fill="#e6f0e5" stroke="#d6e1d8" stroke-width="1.4"/>
-<rect x="797" y="1174" width="3" height="22" rx="1.5" fill="#19735c"/>
-<text x="815" y="1191" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="17" font-weight="650" fill="#19735c">cache[1] … cache[L−1]</text>
-<text x="815" y="1217" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">按层只读；内容不变</text>
-<text x="815" y="1240" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">目标 K/V 每步新算</text>
-<polyline points="797,1203 727,1203" fill="none" stroke="#19735c" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
-<polyline points="381,1252 381,1277" fill="none" stroke="#366baf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<rect x="36" y="1277" width="691" height="81" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
-<rect x="36" y="1292" width="3" height="22" rx="1.5" fill="#366baf"/>
-<text x="54" y="1309" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="19" font-weight="650" fill="#366baf">输出头 → 目标预测 → scheduler 更新 x</text>
-<text x="54" y="1335" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">还有下一步：用更新后的 x 重新从第 1 层开始</text>
-<polyline points="36,1317 16,1317 16,930 36,930" fill="none" stroke="#366baf" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
-<rect x="797" y="1277" width="287" height="81" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
-<rect x="797" y="1292" width="3" height="22" rx="1.5" fill="#a76326"/>
-<text x="815" y="1309" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="19" font-weight="650" fill="#a76326">跨步保留什么？</text>
-<text x="815" y="1335" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">更新的目标 latent</text>
-<text x="815" y="1358" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">固定的逐层条件 K/V</text>
-<text x="36" y="1400" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18" font-weight="700" fill="#20352f">D / 所有去噪步结束后：目标 latent → 还原 / 反归一化 → VAE → RGBA</text>
-<polyline points="381,1408 381,1420" fill="none" stroke="#366baf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<rect x="36" y="1420" width="1048" height="82" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
-<rect x="36" y="1435" width="3" height="22" rx="1.5" fill="#19735c"/>
-<text x="54" y="1452" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="21" font-weight="650" fill="#19735c">只解码最终目标；VAE 不读取这套 DiT KV 缓存</text>
-<text x="54" y="1478" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">正 / 负 CFG 分支各有自己的缓存；此 Pipeline 不自动提供跨请求持久缓存服务。</text>
-<rect x="36" y="1530" width="1048" height="161" rx="14" fill="#edf1f3" stroke="#d6e1d8" stroke-width="1.4"/>
-<text x="54" y="1563" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="19" font-weight="650" fill="#20352f">长度算例 P=6、T=4：首步新算 10 个 query；后续新算 4 个 query。</text>
-<text x="54" y="1597" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18" font-weight="400" fill="#366baf">后续目标仍读取 10 个 key/value = 6 个缓存条件 + 4 个本步目标。</text>
-<text x="54" y="1628" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="17" font-weight="400" fill="#19735c">省掉的是条件侧重算，不是目标对条件的读取；固定缓存不会随去噪步增长。</text>
-<text x="54" y="1660" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">绿色 = 条件 / 缓存；蓝色 = 当前目标；实线写入与计算，虚线读取或回环。</text>
-<text x="36" y="1721" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="14" font-weight="400" fill="#64766e">源码：Diffusers f9316b0 · 教学数据依赖图，无 GPU 性能实测 · build_kv_dataflow.py 可重绘</text>
+<rect width="1120" height="2320" fill="#f7f9f5"/><rect width="1120" height="2320" fill="url(#grid)"/>
+<text x="36" y="38" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="13" font-weight="600" fill="#64766e">WENMANG / QWEN-IMAGE-2.1 · DATAFLOW + TENSOR SHAPES</text>
+<text x="36" y="80" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="28" font-weight="700" fill="#20352f">沿着数据流，直接看见 KV 复用前后的 shape</text>
+<text x="36" y="113" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16" font-weight="400" fill="#64766e">输出 W1024×H1024；参考 W1024×H1204 → W960×H1120；B=1，无 TP。</text>
+<rect x="36" y="135" width="1048" height="49" rx="14" fill="#fbf0df" stroke="#d6e1d8" stroke-width="1.4"/>
+<text x="54" y="157" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16" font-weight="650" fill="#a76326">2048 = 有效非图像 token（含保留标记），不含图像槽；32 头×128，宽度4096。</text>
+<text x="54" y="177" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="14" font-weight="400" fill="#64766e">若2048仅指原始prompt，模板净增加δ须计入序列长度；以下为匹配processor下的算例。</text>
+<text x="36" y="216" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18" font-weight="700" fill="#20352f">A / 循环之前：条件双路径编码，目标初始化为噪声</text>
+<rect x="36" y="238" width="334" height="145" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="36" y="253" width="3" height="22" rx="1.5" fill="#19735c"/>
+<text x="54" y="270" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="17" font-weight="650" fill="#19735c">文字 + 参考图 → Qwen3-VL</text>
+<text x="54" y="296" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">2048 文本 + 1050 图像槽</text>
+<text x="54" y="319" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">prompt_embeds</text>
+<text x="54" y="342" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">[1,3098,4096]</text>
+<text x="54" y="365" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">图像槽待展开，不是缓存 K/V</text>
+<rect x="393" y="238" width="334" height="145" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="393" y="253" width="3" height="22" rx="1.5" fill="#19735c"/>
+<text x="411" y="270" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="17" font-weight="650" fill="#19735c">同一参考图 → RGBA VAE</text>
+<text x="411" y="296" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">像素 [1,4,1,1120,960]</text>
+<text x="411" y="319" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">latent [1,64,1,70,60]</text>
+<text x="411" y="342" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">展平 [1,4200,64]</text>
+<text x="411" y="365" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">img_in → [1,4200,4096]</text>
+<rect x="750" y="238" width="334" height="145" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="750" y="253" width="3" height="22" rx="1.5" fill="#366baf"/>
+<text x="768" y="270" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18" font-weight="650" fill="#366baf">随机噪声 → 目标 latent</text>
+<text x="768" y="296" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">空间 H64 × W64</text>
+<text x="768" y="319" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">展平 x [1,4096,64]</text>
+<text x="768" y="342" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">img_in → [1,4096,4096]</text>
+<text x="768" y="365" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">每步 scheduler 更新 x</text>
+<polyline points="203,383 203,411 388,411 388,439" fill="none" stroke="#19735c" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="560,383 560,411 388,411" fill="none" stroke="#19735c" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="917,383 917,439" fill="none" stroke="#366baf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="36" y="439" width="691" height="108" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="36" y="454" width="3" height="22" rx="1.5" fill="#19735c"/>
+<text x="54" y="471" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="22" font-weight="650" fill="#19735c">条件前缀 c：[1,6248,4096]</text>
+<text x="54" y="497" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">1050 图像槽 ×4 并替换 → 4200 参考 token</text>
+<text x="54" y="520" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">P = 2048 文本 + 4200 参考 = 6248；条件调制 t=0</text>
+<text x="54" y="543" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">img_mask 追加目标槽前后：[1,3098] → [1,4122]</text>
+<rect x="750" y="439" width="334" height="108" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="750" y="454" width="3" height="22" rx="1.5" fill="#366baf"/>
+<text x="768" y="471" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="19" font-weight="650" fill="#366baf">目标：[1,4096,4096]</text>
+<text x="768" y="497" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">T=4096；使用当前时间 t</text>
+<text x="768" y="520" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">前缀 + 目标的联合长度</text>
+<text x="768" y="543" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">N = 6248 + 4096 = 10344</text>
+<text x="36" y="593" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18" font-weight="700" fill="#20352f">B / 首步 extract：联合序列参与每一层计算，并逐层写条件缓存</text>
+<polyline points="388,547 388,566 738,566 738,606 388,606 388,628" fill="none" stroke="#19735c" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="917,547 917,566 738,566" fill="none" stroke="#366baf" stroke-width="2" stroke-linejoin="round"/>
+<rect x="36" y="628" width="691" height="170" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="36" y="643" width="3" height="22" rx="1.5" fill="#366baf"/>
+<text x="54" y="660" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="22" font-weight="650" fill="#366baf">第 1 层：输入 [1,10344,4096]</text>
+<text x="54" y="686" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">LN / 调制 → QKV 投影 → QK norm / RoPE</text>
+<text x="54" y="709" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">新算 Q、K、V：各 [1,10344,32,128]</text>
+<text x="54" y="732" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">取前6248个 token 的 K/V → 写入右侧缓存</text>
+<text x="54" y="755" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">块因果 attention → 残差 / FFN</text>
+<text x="54" y="778" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">下一层输入仍为 [1,10344,4096]</text>
+<rect x="797" y="628" width="287" height="170" rx="14" fill="#e6f0e5" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="797" y="643" width="3" height="22" rx="1.5" fill="#19735c"/>
+<text x="815" y="660" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="20" font-weight="650" fill="#19735c">写 cache[0]</text>
+<text x="815" y="686" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">K [1,6248,32,128]</text>
+<text x="815" y="709" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">V [1,6248,32,128]</text>
+<text x="815" y="732" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">K：QK norm + RoPE 后</text>
+<text x="815" y="755" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">V：投影后，不做 RoPE</text>
+<text x="815" y="778" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">不含目标；不保存 Q</text>
+<polyline points="727,705 797,705" fill="none" stroke="#19735c" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="744" y="690" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="14" font-weight="650" fill="#19735c">写</text>
+<polyline points="381,798 381,828" fill="none" stroke="#366baf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="36" y="828" width="691" height="108" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="36" y="843" width="3" height="22" rx="1.5" fill="#366baf"/>
+<text x="54" y="860" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="22" font-weight="650" fill="#366baf">第 2 层 → … → 第 32 层</text>
+<text x="54" y="886" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">每层输入 / 输出均为 [1,10344,4096]</text>
+<text x="54" y="909" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">每层有自己的 QKV 投影，缓存数值不相同</text>
+<text x="54" y="932" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">第一层 K/V 不能给第二层使用</text>
+<rect x="797" y="828" width="287" height="108" rx="14" fill="#e6f0e5" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="797" y="843" width="3" height="22" rx="1.5" fill="#19735c"/>
+<text x="815" y="860" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="17" font-weight="650" fill="#19735c">cache[1] … cache[31]</text>
+<text x="815" y="886" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">每层 K、V 各一份</text>
+<text x="815" y="909" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">各 [1,6248,32,128]</text>
+<text x="815" y="932" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">每层前缀长度固定为6248</text>
+<polyline points="727,877 797,877" fill="none" stroke="#19735c" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="381,936 381,966" fill="none" stroke="#366baf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="36" y="966" width="691" height="108" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="36" y="981" width="3" height="22" rx="1.5" fill="#366baf"/>
+<text x="54" y="998" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="21" font-weight="650" fill="#366baf">输出头 → 取末尾目标 → scheduler</text>
+<text x="54" y="1024" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">全序列预测 [1,10344,64] → 目标 [1,4096,64]</text>
+<text x="54" y="1047" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">scheduler更新后的 x：[1,4096,64]</text>
+<text x="54" y="1070" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">只更新目标 latent；条件缓存原样保留</text>
+<rect x="797" y="966" width="287" height="108" rx="14" fill="#e6f0e5" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="797" y="981" width="3" height="22" rx="1.5" fill="#19735c"/>
+<text x="815" y="998" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="20" font-weight="650" fill="#19735c">缓存跨步保留</text>
+<text x="815" y="1024" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">32 层分别保存 K/V</text>
+<text x="815" y="1047" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">不追加本步目标 K/V</text>
+<text x="815" y="1070" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">后续按相同层号读取</text>
+<text x="36" y="1138" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18" font-weight="700" fill="#20352f">C / 每个后续 cached 步：新目标重新从第 1 层进入，缓存只读</text>
+<polyline points="381,1074 738,1074 738,1150 381,1150 381,1170" fill="none" stroke="#366baf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="36" y="1170" width="691" height="110" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="36" y="1185" width="3" height="22" rx="1.5" fill="#366baf"/>
+<text x="54" y="1202" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="21" font-weight="650" fill="#366baf">新目标 x [1,4096,64] → img_in</text>
+<text x="54" y="1228" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">准备布局后裁掉条件 query → [1,4096,4096]</text>
+<text x="54" y="1251" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">不是把上一步最后一层隐藏状态直接送回第1层</text>
+<text x="54" y="1274" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">每个去噪步都重新进入网络；目标Q/K/V不跨步复用</text>
+<polyline points="381,1280 381,1310" fill="none" stroke="#366baf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="36" y="1310" width="691" height="170" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="36" y="1325" width="3" height="22" rx="1.5" fill="#366baf"/>
+<text x="54" y="1342" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="20" font-weight="650" fill="#366baf">第 1 层：只新算目标 Q_x、K_x、V_x</text>
+<text x="54" y="1368" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">目标隐藏状态 [1,4096,4096]</text>
+<text x="54" y="1391" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">新算 Q_x / K_x / V_x：各 [1,4096,32,128]</text>
+<text x="54" y="1414" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">读取右侧同层条件 K_c/V_c，沿 token 轴拼接：</text>
+<text x="54" y="1437" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">K_all = [6248条件 | 4096目标] → [1,10344,32,128]</text>
+<text x="54" y="1460" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">V_all = [6248条件 | 4096目标] → [1,10344,32,128]</text>
+<rect x="797" y="1310" width="287" height="170" rx="14" fill="#e6f0e5" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="797" y="1325" width="3" height="22" rx="1.5" fill="#19735c"/>
+<text x="815" y="1342" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="20" font-weight="650" fill="#19735c">读 cache[0]</text>
+<text x="815" y="1368" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">K [1,6248,32,128]</text>
+<text x="815" y="1391" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">V [1,6248,32,128]</text>
+<text x="815" y="1414" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">形状和内容都不变</text>
+<text x="815" y="1437" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">省掉条件 Q / K / V重算</text>
+<text x="815" y="1460" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">也省掉条件输出与 FFN</text>
+<polyline points="797,1384 727,1384" fill="none" stroke="#19735c" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+<text x="744" y="1369" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="14" font-weight="650" fill="#19735c">读</text>
+<polyline points="1084,713 1103,713 1103,1390 1084,1390" fill="none" stroke="#19735c" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+<polyline points="381,1480 381,1510" fill="none" stroke="#366baf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="36" y="1510" width="691" height="140" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="36" y="1525" width="3" height="22" rx="1.5" fill="#366baf"/>
+<text x="54" y="1542" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="21" font-weight="650" fill="#366baf">目标 attention → 残差 / FFN</text>
+<text x="54" y="1568" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">Q_x [1,4096,32,128] 查询完整 K_all / V_all</text>
+<text x="54" y="1591" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">逻辑 score [1,32,4096,10344]；不必物化</text>
+<text x="54" y="1614" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">attention [1,4096,32,128] → 合头 [1,4096,4096]</text>
+<text x="54" y="1637" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">下一层目标隐藏状态仍为 [1,4096,4096]</text>
+<rect x="797" y="1510" width="287" height="140" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="797" y="1525" width="3" height="22" rx="1.5" fill="#a76326"/>
+<text x="815" y="1542" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="17" font-weight="650" fill="#a76326">目标仍然读取条件！</text>
+<text x="815" y="1568" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">query数：10344 → 4096</text>
+<text x="815" y="1591" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">读取 K/V 长度仍为10344</text>
+<text x="815" y="1614" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">无padding：mask可为None</text>
+<text x="815" y="1637" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">不是把前缀从 K/V 中删掉</text>
+<polyline points="381,1650 381,1666" fill="none" stroke="#366baf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="36" y="1666" width="691" height="108" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="36" y="1681" width="3" height="22" rx="1.5" fill="#366baf"/>
+<text x="54" y="1698" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="22" font-weight="650" fill="#366baf">第 2 层 → … → 第 32 层</text>
+<text x="54" y="1724" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">每层只重算目标，各读自己的条件 K/V</text>
+<text x="54" y="1747" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">每层目标输出 [1,4096,4096]</text>
+<text x="54" y="1770" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">网络层号是深度；去噪步号是时间，两者不同</text>
+<rect x="797" y="1666" width="287" height="108" rx="14" fill="#e6f0e5" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="797" y="1681" width="3" height="22" rx="1.5" fill="#19735c"/>
+<text x="815" y="1698" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="17" font-weight="650" fill="#19735c">cache[1] … cache[31]</text>
+<text x="815" y="1724" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">各 [1,6248,32,128]</text>
+<text x="815" y="1747" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">不增长、不覆盖</text>
+<text x="815" y="1770" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">本步目标 K/V 用完即弃</text>
+<polyline points="797,1715 727,1715" fill="none" stroke="#19735c" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+<polyline points="381,1774 381,1804" fill="none" stroke="#366baf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="36" y="1804" width="691" height="108" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="36" y="1819" width="3" height="22" rx="1.5" fill="#366baf"/>
+<text x="54" y="1836" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="19" font-weight="650" fill="#366baf">输出头 → 目标预测 → scheduler 更新 x</text>
+<text x="54" y="1862" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">预测 [1,4096,64]；更新后的 x [1,4096,64]</text>
+<text x="54" y="1885" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">还有下一步：用新 x 重新从第 1 层计算</text>
+<text x="54" y="1908" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">跨步不保存目标 Q/K/V 或最后一层隐藏状态</text>
+<polyline points="36,1858 16,1858 16,1225 36,1225" fill="none" stroke="#366baf" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+<rect x="797" y="1804" width="287" height="108" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="797" y="1819" width="3" height="22" rx="1.5" fill="#a76326"/>
+<text x="815" y="1836" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="20" font-weight="650" fill="#a76326">跨步保留</text>
+<text x="815" y="1862" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">目标 latent [1,4096,64]</text>
+<text x="815" y="1885" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">每层固定条件 K/V</text>
+<text x="815" y="1908" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">两者分别流动，不可混淆</text>
+<text x="36" y="1964" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18" font-weight="700" fill="#20352f">D / 所有去噪步结束：只把最终目标送入 VAE 解码</text>
+<polyline points="381,1975 381,1994" fill="none" stroke="#366baf" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="36" y="1994" width="1048" height="110" rx="14" fill="#fff" stroke="#d6e1d8" stroke-width="1.4"/>
+<rect x="36" y="2009" width="3" height="22" rx="1.5" fill="#19735c"/>
+<text x="54" y="2026" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="22" font-weight="650" fill="#19735c">目标 [1,4096,64] → 还原 [1,64,1,64,64] → VAE</text>
+<text x="54" y="2052" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">RGBA像素 [1,4,1,1024,1024] → 去单帧轴 [1,4,1024,1024] → PIL 1024×1024 RGBA</text>
+<text x="54" y="2075" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">VAE 不读取 DiT KV；正 / 负 CFG 分支需分别建缓存；请求间不自动共享。</text>
+<text x="54" y="2098" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="15" font-weight="400" fill="#64766e">QKV采用 [B,tokens,heads,head_dim]；内核可能换轴。图像像素张量采用 B,C,F,H,W。</text>
+<rect x="36" y="2136" width="1048" height="127" rx="14" fill="#edf1f3" stroke="#d6e1d8" stroke-width="1.4"/>
+<text x="54" y="2169" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="21" font-weight="650" fill="#20352f">对比：首步 Q/K/V 新算10344个 token；后续只新算4096个目标 token。</text>
+<text x="54" y="2202" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="18" font-weight="400" fill="#19735c">条件 K/V 始终各 [1,6248,32,128]；后续拼接后的 K/V 仍各 [1,10344,32,128]。</text>
+<text x="54" y="2233" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="16" font-weight="400" fill="#64766e">单分支BF16：每层K+V约97.625 MiB，32层约3.051 GiB；不含权重、临时张量及工作区。</text>
+<text x="36" y="2300" font-family="system-ui, -apple-system, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="14" font-weight="400" fill="#64766e">Diffusers f9316b0 · shape_example.py 核对算术 · 教学shape，无 GPU 实测 · 绿色缓存，蓝色目标</text>
 </svg>

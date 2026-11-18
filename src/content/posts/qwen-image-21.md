@@ -104,13 +104,13 @@ $$
 
 用“给参考图中的人物换一件蓝色外套”作为例子。先把三个不同的“固定”区分开：参考图文件不变、编码后的条件输入不变、每个 DiT 层的条件 K/V 不变，是三个层次。前两个能在准备输入时得到，最后一个还需要块因果注意力和固定条件调制来保证。
 
-下面按一次请求展开。图中绿色是固定条件及其缓存，蓝色是每步变化的目标，橙色是去噪时间。**图中的第 1 层／第 2 层是网络深度，首步／后续步是去噪时间，两者不能混为一谈。**
+下面按一次请求展开。图中绿色是固定条件及其缓存，蓝色是每步变化的目标，橙色强调复用边界。节点中的具体 shape 使用本节 F 的统一假设：输出1024×1024、参考1024×1204（默认缩放至960×1120）、有效非图像token为2048，B=1、无TP。**图中的第 1 层／第 2 层是网络深度，首步／后续步是去噪时间，两者不能混为一谈。**
 
 <figure>
   <div style="overflow-x:auto">
-    <a href="/images/qwen-image21/kv-dataflow.svg" target="_blank" rel="noopener"><img src="/images/qwen-image21/kv-dataflow.svg" width="1120" height="1740" loading="lazy" alt="Qwen-Image-2.1 条件KV完整数据流：参考图分别经过VLM与VAE；首步联合序列进入每层并写入该层前缀KV；后续从更新后的目标latent重新进入第1层，每层读取自己的前缀KV、拼接新目标KV；最后只更新目标latent并在去噪结束后解码。" /></a>
+    <a href="/images/qwen-image21/kv-dataflow.svg" target="_blank" rel="noopener"><img src="/images/qwen-image21/kv-dataflow.svg" width="1120" height="2320" loading="lazy" alt="Qwen-Image-2.1 条件KV完整数据流：参考图分别经过VLM与VAE；首步联合序列进入每层并写入该层前缀KV；后续从更新后的目标latent重新进入第1层，每层读取自己的前缀KV、拼接新目标KV；最后只更新目标latent并在去噪结束后解码。" /></a>
   </div>
-  <figcaption>KV 数据流图 · 先准备条件，再逐层写缓存，后续每一步按相同层号读取。箭头表示数据依赖，不代表实测耗时；点击可查看原图。</figcaption>
+  <figcaption>KV 数据流图（shape 已直接标在节点中）· 按后文具体算例，条件前缀6248、目标4096；首步与后续步的 Q/K/V、缓存及输出形状可沿箭头对照。2048 指有效非图像 token；完整假设与模板差异见本节 F。箭头表示数据依赖，不代表实测耗时；点击可查看原图。</figcaption>
 </figure>
 
 #### A. 循环开始前：算出固定条件，初始化目标噪声
