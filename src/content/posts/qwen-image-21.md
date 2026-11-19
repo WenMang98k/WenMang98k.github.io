@@ -969,19 +969,58 @@ $$
 
 服务过载时，还应有排队上限、幂等、超时、取消和失败重试策略。它们决定真实 SLA，而不是只由 DiT 单次耗时决定。
 
-## 框架选择：比较实际图像执行路径
+## 框架选择与部署实查
 
-| 路线 | 本轮已核实 | 适合先做什么 |
+截至 2026-11-19，vLLM-Omni 和 SGLang Diffusion 的主分支都有 2.1 专用 pipeline 和服务端测试。在线服务可以从前者的去噪步调度、后者按显卡给出的部署配置开始选型。Diffusers 仍适合作为功能和质量基线。以下结论来自固定版本的源码、部署文档与上游测量。
+
+| 框架 | 部署入口 | 2.1 已核实的优化或可用路径 |
 |---|---|---|
-| Diffusers | `QwenImage21Pipeline`、专用 Transformer、RGBA VAE、LoRA loader、前缀缓存、Turbo schedule | 建立可读性强的功能／质量基线 |
-| LightX2V | 2.1 专用 runner、prefill／infer、融合算子、量化／并行配置、LoRA 校验 | 结合目标硬件做延迟与驻留优化 |
-| vLLM-Omni | 2.1 官方 README 指向专用图像 recipe 与 step-wise 路径 | 面向服务调度、连续批处理与多卡评估 |
-| SGLang-Diffusion | 2.1 官方 README 指向 cookbook 与集成 PR | 多卡、缓存、offload 与服务路径评估 |
-| ComfyUI | 官方 2.1 README 指向原生支持和工作流模板 | 设计／产品快速体验与可视化工作流 |
+| vLLM-Omni | `vllm serve ... --omni`，文生图 JSON、编辑 multipart 上传 | 请求内逐层前缀 KV、步级调度、固定形状 decode CUDA Graph、组件 FP8、前缀 FP8、TP、Ulysses 或 Ring |
+| SGLang Diffusion | `sglang generate`，cookbook 提供文生图和编辑 HTTP 请求 | Base/Turbo、条件缓存、请求内前缀 KV、Cache-DiT、Breakable CUDA Graph、TP/Ulysses/Ring/CFG、组件卸载 |
+| LightX2V | 2.1 专用脚本与 JSON 配置 | FlashAttention3、融合 QK RMSNorm 与调制算子、FP8 DiT 和文本编码器、Ulysses、VAE 并行 |
+| Diffusers | `QwenImage21Pipeline` | 原生前缀 KV、RGBA VAE、官方 Turbo 时间网格、LoRA；切换 flex attention processor 时结合 compile |
+| ComfyUI | 2.1 兼容权重及文生图、编辑节点工作流 | 原生 2.1 加载与工作流内前缀缓存，源码测试覆盖内存预算下的缓存准入 |
 
-“vLLM 支持”这里指 **vLLM-Omni 的图像执行路径**，不能直接照搬普通 LLM 的启动与投机解码设置；SGLang 也要区分 Diffusion 路径。官方生态列表说明有支持方向，不替代每个后端的端到端实测。
+LightX2V 的 FP8 权重需要按指南转换并指向匹配的组件文件。ComfyUI 可用来快速核对参考图与透明边缘，节点工作流的运行时间需要按自身执行条件解释。[LightX2V 2.1 指南](https://github.com/ModelTC/LightX2V/blob/671fc893bc02766f9bd485aa7ff9dbd6a5f8acb6/scripts/qwen_image_21/README.md) · [ComfyUI 缓存测试](https://github.com/Comfy-Org/ComfyUI/blob/d5d59c4011312df6b3a4241fb48c045289ad9441/tests-unit/comfy_test/qwen21_cache_admission_test.py) · [ComfyUI 编辑工作流](https://github.com/Comfy-Org/workflow_templates/blob/main/templates/image_qwen_image_2_1_image_edit.json)
 
-Diffusers 对 `flex_attention` 另有具体提醒：切换 flex processor 时应结合 compile；未编译的路径可能实体化很大的 FP32 attention 分数矩阵，高分辨率下会慢甚至 OOM。配置越“高级”不代表默认越快。
+### vLLM-Omni 的服务入口与批处理边界
+
+源码检查确认 `v0.30.0` 缺少 2.1 专用 pipeline 文件，`v0.34.0rc1` 已包含该文件。下列命令以具备相应实现的 vLLM-Omni 环境为前提，先用单卡验证请求，再用并发流量评估调度。公开 recipe 的安装段仍引用早期 PR，因此以实际安装版本的模型注册和 CLI 为准。普通 vLLM 的 prompt rewrite 服务只负责改写提示词。[候选发布版源码](https://github.com/vllm-project/vllm-omni/blob/v0.34.0rc1/vllm_omni/diffusion/models/qwen_image_21/pipeline_qwen_image_21.py) · [2.1 recipe](https://github.com/vllm-project/recipes/blob/cb7c0e949bcb2bf580fcbd0d1d4e2e69ebf502ee/models/Qwen/Qwen-Image-2.1.yaml)
+
+```bash
+vllm serve Qwen/Qwen-Image-2.1 --omni --port 8091
+curl -fsS http://localhost:8091/v1/images/generations \
+  -H 'Content-Type: application/json' \
+  -d '{"model":"Qwen/Qwen-Image-2.1","prompt":"A ceramic teapot on a wooden table","size":"1024x1024","num_inference_steps":40,"true_cfg_scale":1.0,"seed":42}'
+```
+
+编辑走 `/v1/images/edits`，用 `-F image=@input.png` 上传参考图，重复该字段可传多张，recipe 上限为四张。两条图像接口均可从 `.data[0].b64_json` 取回图像。显式传步数和 `true_cfg_scale` 能固定比较口径，尤其是请求中含负提示词时。需要评估批量服务时，加 `--step-execution --max-num-seqs 8`。recipe 描述的是按 KV 阶段准入，同批已越过首步时，新请求可能继续排队，即使序列容量有余。延迟对照应包含到达时间与排队时间。[接口与调度 recipe](https://github.com/vllm-project/recipes/blob/cb7c0e949bcb2bf580fcbd0d1d4e2e69ebf502ee/models/Qwen/Qwen-Image-2.1.yaml)
+
+原生前缀 KV 从首步生成，寿命为单次生成。固定形状的后续去噪可用 CUDA Graph，首步仍走 eager。前缀量化通过 `prefix_kv_cache_dtype` 控制，`fp8_v` 只量化 V，`fp8` 量化 K 和 V，两者都会使 decode 回退 eager。当前源码还支持单独选择 Ring 或 Ulysses，明确拒绝两者同时大于 1。模型注册把 `cache_dit` 和 `tea_cache` 列为不支持。Turbo 的 `sample_sigmas` 已有源码处理及测试，服务部署仍应单独验收 Turbo checkpoint 与采样设置。[Transformer](https://github.com/vllm-project/vllm-omni/blob/7971aaff1a19888c182314442d34f6282457ebb4/vllm_omni/diffusion/models/qwen_image_21/qwen_image_21_transformer.py) · [CUDA Graph](https://github.com/vllm-project/vllm-omni/blob/7971aaff1a19888c182314442d34f6282457ebb4/vllm_omni/diffusion/models/qwen_image_21/decode_graph.py) · [模型注册](https://github.com/vllm-project/vllm-omni/blob/7971aaff1a19888c182314442d34f6282457ebb4/vllm_omni/diffusion/registry.py) · [sigma 测试](https://github.com/vllm-project/vllm-omni/blob/7971aaff1a19888c182314442d34f6282457ebb4/tests/diffusion/models/qwen_image_21/test_qwen_image_21_sample_sigmas.py)
+
+### SGLang Diffusion 的硬件配置与三种缓存
+
+按 cookbook 使用包含该集成的源码环境。下面是 Base 离线功能检查。编辑加 `--image-path input.png`，在线服务用 cookbook 生成目标显卡的 Server 命令及请求示例。Turbo 将模型路径换成 `Qwen/Qwen-Image-2.1-Turbo`，省略手动步数并保留 checkpoint 的 `sample_sigmas`。cookbook 在 H200 上验证了 Turbo 单卡文生图、编辑、透明输出、多参考和单请求双输出，以及双卡 TP 的生成和编辑。[SGLang 2.1 cookbook](https://github.com/sgl-project/sglang/blob/33a03ba42ee4c6036d75c22e71b9bb8600c79355/docs/cookbook/diffusion/Qwen-Image/Qwen-Image-2.1.mdx)
+
+```bash
+sglang generate --model-path Qwen/Qwen-Image-2.1 \
+  --prompt "A ceramic teapot on a wooden table" \
+  --height 1024 --width 1024 --num-inference-steps 40 \
+  --guidance-scale 1 --seed 42 --save-output
+```
+
+- **条件缓存**默认开启。相同输入可跨请求复用编码结果和 VAE posterior，改动提示词或参考图会触发联合 embedding 重算，未变图像仍可复用视觉特征。用 `--disable-conditioning-cache` 建立冷条件对照。
+- **DiT 前缀 KV**在单请求的去噪步之间复用。Breakable CUDA Graph 在单样本、SP=1 的条件下捕获后续步，首步仍走 eager。Bucket 要计入文本和参考图 token，超出已捕获形状会走 eager。
+- **Cache-DiT**通过 `--enable-cache-dit true` 启用，它复用或跳过随步计算的结果，可能改变图像。2.1 集成需要按层读取对应的前缀 KV。比较时单独开关 Cache-DiT，并检查编辑一致性、文字和 alpha 边缘。
+
+单卡显存紧张时优先用 cookbook 的组件放置配置。例如 RTX 4090 的单图配置将 DiT/VAE 常驻并对编码器做逐层卸载。在线动态批处理可合并兼容的文生图请求，编辑单独运行。多卡可按请求形状选择 TP、Ulysses、Ring 或 CFG 并行，SP 度数要整除目标 token 数，Ring 要求匹配的注意力后端。在线 FP8 可按组件选择，序列化 FP8、GGUF、NVFP4 各有权重格式和硬件约束。透明输出需要 PNG 和明确的提示词，验收时应实际解码检查 alpha。[运行时、量化与验证边界](https://github.com/sgl-project/sglang/blob/33a03ba42ee4c6036d75c22e71b9bb8600c79355/docs/cookbook/diffusion/Qwen-Image/Qwen-Image-2.1.mdx)
+
+### 公开数据能支持哪些部署判断
+
+- **vLLM-Omni 单卡 GB300。**上游 recipe 在 1024×1024、40 步、固定提示词与 seed 下报告 BF16 峰值 34.0 GB、每图 3.28–4.49 秒，文本编码器 FP8 降至 27.5–28.1 GB、每图 3.43–4.77 秒。这组数据支持把编码器 FP8 作为显存方案。采用它时一起验收参考图编辑，因为视觉 token 同样经过量化后的语言编码线性层。[vLLM-Omni recipe](https://github.com/vllm-project/recipes/blob/cb7c0e949bcb2bf580fcbd0d1d4e2e69ebf502ee/models/Qwen/Qwen-Image-2.1.yaml)
+- **SGLang 单卡 B200、H200 与 RTX 4090。**cookbook 的 Base、1024×1024、40 步、CFG 1、单张 RGBA PNG 预热后 HTTP 中位数，依次为文生图/编辑 2.22/2.70、4.48/5.29、18.68/21.68 秒，包含 PNG 序列化。4090 的对应卸载配置峰值为 22.7 GiB。各行的设备、注意力后端和驻留策略不同。[SGLang 2.1 cookbook](https://github.com/sgl-project/sglang/blob/33a03ba42ee4c6036d75c22e71b9bb8600c79355/docs/cookbook/diffusion/Qwen-Image/Qwen-Image-2.1.mdx)
+
+这些公开数字用于估算同类配置的资源范围。要比较框架，在同一 GPU 和相同 checkpoint、分辨率、参考图数量、步数、CFG、PNG 输出下，分别记录首次请求、预热单请求、并发 P50/P95、吞吐和峰值显存。文生图和一至四张参考图的编辑分别测，短提示词和长前缀分别测，再逐个启用图捕获、量化、卸载或并行。本轮基于源码与公开数据，尚无本站 GPU 实测。
 
 ## 建议的验证计划：先质量，再看每张可用图成本
 
