@@ -1,0 +1,183 @@
+---
+import Base from '../layouts/Base.astro';
+import { articles, articleSections, formatDate, type ArticleSection } from '../data/site';
+
+interface Props {
+  section?: ArticleSection;
+}
+
+const { section } = Astro.props;
+const allPosts = await articles();
+const posts = section ? allPosts.filter(post => post.section === section) : allPosts;
+const tags = [...new Set(posts.flatMap(post => post.tags))];
+const category = section ? articleSections[section] : undefined;
+const heading = category ? `${category.label}文章` : '全部文章';
+const tabs = [
+  { href: '/articles/', label: '全部文章', current: !section, count: allPosts.length },
+  { href: '/tech/', label: '技术', current: section === 'tech', count: allPosts.filter(post => post.section === 'tech').length },
+  { href: '/life/', label: '生活', current: section === 'life', count: allPosts.filter(post => post.section === 'life').length },
+];
+---
+<Base title={`${heading} · WenMang`}>
+  <section class="page-heading">
+    <h1>{heading}<span>。</span></h1>
+    <p class="lead">{category?.intro ?? '技术实践与生活记录，按时间浏览或进入感兴趣的栏目。'}</p>
+  </section>
+
+  <nav class="archive-tabs" aria-label="文章栏目">
+    {tabs.map(tab => (
+      <a href={tab.href} aria-current={tab.current ? 'page' : undefined}>
+        {tab.label} <span>{tab.count}</span>
+      </a>
+    ))}
+  </nav>
+
+  {section && category && (
+    <section class="archive-topics" aria-labelledby="archive-topics-title">
+      <h2 id="archive-topics-title">按主题阅读</h2>
+      <div class="topic-grid">
+        {category.topics.map(topic => (
+          <a class="topic-card" href={`/${section}/${topic.slug}/`}>
+            <h3>{topic.title} <span aria-hidden="true">↗</span></h3>
+            <p>{topic.description}</p>
+          </a>
+        ))}
+      </div>
+      {section === 'tech' && <a class="quiet tech-about" href="/tech/about/">技术经历与开源项目 ↗</a>}
+    </section>
+  )}
+
+  {section !== 'life' && (
+    <section class="series-index-banner" aria-label="投机解码系列">
+      <h2>投机解码系列</h2>
+      <p>一篇综述与 35 篇方法文章，按机制连接论文、源码和框架集成。</p>
+      <a href="/articles/speculative-decoding/">进入综述与系列目录 ↗</a>
+    </section>
+  )}
+
+  <section aria-label="文章列表">
+    <div class="search-bar">
+      <label for="search">搜索文章</label>
+      <input id="search" type="search" placeholder="标题、摘要或标签…" />
+    </div>
+    <div class="filters" role="group" aria-label="按标签筛选">
+      <button type="button" data-tag="" aria-pressed="true">全部</button>
+      {tags.map(tag => <button type="button" data-tag={tag} aria-pressed="false">{tag}</button>)}
+    </div>
+    <p class="meta" id="results" aria-live="polite">共 {posts.length} 篇文章</p>
+    <div class="article-list">
+      {posts.map(post => (
+        <a class="article-row" href={post.href} data-post data-tags={JSON.stringify(post.tags)}
+           data-search={[post.title, post.description, articleSections[post.section].label, ...post.tags].join(' ').toLocaleLowerCase()}>
+          <div>
+            <div class="meta">{formatDate(post.date)} · {!section && `${articleSections[post.section].label} · `}{post.tags.join(' / ')}</div>
+            <h2>{post.title}</h2>
+            <p>{post.description}</p>
+          </div>
+          <span class="arrow" aria-hidden="true">↗</span>
+        </a>
+      ))}
+    </div>
+    <p id="empty" hidden={posts.length > 0}>没有找到匹配的文章。</p>
+  </section>
+</Base>
+
+<script>
+  const search = document.querySelector<HTMLInputElement>('#search')!;
+  const buttons = document.querySelectorAll<HTMLButtonElement>('[data-tag]');
+  const rows = document.querySelectorAll<HTMLAnchorElement>('[data-post]');
+  const results = document.querySelector('#results')!;
+  const empty = document.querySelector<HTMLElement>('#empty')!;
+  let tag = '';
+
+  function filter() {
+    const query = search.value.trim().toLocaleLowerCase();
+    let count = 0;
+    rows.forEach(row => {
+      const matches = (!tag || JSON.parse(row.dataset.tags!).includes(tag)) &&
+        row.dataset.search!.includes(query);
+      row.hidden = !matches;
+      if (matches) count++;
+    });
+    results.textContent = `共 ${count} 篇文章`;
+    empty.hidden = count > 0;
+  }
+
+  search.addEventListener('input', filter);
+  buttons.forEach(button => button.addEventListener('click', () => {
+    tag = button.dataset.tag!;
+    buttons.forEach(option => option.setAttribute('aria-pressed', String(option === button)));
+    filter();
+  }));
+</script>
+
+<style>
+  .archive-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 28px;
+  }
+
+  .archive-tabs a {
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    padding: 8px 14px;
+  }
+
+  .archive-tabs a[aria-current="page"] {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: white;
+  }
+
+  .archive-tabs span {
+    margin-inline-start: 5px;
+    font-size: 0.8em;
+  }
+
+  .archive-topics {
+    margin-bottom: 32px;
+  }
+
+  .topic-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+    gap: 12px;
+  }
+
+  .topic-card {
+    padding: 16px;
+    border: 1px solid var(--line);
+  }
+
+  .topic-card:hover, .topic-card:focus-visible {
+    border-color: var(--accent);
+  }
+
+  .topic-card h3 {
+    margin: 0;
+    font-size: 1rem;
+  }
+
+  .topic-card h3 span {
+    color: var(--accent);
+  }
+
+  .topic-card p {
+    margin: 6px 0 0;
+    color: var(--muted);
+    font-size: 0.88rem;
+  }
+
+  .tech-about {
+    display: inline-block;
+    margin-top: 14px;
+  }
+
+  .article-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+</style>

@@ -56,7 +56,7 @@ python3 articles/speculative-decoding/scripts/verify_probabilities.py
 
 ## 保留的分类站点
 
-远程最新的 `/tech/`、`/life/` 与主题页，以及投机解码时间轴均保留。旧分类目录维护在 `content/catalog.json`，说明见 [docs/WRITING.md](docs/WRITING.md)。`python3 scripts/build_site.py` 会重写根目录的旧首页和分类页；Astro 正式首页由 `src/pages/index.astro` 生成。新 Markdown 文章通过新版 `/articles/` 自动收录，旧目录仍使用 catalog 维护。
+Astro 从同一份文章数据生成 `/articles/` 总列表、`/tech/` 技术列表和 `/life/` 生活列表。新 Markdown 文章可用 `section: tech` 或 `section: life` 指定栏目。未填写时沿用 catalog 的已有归类，其余归入技术。主题子页面仍由 `content/catalog.json` 维护，说明见 [docs/WRITING.md](docs/WRITING.md)。文章正文与投机解码时间轴继续使用原有 URL。
 
 ## 投机解码学习系列
 

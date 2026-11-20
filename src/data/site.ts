@@ -1,15 +1,29 @@
 import { getCollection } from 'astro:content';
+import catalog from '../../content/catalog.json';
+
+export const articleSections = { tech: catalog.tech, life: catalog.life };
+export type ArticleSection = keyof typeof articleSections;
+const lifeArticleUrls = new Set(catalog.posts.filter(post => post.section === 'life').map(post => post.url));
+
+export function sectionForArticle(href: string, section?: ArticleSection): ArticleSection {
+  return section ?? (lifeArticleUrls.has(href) ? 'life' : 'tech');
+}
+
 export const legacyArticle = {
   title: 'LLM 投机解码综述',
   description: '从经典 SD 到 EAGLE、MTP、DFlash 与 DSpark：机制、概率校正与工程选型，关联 35 篇方法文章和固定版本源码。学习初稿，未进行 GPU 性能对比实验。',
-  date: new Date('2026-11-11T00:00:00+08:00'), tags: ['LLM', '推理加速'], href: '/articles/speculative-decoding/',
+  date: new Date('2026-11-11T00:00:00+08:00'), tags: ['LLM', '推理加速'], href: '/articles/speculative-decoding/', section: 'tech' as const,
 };
 export async function articles() {
   const posts = await getCollection('posts', ({ data }) => !data.draft && data.seriesRole !== 'overview');
   return [legacyArticle, {
     title: '投机解码技术时间轴', description: '从早期块预测到 EAGLE、MTP、DFlash 与 DSpark，区分论文提出、代码发布和框架支持。',
-    date: new Date('2026-11-11T00:00:00+08:00'), tags: ['LLM', '推理加速'], href: '/articles/speculative-decoding/timeline.html'
-  }, ...posts.map(p => ({ ...p.data, href: `/articles/${p.id}/` }))]
+    date: new Date('2026-11-11T00:00:00+08:00'), tags: ['LLM', '推理加速'], href: '/articles/speculative-decoding/timeline.html',
+    section: 'tech' as const,
+  }, ...posts.map(({ id, data }) => {
+    const href = `/articles/${id}/`;
+    return { ...data, href, section: sectionForArticle(href, data.section) };
+  })]
     .sort((a,b) => b.date.getTime() - a.date.getTime());
 }
 export const projects = [
