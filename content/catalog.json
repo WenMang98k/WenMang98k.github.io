@@ -94,10 +94,25 @@
         "title": "养花",
         "description": "从一束鲜花到一盆绿意，记录花期、养护与日常。",
         "symbol": "❀"
+      },
+      {
+        "slug": "real-estate",
+        "title": "房产",
+        "description": "看懂房源、算清居住成本，记录买房和居住决策。",
+        "symbol": "⌂"
       }
     ]
   },
   "posts": [
+    {
+      "title": "北京买房入门：看懂房源、算清预算，再决定何时买",
+      "section": "life",
+      "topic": "real-estate",
+      "url": "/articles/beijing-home-buying-guide/",
+      "date": "2026-11-20",
+      "kind": "购房指南 · 北京二手房",
+      "summary": "从挂牌字段、产权和贷款出发，结合出生人口、入学口径和小区成交，建立自住购房的决策条件。"
+    },
     {
       "title": "FastVideo 技术解读：从稀疏蒸馏到图文与视频生成落地",
       "section": "tech",
