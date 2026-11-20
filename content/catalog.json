@@ -105,6 +105,15 @@
   },
   "posts": [
     {
+      "title": "通用 Agent 与个人 Agent：国内外产品版图和趋势",
+      "section": "tech",
+      "topic": "agents",
+      "url": "/articles/general-and-personal-agents/",
+      "date": "2026-11-20",
+      "kind": "产品调研 · 通用与个人 Agent",
+      "summary": "对比国内外大厂、创业公司与开源项目，分析通用任务交付、个人常驻助理与具体场景的产品进展。"
+    },
+    {
       "title": "北京买房入门：看懂房源、算清预算，再决定何时买",
       "section": "life",
       "topic": "real-estate",
